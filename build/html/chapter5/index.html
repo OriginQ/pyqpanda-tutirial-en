@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>5 Utility tool &mdash; pyQPanda 1.0.0 文档</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/translations.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="6 Component" href="../chapter6/index.html" />
+    <link rel="prev" title="4 Compiling of quantum program" href="../chapter4/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> pyQPanda
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="在文档中搜索" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../chapter1/index.html">1 Basic Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter2/index.html">2 Deep learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter3/index.html">3 Quantum program information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter4/index.html">4 Compiling of quantum program</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">5 Utility tool</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#quantum-circuit-query-and-replacement">5.1 Quantum circuit query and replacement</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#introduction-to-interface-used">5.1.1 Introduction to interface used</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example">5.1.2 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#filling-qprog-by-gate-i">5.2 Filling QProg by gate I</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">5.2.1 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#unitary-matrix-decomposition">5.3 Unitary matrix decomposition</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#objective-of-algorithm">5.3.1 Objective of algorithm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#overview-of-algorithm">5.3.2 Overview of algorithm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#instructions">5.3.3 Instructions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">5.3.4 Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter6/index.html">6 Component</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter7/index.html">7 VQC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter8/index.html">8 Basis of quantum algorithm</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pyQPanda</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>5 Utility tool</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/chapter5/index.rst.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="utility-tool">
+<h1>5 Utility tool<a class="headerlink" href="#utility-tool" title="永久链接至标题"></a></h1>
+<section id="quantum-circuit-query-and-replacement">
+<h2>5.1 Quantum circuit query and replacement<a class="headerlink" href="#quantum-circuit-query-and-replacement" title="永久链接至标题"></a></h2>
+<p>In quantum computing, there are some quantum logic gates or quantum
+circuits which are interchangeable, including the substitution process
+below:</p>
+<p>H(0)-&gt;CNOT(1,0)-&gt;H(0) can be substituted by CZ(1,0).</p>
+<section id="introduction-to-interface-used">
+<h3>5.1.1 Introduction to interface used<a class="headerlink" href="#introduction-to-interface-used" title="永久链接至标题"></a></h3>
+<p>There may be multiple sub-quantum circuits with the same structure or
+multiple quantum logic gates with the same structure in the quantum
+program. The function of querying and substituting the quantum circuits
+with the specified structure in the quantum program is to find these
+sub-quantum circuits with the same structure and substitute them with
+the target quantum circuits.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">circuit_optimizer</span></code> provides a unified quantum circuit optimization
+interface, which can realize query and replacement of various quantum
+circuits. The corresponding interface parameters are as follows:
+Parameter 1: QProg parameter 2 of the original quantum program to be
+optimized: Vector sublines query replacement queues, and each queue
+element contains the target search line and the corresponding
+replacement line.</p>
+<div class="admonition warning">
+<p class="admonition-title">警告</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">graph_query_replace</span></code> interface is deprecated.</p>
+</div>
+</section>
+<section id="example">
+<h3>5.1.2 Example<a class="headerlink" href="#example" title="永久链接至标题"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyqpanda</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span><span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">machine</span> <span class="o">=</span> <span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">)</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">cAlloc_many</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+    <span class="c1"># Building quantum programs</span>
+    <span class="n">prog</span> <span class="o">=</span> <span class="n">QProg</span><span class="p">()</span>
+    <span class="n">prog</span> <span class="o">&lt;&lt;</span> <span class="n">H</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>\
+        <span class="o">&lt;&lt;</span> <span class="n">H</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>\
+        <span class="o">&lt;&lt;</span> <span class="n">H</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>\
+        <span class="o">&lt;&lt;</span> <span class="n">CNOT</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>\
+        <span class="o">&lt;&lt;</span> <span class="n">H</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>\
+        <span class="o">&lt;&lt;</span> <span class="n">CNOT</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>\
+        <span class="o">&lt;&lt;</span> <span class="n">H</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>\
+        <span class="o">&lt;&lt;</span> <span class="n">CNOT</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>\
+        <span class="o">&lt;&lt;</span> <span class="n">H</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+    <span class="c1"># Build a query line</span>
+    <span class="n">query_cir</span> <span class="o">=</span> <span class="n">QCircuit</span><span class="p">()</span>
+    <span class="n">query_cir</span> <span class="o">&lt;&lt;</span> <span class="n">H</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>\
+            <span class="o">&lt;&lt;</span> <span class="n">CNOT</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>\
+            <span class="o">&lt;&lt;</span> <span class="n">H</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="c1"># Build alternate lines</span>
+    <span class="n">replace_cir</span> <span class="o">=</span> <span class="n">QCircuit</span><span class="p">()</span>
+    <span class="n">replace_cir</span> <span class="o">&lt;&lt;</span> <span class="n">CZ</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Query before replacement：&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">convert_qprog_to_originir</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span><span class="n">machine</span><span class="p">))</span>
+<span class="c1"># Search the query line in the quantum program and replace it with a</span>
+<span class="c1"># replacement line</span>
+    <span class="n">update_prog</span> <span class="o">=</span> <span class="n">circuit_optimizer</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="p">[[</span><span class="n">query_cir</span><span class="p">,</span> <span class="n">replace_cir</span><span class="p">]])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Query after replacement：&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">convert_qprog_to_originir</span><span class="p">(</span><span class="n">update_prog</span><span class="p">,</span><span class="n">machine</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The running results are as follows:</p>
+<p>Query before replacement：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">QINIT</span> <span class="mi">4</span>
+<span class="n">CREG</span> <span class="mi">4</span>
+<span class="n">H</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">H</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">H</span> <span class="n">q</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+<span class="n">CNOT</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">H</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">CNOT</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">H</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">CNOT</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+<span class="n">H</span> <span class="n">q</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Query after replacement：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">QINIT</span> <span class="mi">4</span>
+<span class="n">CREG</span> <span class="mi">4</span>
+<span class="n">CZ</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">CZ</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">CZ</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">警告</p>
+<ol class="arabic simple">
+<li><p>The qubits controlled by the queried quantum circuit and the substituted quantum circuit must be one-to-one corresponding.</p></li>
+<li><p>The directed acyclic graph corresponding to the queried quantum circuit and the substituted quantum circuit must be connected.</p></li>
+</ol>
+</div>
+</section>
+</section>
+<section id="filling-qprog-by-gate-i">
+<h2>5.2 Filling QProg by gate I<a class="headerlink" href="#filling-qprog-by-gate-i" title="永久链接至标题"></a></h2>
+<p>The interface <code class="docutils literal notranslate"><span class="pre">fill_qprog_by_I</span></code> realizes the function of filling QProg
+(quantum program) by I gate.</p>
+<section id="id1">
+<h3>5.2.1 Example<a class="headerlink" href="#id1" title="永久链接至标题"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pyqpanda.pyQPanda</span> <span class="k">as</span> <span class="nn">pq</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">pyqpanda.Visualization.circuit_draw</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="k">class</span> <span class="nc">InitQMachine</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quBitCnt</span><span class="p">,</span> <span class="n">cBitCnt</span><span class="p">,</span> <span class="n">machineType</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_machine</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">machineType</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_qlist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">m_machine</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="n">quBitCnt</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_clist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">m_machine</span><span class="o">.</span><span class="n">cAlloc_many</span><span class="p">(</span><span class="n">cBitCnt</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">pq</span><span class="o">.</span><span class="n">destroy_quantum_machine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m_machine</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_fill_I</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+    <span class="c1"># Building quantum programs</span>
+    <span class="n">prog</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QCircuit</span><span class="p">()</span>
+<span class="n">prog</span> <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">CU</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">S</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>\
+ <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">CNOT</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">CZ</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>\
+ <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">CR</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">prog</span><span class="o">.</span><span class="n">set_dagger</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># Output the original quantum program</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;source prog:&#39;</span><span class="p">)</span>
+    <span class="n">draw_qprog</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">,</span><span class="n">console_encode_type</span><span class="o">=</span><span class="s1">&#39;gbk&#39;</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    console_encode_type=&#39;utf8&#39; or &#39;gbk&#39;(默认&#39;utf8&#39;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Quantum program filling I gate</span>
+    <span class="n">prog</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">fill_qprog_by_I</span><span class="p">(</span><span class="n">prog</span><span class="p">)</span>
+    <span class="c1"># Output fill I gate quantum program</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;The prog after fill_qprog_by_I:&#39;</span><span class="p">)</span>
+    <span class="n">draw_qprog</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">,</span><span class="n">console_encode_type</span><span class="o">=</span><span class="s1">&#39;gbk&#39;</span><span class="p">)</span>
+    <span class="n">draw_qprog</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="s1">&#39;pic&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;D:/test_cir_draw.png&#39;</span><span class="p">)</span>
+<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span><span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">init_machine</span> <span class="o">=</span> <span class="n">InitQMachine</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
+    <span class="n">qlist</span> <span class="o">=</span> <span class="n">init_machine</span><span class="o">.</span><span class="n">m_qlist</span>
+    <span class="n">clist</span> <span class="o">=</span> <span class="n">init_machine</span><span class="o">.</span><span class="n">m_clist</span>
+    <span class="n">machine</span> <span class="o">=</span> <span class="n">init_machine</span><span class="o">.</span><span class="n">m_machine</span>
+    <span class="n">test_fill_I</span><span class="p">(</span><span class="n">qlist</span><span class="p">,</span> <span class="n">clist</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The above example program demonstrates how to use the <code class="docutils literal notranslate"><span class="pre">fill_qprog_by_I</span></code>
+interface. We can see that we only need input a parameter of QProg type.
+The interface returns a new filled QProg, and the input QProg remains
+unchanged. The character drawing of the example program above shows the
+output results as below:</p>
+<figure class="align-default">
+<img alt="" src="../_images/5.1.png" />
+</figure>
+</section>
+</section>
+<section id="unitary-matrix-decomposition">
+<h2>5.3 Unitary matrix decomposition<a class="headerlink" href="#unitary-matrix-decomposition" title="永久链接至标题"></a></h2>
+<p>Currently, a quantum computing algorithm is usually represented by a
+quantum circuit which includes quantum logic gate operations. A
+continuous quantum circuit generally includes dozens or hundreds or even
+thousands of quantum logic gate operations. The larger the number of
+quantum logic gates or the number of qubits operated by a single quantum
+logic gate, the more complex the computing process is, thus resulting in
+low simulation efficiency of quantum circuits and great occupancy of
+hardware resources.</p>
+<section id="objective-of-algorithm">
+<h3>5.3.1 Objective of algorithm<a class="headerlink" href="#objective-of-algorithm" title="永久链接至标题"></a></h3>
+<p>For the above problem, equivalent transformation is necessary for the
+quantum circuit and the number of logic gates in the quantum circuit
+shall be reduced. Meanwhile, on this basis, we shall ensure that the
+unitary matrix corresponding to the whole quantum circuit before the
+transformation is exactly the same as that after the transformation.</p>
+</section>
+<section id="overview-of-algorithm">
+<h3>5.3.2 Overview of algorithm<a class="headerlink" href="#overview-of-algorithm" title="永久链接至标题"></a></h3>
+<p>The algorithm introduced herein is to decompose a unitary matrix of
+order N into no more than r = N(N−1)/2 single-quantum logic gate
+sequences with a few controls where N=2^ N, and the decomposed products
+satisfy the equation relations below:</p>
+<div class="math notranslate nohighlight">
+\[U_{r} U_{r-1} \ldots U_{3} U_{2} U_{1} U=I_{N}\]</div>
+<p>Thus, we can obtain the decomposition result of the original matrix U</p>
+<div class="math notranslate nohighlight">
+\[U=U_{1}^{\dagger} U_{2}^{\dagger} U_{2}^{\dagger} \ldots U_{r-1}^{\dagger} U_{r}^{\dagger}\]</div>
+</section>
+<section id="instructions">
+<h3>5.3.3 Instructions<a class="headerlink" href="#instructions" title="永久链接至标题"></a></h3>
+<p>The pyqpanda is designed with <code class="docutils literal notranslate"><span class="pre">matrix_decompose</span></code> interface which is used
+for unitary matrix decomposition and requires two parameters: the first
+parameter is all the qubits used and the second is the unitary matrix to
+be decomposed. The output of this function is the quantum circuit after
+transformation.</p>
+</section>
+<section id="id2">
+<h3>5.3.4 Example<a class="headerlink" href="#id2" title="永久链接至标题"></a></h3>
+<p>The following example shows how to use the partial-amplitude quantum
+simulator.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pyqpanda</span> <span class="k">as</span> <span class="nn">pq</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span><span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">machine</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">)</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">cAlloc_many</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">source_matrix</span> <span class="o">=</span> <span class="p">[(</span><span class="mf">0.6477054522122977</span><span class="o">+</span><span class="mf">0.1195417767870219</span><span class="n">j</span><span class="p">),</span>\
+<span class="p">(</span><span class="o">-</span><span class="mf">0.16162176706189357</span><span class="o">-</span><span class="mf">0.4020495632468249</span><span class="n">j</span><span class="p">),</span>\
+<span class="p">(</span><span class="o">-</span><span class="mf">0.19991615329121998</span><span class="o">-</span><span class="mf">0.3764618308248643</span><span class="n">j</span><span class="p">),</span>\
+<span class="p">(</span><span class="o">-</span><span class="mf">0.2599957197928922</span><span class="o">-</span><span class="mf">0.35935248873007863</span><span class="n">j</span><span class="p">),</span>
+                    <span class="p">(</span><span class="o">-</span><span class="mf">0.16162176706189363</span><span class="o">-</span><span class="mf">0.40204956324682495</span><span class="n">j</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.7303014482204584</span><span class="o">-</span><span class="mf">0.4215172444390785</span><span class="n">j</span><span class="p">),</span>\
+<span class="p">(</span><span class="o">-</span><span class="mf">0.15199187936216693</span><span class="o">+</span><span class="mf">0.09733585496768032</span><span class="n">j</span><span class="p">),</span>\
+<span class="p">(</span><span class="o">-</span><span class="mf">0.22248203136345918</span><span class="o">-</span><span class="mf">0.1383600597660744</span><span class="n">j</span><span class="p">),</span>
+                    <span class="p">(</span><span class="o">-</span><span class="mf">0.19991615329122003</span><span class="o">-</span><span class="mf">0.3764618308248644</span><span class="n">j</span><span class="p">),</span>\
+ <span class="p">(</span><span class="o">-</span><span class="mf">0.15199187936216688</span><span class="o">+</span><span class="mf">0.09733585496768032</span><span class="n">j</span><span class="p">),</span>\
+ <span class="p">(</span><span class="mf">0.6826630277354306</span><span class="o">-</span><span class="mf">0.37517063774206166</span><span class="n">j</span><span class="p">),</span>\
+ <span class="p">(</span><span class="o">-</span><span class="mf">0.3078966462928956</span><span class="o">-</span><span class="mf">0.2900897445133085</span><span class="n">j</span><span class="p">),</span>
+                    <span class="p">(</span><span class="o">-</span><span class="mf">0.2599957197928923</span><span class="o">-</span><span class="mf">0.3593524887300787</span><span class="n">j</span><span class="p">),</span>\
+ <span class="p">(</span><span class="o">-</span><span class="mf">0.22248203136345912</span><span class="o">-</span><span class="mf">0.1383600597660744</span><span class="n">j</span><span class="p">),</span>\
+ <span class="p">(</span><span class="o">-</span><span class="mf">0.30789664629289554</span><span class="o">-</span><span class="mf">0.2900897445133085</span><span class="n">j</span><span class="p">),</span>\
+ <span class="p">(</span><span class="mf">0.6640994547408099</span><span class="o">-</span><span class="mf">0.338593803336005</span><span class="n">j</span><span class="p">)]</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;source matrix : &quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">source_matrix</span><span class="p">)</span>
+
+    <span class="n">out_cir</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">matrix_decompose</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">source_matrix</span><span class="p">)</span>
+    <span class="n">circuit_matrix</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">get_matrix</span><span class="p">(</span><span class="n">out_cir</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;the decomposed matrix : &quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">circuit_matrix</span><span class="p">)</span>
+
+    <span class="n">source_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">source_matrix</span><span class="p">),</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">circuit_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">circuit_matrix</span><span class="p">),</span><span class="mi">3</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">source_matrix</span> <span class="o">==</span> <span class="n">circuit_matrix</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;matrix decompose ok !&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;matrix decompose false !&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The results are as below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>source matrix :
+[(0.6477054522122977+0.1195417767870219j), (-0.16162176706189357-0.4020495632468249j),
+(-0.19991615329121998-0.3764618308248643j), (-0.2599957197928922-0.35935248873007863j),
+(-0.16162176706189363-0.40204956324682495j), (0.7303014482204584-0.4215172444390785j),
+(-0.15199187936216693+0.09733585496768032j), (-0.22248203136345918-0.1383600597660744j),
+(-0.19991615329122003-0.3764618308248644j), (-0.15199187936216688+0.09733585496768032j),
+(0.6826630277354306-0.37517063774206166j), (-0.3078966462928956-0.2900897445133085j),
+(-0.2599957197928923-0.3593524887300787j), (-0.22248203136345912-0.1383600597660744j),
+(-0.30789664629289554-0.2900897445133085j), (0.6640994547408099-0.338593803336005j)]
+
+the decomposed matrix :
+[(0.6477054522122979+0.11954177678702192j), (-0.16162176706189357-0.402049563246825j),
+(-0.19991615329122003-0.37646183082486445j), (-0.2599957197928924-0.3593524887300788j),
+(-0.16162176706189368-0.40204956324682506j), (0.7303014482204584-0.4215172444390785j),
+(-0.1519918793621669+0.09733585496768038j), (-0.22248203136345918-0.13836005976607446j),
+(-0.19991615329122003-0.3764618308248644j), (-0.151991879362167+0.09733585496768042j),
+(0.6826630277354307-0.37517063774206155j), (-0.30789664629289576-0.2900897445133086j),
+(-0.2599957197928924-0.35935248873007875j), (-0.22248203136345918-0.13836005976607443j),
+(-0.30789664629289576-0.2900897445133086j), (0.6640994547408103-0.3385938033360052j)]
+
+matrix decompose ok !
+</pre></div>
+</div>
+<p>Based on the output results, the matrix before transformation is exactly
+the same as that after transformation. For a quantum system where the
+number of qubits is determined, the interface can control the complexity
+of the decomposed quantum circuit within a reasonable range as not
+affected by the complexity of the pre-decomposed quantum circuit despite
+that the pre-decomposed quantum circuit contains thousands of quantum
+logic gates.</p>
+<div class="admonition-note admonition">
+<p class="admonition-title">Note</p>
+<ol class="arabic simple">
+<li><p>The input parameter of the interface must be a unitary matrix.</p></li>
+<li><p>Limiting the number of decomposition results to a limited range effectively reduces the number of quantum logic gates in the quantum circuit and significantly improves the simulation efficiency of the quantum algorithm.</p></li>
+<li><p>In the example program, the <code class="docutils literal notranslate"><span class="pre">get_matrix</span> <span class="pre">interface</span></code> is used to acquire the corresponding matrix of a quantum circuit.</p></li>
+</ol>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../chapter4/index.html" class="btn btn-neutral float-left" title="4 Compiling of quantum program" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> 上一页</a>
+        <a href="../chapter6/index.html" class="btn btn-neutral float-right" title="6 Component" accesskey="n" rel="next">下一页 <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2021, BYLZ.</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用了 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a>开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,42 @@
+.. pyQPanda documentation master file, created by
+   sphinx-quickstart on Sat Oct  9 14:45:08 2021.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+
+**5 Utility tool**
+==================
+
+5.1 Quantum circuit query and replacement
+-----------------------------------------
+In quantum computing, there are some quantum logic gates or quantum circuits which are interchangeable, including the substitution process below:
+H(0)->CNOT(1,0)->H(0) can be substituted by CZ(1,0)
+
+5.1.1 Introduction to interface used
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+
+pyqpanda是以C++为宿主语言，其对系统的环境要求如下：
+
++------------+------------+
+| software   | version    |
++============+============+
+| GCC        | >= 5.4.0   |
++------------+------------+
+| Python     | >=3.6.0    |
++------------+------------+
+
+1.1.2 下载pyqpanda
+~~~~~~~~~~~~~~~~~~
+
+如果你已经安装好了python环境和pip工具，在终端或者控制台输入下面命令：
+
+::
+
+    pip install pyqpanda
+
+*注解：*
+
+在linux下若遇到权限问题需要加sudo。

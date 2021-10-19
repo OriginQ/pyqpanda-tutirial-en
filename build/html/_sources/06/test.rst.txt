@@ -1,0 +1,348 @@
+**6 组件**
+==========
+
+**6.1 泡利算符类**
+------------------
+
+泡利算符是一组三个2×2的幺正厄米复矩阵，又称酉矩阵。我们一般都以希腊字母
+σ（西格玛）来表示，记作\ :math:`\sigma_{x}` , :math:`\sigma_{y}`
+，\ :math:`\sigma_{z}` 。在 pyqpanda 中我们称它们为 X 门，Y 门，Z 门。
+它们对应的矩阵形式如下表所示。
+
++---------+----------------------+----------------------------------------------------------------------+
+| |img|   | :math:`\sigma_{x}`   | .. math:: \left[\begin{array}{ll}0 & 1 \\ 1 & 0\end{array}\right]    |
+                                                                                                       
++=========+======================+======================================================================+
+| |Y|     | :math:`\sigma_{y}`   | .. math:: \left[\begin{array}{cc}0 & -i \\ i & 0\end{array}\right]   |
+                                                                                                       
++---------+----------------------+----------------------------------------------------------------------+
+| |Z|     | :math:`\sigma_{z}`   | .. math:: \left[\begin{array}{cc}1 & 0 \\ 0 & -1\end{array}\right]   |
+                                                                                                       
++---------+----------------------+----------------------------------------------------------------------+
+
+泡利算符的运算规则如下：
+
+1.泡利算符与自身相乘得到是单位矩阵
+
+.. math::
+
+
+   \begin{gathered}
+   \sigma_{x} \sigma_{x}=I \\
+   \sigma_{y} \sigma_{y}=I \\
+   \sigma_{z} \sigma_{z}=I
+   \end{gathered}
+
+2.泡利算符与单位矩阵相乘，无论是左乘还是右乘，其值不变
+
+.. math::
+
+
+   \begin{gathered}
+   \sigma_{x} I=I \sigma_{x}=\sigma_{x} \\
+   \sigma_{y} I=I \sigma_{y}=\sigma_{y} \\
+   \sigma_{z} I=I \sigma_{z}=\sigma_{z}
+   \end{gathered}
+
+ 3.顺序相乘的两个泡利算符跟未参与计算的泡利算符是 i 倍的关系
+
+.. math::
+
+
+   \begin{aligned}
+   \sigma_{x} \sigma_{y} &=i \sigma_{z} \\
+   \sigma_{y} \sigma_{z} &=i \sigma_{x} \\
+   \sigma_{z} \sigma_{x} &=i \sigma_{y}
+   \end{aligned}
+
+ 4.逆序相乘的两个泡利算符跟未参与计算的泡利算符是 −i 倍的关系
+
+.. math::
+
+
+   \begin{aligned}
+   &\sigma_{y} \sigma_{x}=-i \sigma_{z} \\
+   &\sigma_{z} \sigma_{y}=-i \sigma_{x} \\
+   &\sigma_{x} \sigma_{z}=-i \sigma_{y}
+   \end{aligned}
+
+6.1.1 接口介绍
+~~~~~~~~~~~~~~
+
+根据泡利算符的上述性质，我们在 pyQPanda 中实现了泡利算符类
+PauliOperator。我们可以很容易的构造泡利算符类，例如
+
+::
+
+    from pyqpanda import *
+
+    if __name__=="__main__":
+        # 构造一个空的泡利算符类
+        p1 = PauliOperator()
+
+        # 2倍的"泡利Z0"张乘"泡利Z1"
+        p2 = PauliOperator("Z0 Z1", 2)
+
+        # 2倍的"泡利Z0"张乘"泡利Z1" + 3倍的"泡利X1"张乘"泡利Y2"
+        p3 = PauliOperator({"Z0 Z1": 2, "X1 Y2": 3})
+
+        # 构造一个单位矩阵，其系数为2，等价于p4 = PauliOperator("", 2)
+        p4 = PauliOperator(2)
+
+其中PauliOperator p2("Z0 Z1", 2)表示的是
+:math:`2 \sigma_{0}^{z} \otimes \sigma_{1}^{z}`\ 。
+
+*注解：*
+
+构造泡利算符类的时候，字符串里面包含的字符只能是空格、 X ，Y ，Z
+中的一个或多个，包含其它字符将会抛出异常。另外，同一个字符串里面同一泡利算符的比特索引不能相同，例如：PauliOperator("Z0
+Z0", 2)将会抛出异常。
+
+泡利算符类之间可以做加、减、乘等操作，计算返回结果还是一个泡利算符类。
+
+::
+
+    a = PauliOperator("Z0 Z1", 2)
+    b = PauliOperator("X5 Y6", 3)
+
+    plus = a + b
+    minus = a - b
+    muliply = a * b
+
+泡利算符类支持打印功能，我们可以将泡利算符类打印输出到屏幕上，方便查看其值。
+
+::
+
+    a = PauliOperator("Z0 Z1", 2)
+
+    print(a)
+
+我们在实际使用的时候，常常需要知道该泡利算符类操作了多少个量子比特，这时候我们通过调用泡利算符类getMaxIndex接口即可得到。
+如果是空的泡利算符类调用getMaxIndex接口则返回0，否则返回其最大下标索引值加1的结果。
+
+::
+
+    a = PauliOperator("Z0 Z1", 2)
+    b = PauliOperator("X5 Y6", 3)
+
+    # 输出的值为2
+    print(a.getMaxIndex())
+    # 输出的值为7
+    print(b.getMaxIndex())
+
+如果我们构造的的泡利算符类，其中泡利算符的下标索引不是从0开始分配的，例如PauliOperator
+b("X5 Y6", 3)调用getMaxIndex接口返回的使用的比特数是7，其实
+只使用了2个比特。我们如何才能返回其真实用到的比特数呢。我们可以调用泡利算符类里面remapQubitIndex接口，它的功能是对泡利算符类中的索引从0比特开始分配映射，并返回新的泡利算符类，该接口需要传入一个map来保存前后下标的映射关系。
+
+::
+
+    b = PauliOperator("X5 Y6", 3)
+
+    index_map = []
+    c = b.remapQubitIndex(index_map)
+
+    # 输出的值为7
+    print(b.getMaxIndex())
+    # 输出的值为2
+    print(a.getMaxIndex())
+
+6.1.2 实例
+~~~~~~~~~~
+
+以下实例主要是展示 PauliOperator 接口的使用方式.
+
+::
+
+    from pyqpanda import *
+
+    if __name__=="__main__":
+
+        a = PauliOperator("Z0 Z1", 2)
+        b = PauliOperator("X5 Y6", 3)
+
+        plus = a + b
+        minus = a - b
+        muliply = a * b
+
+        print("a + b = ", plus)
+        print("a - b = ", minus)
+        print("a * b = ", muliply)
+
+        print("Index : ", muliply.getMaxIndex())
+
+        index_map = {}
+        remap_pauli = muliply.remapQubitIndex(index_map)
+
+        print("remap_pauli : ", remap_pauli)
+        print("Index : ", remap_pauli.getMaxIndex())
+
+.. figure:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/PauliOperatorTest.png
+   :alt: \_images/PauliOperatorTest.png
+
+   \_images/PauliOperatorTest.png
+**6.2 费米子算符类**
+--------------------
+
+我们用如下的记号标识来表示费米子的两个形态， 湮没: X 表示\ :math:`a_{x}`
+，创建: :math:`X+`\ 表示 :math:`a_{x}^{\dagger}`\ ， 例如: "1+ 3 5+
+1"则代表\ :math:`a_{1}^{\dagger} a_{3} a_{5}^{\dagger} a_{1}`
+
+整理规则如下：
+
+1.不同数字
+
+:math:`\begin{aligned} " 1 \quad 2 " &=-1 * " 2 \quad 1 " \\ " 1+2+" &=-1 * " 2+1+" \\ " 1+2 " &=-1 * " 2 \quad 1+" \end{aligned}`
+
+2.相同数字
+
+:math:`" 1+"=1-" 1+1 "` :math:`" 1+\quad 1+"=0` :math:`" 1 "=0`
+
+跟PauliOperator 类似，FermionOperator
+类也提供了费米子算符之间加、减和乘的基础的运算操作。通过整理功能可以得到一份有序排列的结果。
+
+6.2.1实例
+~~~~~~~~~
+
+::
+
+    from pyqpanda import *
+
+    if __name__=="__main__":
+
+        a = FermionOperator("0 1+", 2)
+        b = FermionOperator("2+ 3", 3)
+
+        plus = a + b
+        minus = a - b
+        muliply = a * b
+
+        print("a + b = ", plus)
+        print("a - b = ", minus)
+        print("a * b = ", muliply)
+
+        print("normal_ordered(a + b) = ", plus.normal_ordered())
+        print("normal_ordered(a - b) = ", minus.normal_ordered())
+        print("normal_ordered(a * b) = ", muliply.normal_ordered())
+
+.. figure:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/FermionOperatorTest.png
+   :alt: \_images/FermionOperatorTest.png
+
+   \_images/FermionOperatorTest.png
+**6.3 优化算法(直接搜索法)**
+----------------------------
+
+本章节将讲解优化算法的使用，包括 Nelder-Mead 算法跟 Powell
+算法，它们都是一种直接搜索算法。我们在 QPanda
+中实现了这两个算法，OriginNelderMead 和 OriginPowell ， 这两个类都继承自
+AbstractOptimizer 。
+
+6.3.1 接口介绍
+~~~~~~~~~~~~~~
+
+我们可以通过优化器工厂生成指定类型的优化器，例如我们指定它的类型为Nelder-Mead
+
+::
+
+    optimizer = OptimizerFactory.makeOptimizer(OptimizerType.NELDER_MEAD)
+    #optimizer = OptimizerFactory.makeOptimizer('NELDER_MEAD')
+
+我们需要向优化器注册一个计算损失值的函数和待优化参数。
+
+::
+
+    init_para = [0, 0]
+    optimizer.registerFunc(lossFunc, init_para)
+
+然后设置结束条件，我们可以设置变量及函数值的收敛阈值，函数最大可调用次数，和优化迭代次数。只要满足上述结束条件，则优化结束。
+
+::
+
+    optimizer.setXatol(1e-6)
+    optimizer.setFatol(1e-6)
+    optimizer.setMaxFCalls(200)
+    optimizer.setMaxIter(200)
+
+然后通过exec接口执行优化，通过getResult接口获得优化后的结果。
+
+::
+
+    optimizer.exec()
+
+    result = optimizer.getResult()
+    print(result.message)
+    print(" Current function value: ", result.fun_val)
+    print(" Iterations: ", result.iters)
+    print(" Function evaluations: ", result.fcalls)
+    print(" Optimized para: W: ", result.para[0], " b: ", result.para[1])
+
+6.3.2 实例
+~~~~~~~~~~
+
+给定一些散列点，我们来拟合一条直线，使得散列点到直线的距离和最小。定义直线的函数的表达式为
+y = w\*x + b
+，接下来我们将通过使用优化算法得到w和b的优化值。首先定义求期望的函数
+
+.. code:: python
+
+    from pyqpanda import *
+    import numpy as np
+
+    x = np.array([3.3, 4.4, 5.5, 6.71, 6.93, 4.168, 9.779, 6.182, 7.59,
+                 2.167, 7.042, 10.791, 5.313, 7.997, 5.654, 9.27,3.1])
+    y = np.array([1.7, 2.76, 2.09, 3.19, 1.694, 1.573, 3.366, 2.596, 2.53,
+                 1.221, 2.827, 3.465, 1.65, 2.904, 2.42, 2.94,1.3])
+
+    def lossFunc(para,grad,inter,fcall):
+        y_ = np.zeros(len(y))
+
+        for i in range(len(y)):
+            y_[i] = para[0] * x[i] + para[1]
+
+        loss = 0
+        for i in range(len(y)):
+            loss += (y_[i] - y[i])**2/len(y)
+
+        return ("", loss)
+
+我们使用 Nelder-Mead 算法进行优化。
+
+::
+
+    optimizer = OptimizerFactory.makeOptimizer('NELDER_MEAD')
+
+    init_para = [0, 0]
+    optimizer.registerFunc(lossFunc, init_para)
+    optimizer.setXatol(1e-6)
+    optimizer.setFatol(1e-6)
+    optimizer.setMaxIter(200)
+    optimizer.exec()
+
+    result = optimizer.getResult()
+    print(result.message)
+    print(" Current function value: ", result.fun_val)
+    print(" Iterations: ", result.iters)
+    print(" Function evaluations: ", result.fcalls)
+    print(" Optimized para: W: ", result.para[0], " b: ", result.para[1])
+
+.. figure:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/OptimizerTest.png
+   :alt: \_images/OptimizerTest.png
+
+   \_images/OptimizerTest.png
+我们将散列点和拟合的直线进行绘图
+
+::
+
+    import matplotlib.pyplot as plt
+
+    w = result.para[0]
+    b = result.para[1]
+
+    plt.plot(x, y, 'o', label = 'Training data')
+    plt.plot(x, w*x + b, 'r', label = 'Fitted line')
+    plt.legend()
+    plt.show()
+
+.. figure:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/OptimizerPlot.png
+   :alt: \_images/OptimizerPlot.png
+
+   \_images/OptimizerPlot.png

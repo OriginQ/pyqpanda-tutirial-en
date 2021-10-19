@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyQPanda &mdash; pyQPanda 1.0.0 文档</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/translations.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="1 Basic Introduction" href="chapter1/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="#" class="icon icon-home"> pyQPanda
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="在文档中搜索" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="chapter1/index.html">1 Basic Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter2/index.html">2 Deep learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter3/index.html">3 Quantum program information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter4/index.html">4 Compiling of quantum program</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter5/index.html">5 Utility tool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter6/index.html">6 Component</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter7/index.html">7 VQC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapter8/index.html">8 Basis of quantum algorithm</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">pyQPanda</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
+      <li>pyQPanda</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pyqpanda">
+<h1>pyQPanda<a class="headerlink" href="#pyqpanda" title="永久链接至标题"></a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="chapter1/index.html">1 Basic Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="chapter1/index.html#system-configuration">1.1 System configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="chapter1/index.html#download-pyqpanda">1.2 Download pyqpanda</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="chapter2/index.html">2 Deep learning</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="chapter2/index.html#quantum-logic-gate">2.1 Quantum logic gate</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter2/index.html#matrix-form-of-common-quantum-logic-gates">2.1.1 Matrix form of common quantum logic gates</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="chapter2/index.html#single-qubit-quantum-logic-gate">2.1.1.1 Single-qubit quantum logic gate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chapter2/index.html#multi-qubit-quantum-logic-gates">2.1.1.2 Multi-qubit quantum logic gates</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="chapter2/index.html#interface-introduction">2.1.2 Interface introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter2/index.html#example">2.1.3 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter2/index.html#quantum-circuit">2.2 Quantum circuit</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter2/index.html#quantum-algorithm-circuit-diagram">2.2.1 Quantum algorithm circuit diagram</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter2/index.html#id1">2.2.2 Interface introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter2/index.html#id2">2.2.3 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter2/index.html#qwhile">2.3 QWhile</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter2/index.html#id3">2.3.1 Interface introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter2/index.html#id4">2.3.2 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter2/index.html#qif">2.4 QIf</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter2/index.html#id5">2.4.1 Interface introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter2/index.html#id6">2.4.2 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter2/index.html#quantum-program">2.5 Quantum program</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter2/index.html#id7">2.5.1 Interface introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter2/index.html#id8">2.5.2 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter2/index.html#quantum-simulator">2.6 Quantum simulator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter2/index.html#full-amplitude-quantum-simulator">2.6.1 Full-amplitude quantum simulator</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="chapter2/index.html#id9">2.6.1.1 Interface introduction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chapter2/index.html#example-1">2.6.1.2 Example 1</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chapter2/index.html#example-2">2.6.1.3 Example 2</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="chapter2/index.html#noise-inclusive-quantum-simulator">2.6.2 Noise inclusive quantum simulator</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="chapter2/index.html#introduction-to-noise-models">2.6.2.1 Introduction to noise models</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="chapter2/index.html#damping-kraus-operator">(1) DAMPING_KRAUS_OPERATOR</a></li>
+<li class="toctree-l5"><a class="reference internal" href="chapter2/index.html#dephasing-kraus-operator">(2) DEPHASING_KRAUS_OPERATOR</a></li>
+<li class="toctree-l5"><a class="reference internal" href="chapter2/index.html#decoherence-kraus-operator">(3) DECOHERENCE_KRAUS_OPERATOR</a></li>
+<li class="toctree-l5"><a class="reference internal" href="chapter2/index.html#depolarizing-kraus-operator">(4) DEPOLARIZING_KRAUS_OPERATOR</a></li>
+<li class="toctree-l5"><a class="reference internal" href="chapter2/index.html#bitflip-kraus-operator">(5) BITFLIP_KRAUS_OPERATOR</a></li>
+<li class="toctree-l5"><a class="reference internal" href="chapter2/index.html#bit-phase-flip-oprator">(6) BIT_PHASE_FLIP_OPRATOR</a></li>
+<li class="toctree-l5"><a class="reference internal" href="chapter2/index.html#phase-damping-oprator">(7) PHASE_DAMPING_OPRATOR</a></li>
+<li class="toctree-l5"><a class="reference internal" href="chapter2/index.html#doule-gate-noise-model">(8) DOULE-GATE NOISE MODEL</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="chapter2/index.html#id12">2.6.2.2 Interface introduction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chapter2/index.html#id13">2.6.2.3 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="chapter2/index.html#single-amplitude-quantum-simulator">2.6.3 Single-amplitude quantum simulator</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="chapter2/index.html#instructions">2.6.3.1 Instructions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="chapter2/index.html#partial-amplitude-quantum-simulator">2.6.4 Partial-amplitude quantum simulator</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="chapter2/index.html#id14">2.6.4.1 Instructions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="chapter2/index.html#tensor-network-quantum-simulator">2.6.5 Tensor network quantum simulator</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="chapter2/index.html#applications">2.6.5.1 Applications</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chapter2/index.html#id15">2.6.5.2 Instructions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chapter2/index.html#complete-example-code">2.6.5.3 Complete example code</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter2/index.html#qubit-pool">2.7 Qubit pool</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter2/index.html#introduction">2.7.1 Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter2/index.html#interface-description">2.7.2 Interface description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter2/index.html#id16">2.7.3 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter2/index.html#quantum-measurement">2.8 Quantum measurement</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter2/index.html#id17">2.8.1 Interface introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter2/index.html#id18">2.8.2 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter2/index.html#probability-measurement">2.9 Probability measurement</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter2/index.html#id19">2.9.1 Interface introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter2/index.html#id20">2.9.2 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter2/index.html#originq-cloud-service">2.10 OriginQ Cloud service</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter2/index.html#real-chip-computing-service">2.10.1 Real chip computing service</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="chapter2/index.html#origin-wuyuan-superconducting-chip">2.10.1.1 Origin Wuyuan superconducting chip</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="chapter2/index.html#origin-high-performance-computing-cluster-cloud-service">2.10.2 Origin high-performance computing cluster cloud service</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="chapter2/index.html#full-amplitude-simulation-cloud-computing">2.10.2.1 Full-amplitude simulation cloud computing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chapter2/index.html#partial-amplitude-simulation-cloud-computing">2.10.2.2 Partial-amplitude simulation cloud computing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chapter2/index.html#single-amplitude-cloud-computing">2.10.2.3 Single-amplitude cloud computing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chapter2/index.html#noise-simulation-cloud-computing">2.10.2.4 Noise simulation cloud computing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chapter2/index.html#get-the-quantum-state-tomography-results">2.10.2.5 Get the quantum state tomography results</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="chapter3/index.html">3 Quantum program information</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="chapter3/index.html#nodeiter">3.1 NodeIter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter3/index.html#interface-introduction">3.1.1 Interface introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter3/index.html#example">3.1.2 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter3/index.html#logic-gate-statistics">3.2 Logic gate statistics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter3/index.html#introduction">3.2.1 Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter3/index.html#id1">3.2.2 Interface introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter3/index.html#id2">3.2.3 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter3/index.html#counting-quantum-program-clock-cycle">3.3 Counting quantum program clock cycle</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter3/index.html#id3">3.3.1 Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter3/index.html#id4">3.3.2 Interface introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter3/index.html#id5">3.3.3 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter3/index.html#get-the-corresponding-matrix-of-the-quantum-circuit">3.4 Get the corresponding matrix of the quantum circuit</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter3/index.html#id6">3.4.1 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter3/index.html#judge-whether-quantum-logic-gate-matches-with-the-quantum-topology">3.5 Judge whether quantum logic gate matches with the quantum topology</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter3/index.html#id7">3.5.1 Interface introduction</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter3/index.html#get-adjacent-quantum-logic-gates-at-the-designated-position">3.6 Get adjacent quantum logic gates at the designated position.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter3/index.html#id8">3.6.1 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter3/index.html#judge-whether-two-quantum-logic-gates-are-interchanged-for-their-positions">3.7 Judge whether two quantum logic gates are interchanged for their positions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter3/index.html#id9">3.7.1 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter3/index.html#judge-whether-the-logic-gates-are-of-a-set-of-quantum-logic-gates-supported-by-the-quantum-chip">3.8 Judge whether the logic gates are of a set of quantum logic gates supported by the quantum chip</a></li>
+<li class="toctree-l2"><a class="reference internal" href="chapter3/index.html#character-drawing-of-quantum-circuit">3.9 Character drawing of quantum circuit</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter3/index.html#id10">3.9.1 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter3/index.html#quantum-volume">3.10 Quantum volume</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter3/index.html#id11">3.10.1 Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter3/index.html#interface-description">3.10.2 Interface description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter3/index.html#id12">3.10.3 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter3/index.html#random-benchmark">3.11 Random benchmark</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter3/index.html#id13">3.11.1 Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter3/index.html#id14">3.11.2 Interface description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter3/index.html#id15">3.11.3 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter3/index.html#cross-entropy-benchmark">3.12 Cross-entropy benchmark</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter3/index.html#id16">3.12.1 Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter3/index.html#id17">3.12.2 Interface description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter3/index.html#id18">3.12.3 Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="chapter4/index.html">4 Compiling of quantum program</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="chapter4/index.html#conversion-of-qasm-by-a-quantum-program">4.1 Conversion of QASM by a quantum program</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter4/index.html#qasm-introduction">4.1.1 QASM introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter4/index.html#example">4.1.2 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter4/index.html#conversion-into-a-quantum-program-by-qasm">4.2 Conversion into a quantum program by QASM</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter4/index.html#id1">4.2.1 QASM introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter4/index.html#id2">4.2.2 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter4/index.html#conversion-into-quil-by-a-quantum-program">4.3 Conversion into Quil by a quantum program</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter4/index.html#introduction">4.3.1 Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter4/index.html#interface-introduction">4.3.2 Interface introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter4/index.html#id3">4.3.3 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter4/index.html#serialization-of-quantum-programs">4.4 Serialization of quantum programs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter4/index.html#id4">4.4.1 Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter4/index.html#id5">4.4.2 Interface introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter4/index.html#id6">4.4.3 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter4/index.html#parse-quantum-program-binary-files">4.5 Parse quantum program binary files</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter4/index.html#id7">4.5.1 Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter4/index.html#id8">4.5.2 Interface introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter4/index.html#id9">4.5.3 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter4/index.html#conversion-into-a-quantum-program-by-originir">4.6 Conversion into a quantum program by OriginIR</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter4/index.html#originir">4.6.1 OriginIR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter4/index.html#id10">4.6.2 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter4/index.html#conversion-of-originir-by-a-quantum-program">4.7 Conversion of OriginIR by a quantum program</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter4/index.html#originir-introduction">4.7.1 OriginIR introduction</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="chapter4/index.html#qubit">4.7.1.1 Qubit</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chapter4/index.html#classical-register">4.7.1.2 Classical register</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chapter4/index.html#quantum-logic-gate">4.7.1.3 Quantum logic gate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chapter4/index.html#transposed-conjugate-operation">4.7.1.4 Transposed conjugate operation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chapter4/index.html#adding-control-qubit-operation">4.7.1.5 Adding control qubit operation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chapter4/index.html#qif">4.7.1.6 QIF</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chapter4/index.html#qwhile">4.7.1.7 QWHILE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chapter4/index.html#classical-expression">4.7.1.8 Classical expression</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chapter4/index.html#measure-operation">4.7.1.9 MEASURE operation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chapter4/index.html#reset-operation">4.7.1.10 RESET operation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chapter4/index.html#barrier-operation">4.7.1.11 BARRIER operation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chapter4/index.html#qgate-operation">4.7.1.12 QGATE operation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chapter4/index.html#originir-program-example">4.7.1.13 OriginIR program example</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="chapter4/index.html#id11">4.7.2 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter4/index.html#quantum-program-matching-topology">4.8 Quantum program matching topology</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter4/index.html#interface-description">4.8.1 Interface description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter4/index.html#id12">4.8.2 Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="chapter5/index.html">5 Utility tool</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="chapter5/index.html#quantum-circuit-query-and-replacement">5.1 Quantum circuit query and replacement</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter5/index.html#introduction-to-interface-used">5.1.1 Introduction to interface used</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter5/index.html#example">5.1.2 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter5/index.html#filling-qprog-by-gate-i">5.2 Filling QProg by gate I</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter5/index.html#id1">5.2.1 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter5/index.html#unitary-matrix-decomposition">5.3 Unitary matrix decomposition</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter5/index.html#objective-of-algorithm">5.3.1 Objective of algorithm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter5/index.html#overview-of-algorithm">5.3.2 Overview of algorithm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter5/index.html#instructions">5.3.3 Instructions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter5/index.html#id2">5.3.4 Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="chapter6/index.html">6 Component</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="chapter6/index.html#class-of-pauli-operators">6.1 Class of Pauli operators</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter6/index.html#interface-introduction">6.1.1 Interface introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter6/index.html#example">6.1.2 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter6/index.html#class-of-fermionic-operators">6.2 Class of Fermionic operators</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter6/index.html#id1">6.2.1 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter6/index.html#optimization-algorithm-direct-search">6.3 Optimization algorithm (direct search)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter6/index.html#id2">6.3.1 Interface introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter6/index.html#id3">6.3.2 Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="chapter7/index.html">7 VQC</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="chapter7/index.html#variable">7.1 Variable</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter7/index.html#interface-introduction">7.1.1 Interface introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter7/index.html#example">7.1.2 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter7/index.html#operator">7.2 Operator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="chapter7/index.html#variational-quantum-logic-gate">7.3 Variational quantum logic gate</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter7/index.html#id1">7.3.1 Interface introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter7/index.html#id2">7.3.2 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter7/index.html#variational-quantum-logic-gate-vqg">7.4 Variational quantum logic gate (VQG)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter7/index.html#id3">7.4.1 Interface introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter7/index.html#dynamic-modification-of-parameters">7.4.2 Dynamic modification of parameters</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="chapter7/index.html#id6">7.4.2.1 Example:</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter7/index.html#optimization-algorithm-gradient-descent">7.5 Optimization algorithm (gradient descent)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter7/index.html#id7">7.5.1 Interface introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter7/index.html#id8">7.5.2 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter7/index.html#comprehensive-example">7.6 Comprehensive example</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter7/index.html#qaoa">7.6.1 QAOA</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="chapter8/index.html">8 Basis of quantum algorithm</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="chapter8/index.html#review-of-basic-concepts">8.1 Review of basic concepts</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter8/index.html#basic-definitions">8.1.1 Basic definitions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter8/index.html#pyqpanda-interface-function">8.1.2 pyQPanda interface function</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter8/index.html#example">8.1.3 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter8/index.html#experimental-state-preparation-and-quantum-entanglement">8.2 Experimental state preparation and quantum entanglement</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter8/index.html#experimental-state-preparation">8.2.1 Experimental state preparation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="chapter8/index.html#maximum-superposition-state">8.2.1.1 Maximum superposition state</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="chapter8/index.html#quantum-entanglement">8.2.2 Quantum entanglement</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter8/index.html#maximum-superposition-state-preparation">8.2.3 Maximum superposition state preparation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter8/index.html#hadamard-test-and-swap-test">8.3 Hadamard Test and SWAP Test</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter8/index.html#hadamard-test">8.3.1 Hadamard Test</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="chapter8/index.html#output-results-and-generalization">8.3.1.1 Output results and generalization</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chapter8/index.html#code-example">8.3.1.2 Code example</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="chapter8/index.html#swap-test">8.3.2 SWAP Test</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="chapter8/index.html#id3">8.3.2.1 Code example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter8/index.html#amplitude-magnification">8.4 Amplitude magnification</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter8/index.html#background-of-algorithm">8.4.1 Background of algorithm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter8/index.html#id4">8.4.2 Code example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter8/index.html#quantum-fourier-transform">8.5 Quantum Fourier transform</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter8/index.html#basic-definition">8.5.1 Basic definition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter8/index.html#construction-of-quantum-circuit">8.5.2 Construction of quantum circuit</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="chapter8/index.html#sum-form-and-tensor-product-form-of-qft">8.5.2.1 Sum form and tensor product form of QFT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chapter8/index.html#binary-expansion-and-quantum-state-preparation">8.5.2.2 Binary expansion and quantum state preparation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="chapter8/index.html#code-implementation">8.5.3 Code implementation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter8/index.html#quantum-phase-estimation">8.6 Quantum phase estimation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter8/index.html#overview-of-structure-of-quantum-circuit">8.6.1 Overview of structure of quantum circuit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter8/index.html#id5">8.6.2 Construction of quantum circuit</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="chapter8/index.html#eigen-quantum-state-and-eigenvalue-phase-extraction">8.6.2.1 Eigen quantum state and eigenvalue phase extraction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chapter8/index.html#transfer-of-eigenvalue-phase-from-amplitude-to-base-vector">8.6.2.2 Transfer of eigenvalue phase from amplitude to base vector</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="chapter8/index.html#quantum-circuit-diagram-and-code-implementation">8.6.3 Quantum circuit diagram and code implementation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter8/index.html#for-operations-of-quantum">8.7 For operations of quantum</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter8/index.html#background-of-adder-algorithm">8.7.1 Background of adder algorithm</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="chapter8/index.html#component-of-maj-quantum-circuit">8.7.1.1 Component of MAJ quantum circuit</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chapter8/index.html#component-of-uma-quantum-circuit">8.7.1.2 Component of UMA quantum circuit</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="chapter8/index.html#id6">8.7.2 For operations of quantum</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="chapter8/index.html#quantum-adder">8.7.2.1 Quantum adder</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chapter8/index.html#quantum-subtracter">8.7.2.2 Quantum subtracter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chapter8/index.html#quantum-multiplier">8.7.2.3 Quantum multiplier</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chapter8/index.html#quantum-divider">8.7.2.4 Quantum divider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="chapter8/index.html#code-implementation-and-use-instructions">8.7.3 Code implementation and use instructions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="chapter8/index.html#id7">8.7.3.1 Quantum adder</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chapter8/index.html#id8">8.7.3.2 Quantum subtracter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chapter8/index.html#id9">8.7.3.3 Quantum multiplier</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chapter8/index.html#id10">8.7.3.4 Quantum divider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="chapter8/index.html#id11">8.7.4 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter8/index.html#hhl-algorithm">8.8 HHL algorithm</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter8/index.html#overview-of-background">8.8.1 Overview of background</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter8/index.html#principle-of-algorithm">8.8.2 Principle of algorithm</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="chapter8/index.html#extraction-of-eigenvalue-through-qpe">8.8.2.1 Extraction of eigenvalue through QPE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chapter8/index.html#transfer-of-eigenvalue-through-controlled-rotation">8.8.2.2 Transfer of eigenvalue through controlled rotation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chapter8/index.html#output-of-resulting-quantum-state-through-inverse-qpe">8.8.2.3 Output of resulting quantum state through inverse QPE</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="chapter8/index.html#quantum-circuit-diagram-and-reference-code">8.8.3 Quantum circuit diagram and reference code</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter8/index.html#grover-algorithm-and-quantum-counting-algorithm">8.9 Grover algorithm and Quantum Counting algorithm</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter8/index.html#id14">8.9.1 Overview of background</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="chapter8/index.html#quantum-counting">8.9.1.1 Quantum Counting</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chapter8/index.html#search-for-solution-elements">8.9.1.2 Search for solution elements</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="chapter8/index.html#id15">8.9.2 Principle of algorithm</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="chapter8/index.html#qpe-process-based-on-amplitude-amplification-operator">8.9.2.1 QPE process based on amplitude amplification operator</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter8/index.html#shor-s-algorithm">8.10 Shor’s Algorithm</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter8/index.html#background-of-problem">8.10.1 Background of problem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter8/index.html#id16">8.10.2 Principle of algorithm</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="chapter8/index.html#pre-lemma">8.10.2.1 Pre-lemma</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chapter8/index.html#construction-of-modular-multiplication-quantum-gate">8.10.2.2 Construction of modular multiplication quantum gate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chapter8/index.html#solving-of-modular-exponentiation-inverse-element">8.10.2.3 Solving of modular exponentiation inverse element</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="chapter8/index.html#id19">8.10.3 Quantum circuit diagram and reference code</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chapter8/index.html#quantum-imaginary-time-evolution">8.11 Quantum imaginary time evolution</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chapter8/index.html#id20">8.11.1 Overview of background</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chapter8/index.html#id21">8.11.2 Principle of algorithm</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="chapter8/index.html#approximate-solution-from-schrodinger-equation-to-differential-equation">8.11.2.1 Approximate solution from Schrodinger Equation to differential equation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="chapter8/index.html#imaginary-time-evolution-approaching-ground-state">8.11.2.2 Imaginary time evolution approaching ground state</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="chapter8/index.html#id24">8.11.3 Quantum circuit diagram and reference code</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="chapter1/index.html" class="btn btn-neutral float-right" title="1 Basic Introduction" accesskey="n" rel="next">下一页 <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2021, BYLZ.</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用了 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a>开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

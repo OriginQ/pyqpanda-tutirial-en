@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>1 Basic Introduction &mdash; pyQPanda 1.0.0 文档</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/translations.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="2 Deep learning" href="../chapter2/index.html" />
+    <link rel="prev" title="pyQPanda" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> pyQPanda
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="在文档中搜索" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">1 Basic Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#system-configuration">1.1 System configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#download-pyqpanda">1.2 Download pyqpanda</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter2/index.html">2 Deep learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter3/index.html">3 Quantum program information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter4/index.html">4 Compiling of quantum program</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter5/index.html">5 Utility tool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter6/index.html">6 Component</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter7/index.html">7 VQC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter8/index.html">8 Basis of quantum algorithm</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pyQPanda</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>1 Basic Introduction</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/chapter1/index.rst.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="basic-introduction">
+<h1>1 Basic Introduction<a class="headerlink" href="#basic-introduction" title="永久链接至标题"></a></h1>
+<p>For the sake of compatibility efficiency and convenience, QPanda2 is
+provided with two versions: C++ and Python. This document mainly
+introduces how to use the Python version. To learn about the use of C++
+version, please go to QPanda2.</p>
+<p>We use the pybind11 tools to encapsulate the functions and classes in
+QPanda2 in a direct and concise way, and provide the almost perfect
+mapping function. The code of the encapsulated part will generate a
+dynamic library during Qpanda2 compilation, so the encapsulated part can
+be imported as a Python package.</p>
+<section id="system-configuration">
+<h2>1.1 System configuration<a class="headerlink" href="#system-configuration" title="永久链接至标题"></a></h2>
+<p>Pyqpanda takes C++ as the host language, with requirements for the
+system environment as follows:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 52%" />
+<col style="width: 48%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>software</p></th>
+<th class="head"><p>version</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>GCC</p></td>
+<td><p>&gt;=5.4.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Python</p></td>
+<td><p>&gt;=3.6.0</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="download-pyqpanda">
+<h2>1.2 Download pyqpanda<a class="headerlink" href="#download-pyqpanda" title="永久链接至标题"></a></h2>
+<p>If you have installed the python environment and pip tool, please enter
+the following commands at the terminal or console:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">pyqpanda</span>
+</pre></div>
+</div>
+<div class="admonition-note admonition">
+<p class="admonition-title">Note</p>
+<p>In case of permission problems under linux, add <code class="docutils literal notranslate"><span class="pre">sudo</span></code> .</p>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="pyQPanda" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> 上一页</a>
+        <a href="../chapter2/index.html" class="btn btn-neutral float-right" title="2 Deep learning" accesskey="n" rel="next">下一页 <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2021, BYLZ.</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用了 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a>开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

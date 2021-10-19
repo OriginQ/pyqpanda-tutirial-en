@@ -1,0 +1,2114 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>8 Basis of quantum algorithm &mdash; pyQPanda 1.0.0 文档</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/translations.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="prev" title="7 VQC" href="../chapter7/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> pyQPanda
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="在文档中搜索" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../chapter1/index.html">1 Basic Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter2/index.html">2 Deep learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter3/index.html">3 Quantum program information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter4/index.html">4 Compiling of quantum program</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter5/index.html">5 Utility tool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter6/index.html">6 Component</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter7/index.html">7 VQC</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">8 Basis of quantum algorithm</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#review-of-basic-concepts">8.1 Review of basic concepts</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#basic-definitions">8.1.1 Basic definitions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyqpanda-interface-function">8.1.2 pyQPanda interface function</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example">8.1.3 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#experimental-state-preparation-and-quantum-entanglement">8.2 Experimental state preparation and quantum entanglement</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#experimental-state-preparation">8.2.1 Experimental state preparation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#maximum-superposition-state">8.2.1.1 Maximum superposition state</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#quantum-entanglement">8.2.2 Quantum entanglement</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#maximum-superposition-state-preparation">8.2.3 Maximum superposition state preparation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#hadamard-test-and-swap-test">8.3 Hadamard Test and SWAP Test</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#hadamard-test">8.3.1 Hadamard Test</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#output-results-and-generalization">8.3.1.1 Output results and generalization</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#code-example">8.3.1.2 Code example</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#swap-test">8.3.2 SWAP Test</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id3">8.3.2.1 Code example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#amplitude-magnification">8.4 Amplitude magnification</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#background-of-algorithm">8.4.1 Background of algorithm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">8.4.2 Code example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#quantum-fourier-transform">8.5 Quantum Fourier transform</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#basic-definition">8.5.1 Basic definition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#construction-of-quantum-circuit">8.5.2 Construction of quantum circuit</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#sum-form-and-tensor-product-form-of-qft">8.5.2.1 Sum form and tensor product form of QFT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#binary-expansion-and-quantum-state-preparation">8.5.2.2 Binary expansion and quantum state preparation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#code-implementation">8.5.3 Code implementation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#quantum-phase-estimation">8.6 Quantum phase estimation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview-of-structure-of-quantum-circuit">8.6.1 Overview of structure of quantum circuit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">8.6.2 Construction of quantum circuit</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#eigen-quantum-state-and-eigenvalue-phase-extraction">8.6.2.1 Eigen quantum state and eigenvalue phase extraction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transfer-of-eigenvalue-phase-from-amplitude-to-base-vector">8.6.2.2 Transfer of eigenvalue phase from amplitude to base vector</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#quantum-circuit-diagram-and-code-implementation">8.6.3 Quantum circuit diagram and code implementation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#for-operations-of-quantum">8.7 For operations of quantum</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#background-of-adder-algorithm">8.7.1 Background of adder algorithm</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#component-of-maj-quantum-circuit">8.7.1.1 Component of MAJ quantum circuit</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#component-of-uma-quantum-circuit">8.7.1.2 Component of UMA quantum circuit</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">8.7.2 For operations of quantum</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#quantum-adder">8.7.2.1 Quantum adder</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#quantum-subtracter">8.7.2.2 Quantum subtracter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#quantum-multiplier">8.7.2.3 Quantum multiplier</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#quantum-divider">8.7.2.4 Quantum divider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#code-implementation-and-use-instructions">8.7.3 Code implementation and use instructions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id7">8.7.3.1 Quantum adder</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id8">8.7.3.2 Quantum subtracter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id9">8.7.3.3 Quantum multiplier</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id10">8.7.3.4 Quantum divider</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id11">8.7.4 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#hhl-algorithm">8.8 HHL algorithm</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview-of-background">8.8.1 Overview of background</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#principle-of-algorithm">8.8.2 Principle of algorithm</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#extraction-of-eigenvalue-through-qpe">8.8.2.1 Extraction of eigenvalue through QPE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transfer-of-eigenvalue-through-controlled-rotation">8.8.2.2 Transfer of eigenvalue through controlled rotation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#output-of-resulting-quantum-state-through-inverse-qpe">8.8.2.3 Output of resulting quantum state through inverse QPE</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#quantum-circuit-diagram-and-reference-code">8.8.3 Quantum circuit diagram and reference code</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#grover-algorithm-and-quantum-counting-algorithm">8.9 Grover algorithm and Quantum Counting algorithm</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id14">8.9.1 Overview of background</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#quantum-counting">8.9.1.1 Quantum Counting</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#search-for-solution-elements">8.9.1.2 Search for solution elements</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id15">8.9.2 Principle of algorithm</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#qpe-process-based-on-amplitude-amplification-operator">8.9.2.1 QPE process based on amplitude amplification operator</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#shor-s-algorithm">8.10 Shor’s Algorithm</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#background-of-problem">8.10.1 Background of problem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id16">8.10.2 Principle of algorithm</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pre-lemma">8.10.2.1 Pre-lemma</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#construction-of-modular-multiplication-quantum-gate">8.10.2.2 Construction of modular multiplication quantum gate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solving-of-modular-exponentiation-inverse-element">8.10.2.3 Solving of modular exponentiation inverse element</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id19">8.10.3 Quantum circuit diagram and reference code</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#quantum-imaginary-time-evolution">8.11 Quantum imaginary time evolution</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id20">8.11.1 Overview of background</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id21">8.11.2 Principle of algorithm</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#approximate-solution-from-schrodinger-equation-to-differential-equation">8.11.2.1 Approximate solution from Schrodinger Equation to differential equation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#imaginary-time-evolution-approaching-ground-state">8.11.2.2 Imaginary time evolution approaching ground state</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id24">8.11.3 Quantum circuit diagram and reference code</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pyQPanda</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>8 Basis of quantum algorithm</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/chapter8/index.rst.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="basis-of-quantum-algorithm">
+<h1>8 Basis of quantum algorithm<a class="headerlink" href="#basis-of-quantum-algorithm" title="永久链接至标题"></a></h1>
+<section id="review-of-basic-concepts">
+<h2>8.1 Review of basic concepts<a class="headerlink" href="#review-of-basic-concepts" title="永久链接至标题"></a></h2>
+<section id="basic-definitions">
+<h3>8.1.1 Basic definitions<a class="headerlink" href="#basic-definitions" title="永久链接至标题"></a></h3>
+<p>In physics, a quantum is the smallest inseparable basic unit of physical
+quantities. Bit, as a computer term, indicates the smallest unit of
+information. Different from a classical bit which can only be 0 or 1, a
+qubit can exist in the intermediate state superimposed in any proportion
+between 0 and 1.</p>
+<p>The basic operation performed on qubits is called a quantum gate.</p>
+<p>A quantum gate can either be a single-qubit gate and a multi-qubit gate.
+The single-qubit gate includes Hadamard gate, Pauli-X/Y/Z gate and
+rotating X/Y/Z gate. Two-qubit gates included controlled single-qubit
+gates (such as CNOT gates) and swap gates. A single-qubit gate and a
+two-qubit gate can be further extended to a multi-qubit gate by such
+extension means as controlled operation. It should be noted that
+measurement is a special quantum gate which is irreversible and changes
+the state of qubits.</p>
+<p>Any quantum algorithm is a combination of these basic quantum gates.</p>
+<p>See the common quantum logic gate matrix form for the definition of
+general quantum gate.</p>
+</section>
+<section id="pyqpanda-interface-function">
+<h3>8.1.2 pyQPanda interface function<a class="headerlink" href="#pyqpanda-interface-function" title="永久链接至标题"></a></h3>
+<p>In pyQPanda the defined function of a quantum gate is as below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gate</span> <span class="o">=</span> <span class="n">H</span><span class="p">(</span><span class="n">qubit</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition-note admonition">
+<p class="admonition-title">Note</p>
+<p>The input parameters are Qubit and other parameters, and the return value is QGate (quantum gate) which can be inserted into the quantum circuit.</p>
+</div>
+<p>Many kinds of quantum gates are defined in pyQPanda. Particularly, for
+the quantum gate U4 that supports full customization in pyQPanda, its
+interface functions supports simultaneous overloads as below:</p>
+<p>As described above, the interface function of quantum gates is provided
+with two extension operations: transposed conjugate and controlled
+operation. Both of the operations can be implemented in two ways.</p>
+<p>The two interface functions of transposed conjugate operation are
+defined as below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gate</span> <span class="o">=</span> <span class="n">H</span><span class="p">(</span><span class="n">qubit</span><span class="p">)</span>
+<span class="n">gate1</span> <span class="o">=</span> <span class="n">gate</span><span class="o">.</span><span class="n">dagger</span><span class="p">()</span>
+<span class="n">gate</span><span class="o">.</span><span class="n">setDagger</span><span class="p">(</span><span class="n">true</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition-note admonition">
+<p class="admonition-title">Note</p>
+<p>The dagger function returns a new quantum gate based on the target quantum gate, while the setDagger function returns the target quantum gate subject to transposed conjugate.</p>
+</div>
+<p>The two interface functions of controlled operation are defined as
+below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gate</span> <span class="o">=</span> <span class="n">H</span><span class="p">(</span><span class="n">qubit</span><span class="p">)</span>
+<span class="n">gate1</span> <span class="o">=</span> <span class="n">gate</span><span class="o">.</span><span class="n">control</span><span class="p">(</span><span class="n">QVec</span><span class="p">)</span>
+<span class="n">gate</span><span class="o">.</span><span class="n">setControl</span><span class="p">(</span><span class="n">QVec</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition-note admonition">
+<p class="admonition-title">Note</p>
+<p>The difference of controlled operation is similar to that of transposed conjugate operation, but the input parameter of the controlled operation function is Qvec (list of qubits) rather than a single qubit.</p>
+</div>
+</section>
+<section id="example">
+<h3>8.1.3 Example<a class="headerlink" href="#example" title="永久链接至标题"></a></h3>
+<p>Below is a program example to show the implementation of codes for basic
+qubit and quantum gate operations.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">pyqpanda</span> <span class="k">as</span> <span class="nn">pq</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">machine</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">)</span>
+    <span class="n">qubits</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">control_qubits</span> <span class="o">=</span> <span class="p">[</span><span class="n">qubits</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">qubits</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+    <span class="n">prog</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">create_empty_qprog</span><span class="p">()</span>
+
+    <span class="c1"># Building quantum programs</span>
+    <span class="n">prog</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> \
+        <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span> \
+        <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">dagger</span><span class="p">())</span> \
+        <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">X</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span><span class="o">.</span><span class="n">control</span><span class="p">(</span><span class="n">control_qubits</span><span class="p">))</span>
+
+    <span class="c1"># Perform probability measurements on quantum programs</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">prob_run_dict</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">qubits</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">pq</span><span class="o">.</span><span class="n">destroy_quantum_machine</span><span class="p">(</span><span class="n">machine</span><span class="p">)</span>
+
+    <span class="c1"># Print measurement results</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">key</span><span class="o">+</span><span class="s2">&quot;:&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>
+</pre></div>
+</div>
+<p>The output result shall be as shown below, with the probability of 0.5
+to get <span class="math notranslate nohighlight">\(|000⟩\)</span> and <span class="math notranslate nohighlight">\(|010⟩\)</span>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">000</span><span class="p">:</span><span class="mf">0.4999999999999894</span>
+<span class="mi">001</span><span class="p">:</span><span class="mf">0.0</span>
+<span class="mi">010</span><span class="p">:</span><span class="mf">0.4999999999999894</span>
+<span class="mi">011</span><span class="p">:</span><span class="mf">0.0</span>
+<span class="mi">100</span><span class="p">:</span><span class="mf">0.0</span>
+<span class="mi">101</span><span class="p">:</span><span class="mf">0.0</span>
+<span class="mi">110</span><span class="p">:</span><span class="mf">0.0</span>
+<span class="mi">111</span><span class="p">:</span><span class="mf">0.0</span>
+</pre></div>
+</div>
+<p>Above is the basic definitions of qubit and quantum gate and the
+introduction to the call in pyQPanda.</p>
+</section>
+</section>
+<section id="experimental-state-preparation-and-quantum-entanglement">
+<h2>8.2 Experimental state preparation and quantum entanglement<a class="headerlink" href="#experimental-state-preparation-and-quantum-entanglement" title="永久链接至标题"></a></h2>
+<section id="experimental-state-preparation">
+<h3>8.2.1 Experimental state preparation<a class="headerlink" href="#experimental-state-preparation" title="永久链接至标题"></a></h3>
+<p>Experimental state preparation refers to the construction of the initial
+quantum state of any algorithm in quantum computing, which is the
+initial step of quantum computing.</p>
+<p>Taking the Space two-state space with a single qubit, in actual quantum
+computing, we can directly get the default quantum state as the ground
+state <span class="math notranslate nohighlight">\(|0⟩\)</span>, and also get the ground state <span class="math notranslate nohighlight">\(|1⟩\)</span> indirectly
+through NOT gate.</p>
+<p>For any given target superposition quantum state, we need to construct
+the corresponding combination of quantum gates to obtain such state. The
+process of preparing any given target superposition state by starting
+from the ground state <span class="math notranslate nohighlight">\(|0⟩\)</span> is known as the initial state
+preparation.</p>
+<section id="maximum-superposition-state">
+<h4>8.2.1.1 Maximum superposition state<a class="headerlink" href="#maximum-superposition-state" title="永久链接至标题"></a></h4>
+<p>Taking two-qubit state space as an example, we can get uniform
+superposition of all ground states in the two-qubit state space by
+performing Hadamard gate operation for each qubit, starting from
+<span class="math notranslate nohighlight">\(|0⟩^{⊗2}\)</span>.</p>
+<p>Similarly, in any dimensional state space, we can get the quantum state
+for uniform linear combinations of all ground states by starting from
+the multidimensional <span class="math notranslate nohighlight">\(|0⟩\)</span> ground state by virtue of Hadamard
+gate.</p>
+<p>Such quantum state is called the maximum superposition state which is
+required by the initial state of qubits in many quantum computings.
+Also, the parallelism of quantum computing depends on such state.</p>
+<p>Through the experimental state preparation, we can obtain any basic
+quantum state, thus completing the construction of operation objects in
+quantum computing. However, prior to the operation, we need to make
+clear constraint on the qubits used in quantum computing – entanglement
+and correlation.</p>
+<p>We need to introduce pure state and mixed state before giving an
+introduction to quantum entanglement.</p>
+<p>All quantum states rather than ground states are superposition states.
+Superposition states can be divided into coherent superposition and
+incoherent superposition which are called pure state and mixed state
+respectively.</p>
+<p>Many methods are available to distinguish a pure state and a mixed
+state, including Bloch Sphere by which the state space is related to
+Bloch Sphere and the quantum state on the Sphere is a pure state while
+that in the Sphere is a mixed state.</p>
+<p>Another important method is density matrix where the non-diagonal
+elements of the density matrix of mixed states are all 0.</p>
+</section>
+</section>
+<section id="quantum-entanglement">
+<h3>8.2.2 Quantum entanglement<a class="headerlink" href="#quantum-entanglement" title="永久链接至标题"></a></h3>
+<p>If the quantum state <span class="math notranslate nohighlight">\(|ψ⟩\)</span> of a quantum system can be expressed in
+the form of the direct product of two quantum systems like
+<span class="math notranslate nohighlight">\(|ψ⟩=|ψ0 ⟩⊗|ψ1⟩\)</span>, such quantum state is called the direct product
+state.</p>
+<div class="admonition-note admonition">
+<p class="admonition-title">Note</p>
+<p>Any quantum state rather than direct product state is an entangled state.</p>
+</div>
+<p>For example, a two-qubit Bell state
+<span class="math notranslate nohighlight">\(\frac{1}{\sqrt{2}}|00\rangle+\frac{1}{\sqrt{2}}|11\rangle\)</span> cannot
+be factored as the direct product of two single-qubit quantum states.</p>
+<p>The entangled state of quantum is given with quantum correlation beyond
+classical one. To give full play to the parallelism and efficiency of
+quantum computing, the qubits used in quantum computing shall be
+entangled and correlated.</p>
+</section>
+<section id="maximum-superposition-state-preparation">
+<h3>8.2.3 Maximum superposition state preparation<a class="headerlink" href="#maximum-superposition-state-preparation" title="永久链接至标题"></a></h3>
+<p>The following is the code implementation for the maximum superposition
+state preparation based on pyQPanda, and the qubits called are entangled
+and correlated.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">pyqpanda</span> <span class="k">as</span> <span class="nn">pq</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">machine</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">)</span>
+    <span class="n">qubits</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">prog</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">create_empty_qprog</span><span class="p">()</span>
+
+    <span class="c1"># Building quantum programs</span>
+    <span class="n">prog</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> \
+        <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span> \
+        <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+
+    <span class="c1"># Perform probability measurements on quantum programs</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">prob_run_dict</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">qubits</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">pq</span><span class="o">.</span><span class="n">destroy_quantum_machine</span><span class="p">(</span><span class="n">machine</span><span class="p">)</span>
+
+    <span class="c1"># Print measurement results</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">key</span><span class="o">+</span><span class="s2">&quot;:&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>
+</pre></div>
+</div>
+<p>The results shall be that all quantum states in the 3-qubit space are
+obtained with the uniform probability of 1/8.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">000</span><span class="p">,</span> <span class="mf">0.125</span>
+<span class="mi">001</span><span class="p">,</span> <span class="mf">0.125</span>
+<span class="mi">010</span><span class="p">,</span> <span class="mf">0.125</span>
+<span class="mi">011</span><span class="p">,</span> <span class="mf">0.125</span>
+<span class="mi">100</span><span class="p">,</span> <span class="mf">0.125</span>
+<span class="mi">101</span><span class="p">,</span> <span class="mf">0.125</span>
+<span class="mi">110</span><span class="p">,</span> <span class="mf">0.125</span>
+<span class="mi">111</span><span class="p">,</span> <span class="mf">0.125</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="hadamard-test-and-swap-test">
+<h2>8.3 Hadamard Test and SWAP Test<a class="headerlink" href="#hadamard-test-and-swap-test" title="永久链接至标题"></a></h2>
+<p>A quantum circuit is a combination of a series of quantum gate
+operations. Among the numerous quantum circuits, some are used
+repeatedly during the construction of quantum algorithms. These
+frequently called quantum circuit components are called basic circuits
+of algorithm algorithms. Several common basic circuits will be
+introduced below.</p>
+<section id="hadamard-test">
+<h3>8.3.1 Hadamard Test<a class="headerlink" href="#hadamard-test" title="永久链接至标题"></a></h3>
+<p>The Hadamard Test quantum circuit is mainly used to give the projection
+and expectation <span class="math notranslate nohighlight">\(⟨ψ|U|ψ⟩\)</span> of any given unitary operator <span class="math notranslate nohighlight">\(U\)</span>
+on the given quantum state <span class="math notranslate nohighlight">\(ψ\)</span>.</p>
+<p>The quantum circuit diagram of Hadamard Test is simple in structure, as
+shown below.</p>
+<figure class="align-default">
+<img alt="" src="../_images/8.1.png" />
+</figure>
+<p>The whole quantum circuit can be considered as the combination of
+quantum gate operations performed for the n+1-dimensional quantum state
+<span class="math notranslate nohighlight">\(|0⟩|ψ⟩\)</span> which is composed of qubits in two register
+<span class="math notranslate nohighlight">\(\mathrm{Q}=\left(\mathrm{H} \otimes I^{\otimes n}\right)(\mathrm{C}-\mathrm{U})\left(\mathrm{H} \otimes I^{\otimes n}\right)\)</span>
+where C−U represents a controlled gate based on the unitary operator U.</p>
+<section id="output-results-and-generalization">
+<h4>8.3.1.1 Output results and generalization<a class="headerlink" href="#output-results-and-generalization" title="永久链接至标题"></a></h4>
+<p>The derivation of the output results of Hadamard Test quantum circuit
+generates the following conclusions.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+&amp;\mathrm{Q}|0\rangle|\psi\rangle=\frac{|0\rangle+|1\rangle}{2}+\frac{|0\rangle-|1\rangle}{2} U|\psi\rangle \\
+&amp;=|0\rangle \frac{|\psi\rangle+\mathrm{U}|\psi\rangle}{2}+|1\rangle \frac{|\psi\rangle-\mathrm{U}|\psi\rangle}{2}
+\end{aligned}\end{split}\]</div>
+<p>The probability to get <span class="math notranslate nohighlight">\(|0⟩, |1⟩\)</span> by measuring the output
+resulting quantum state is as below:</p>
+<div class="math notranslate nohighlight">
+\[P_{0}=\frac{1}{4} \|(I+U)(\mathrm{Q}|0\rangle|\psi\rangle) \|^{2}=\frac{1+\operatorname{Re}(\langle\psi|U| \psi\rangle)}{2}, P_{1}=1-P_{0}\]</div>
+<p>By deduced by the formula, the measurement probability of Hadamard Test
+results is related to the real part of <span class="math notranslate nohighlight">\(Re(⟨ψ|U|ψ⟩)\)</span> (unitary
+operator U) mapped and expected on the quantum state <span class="math notranslate nohighlight">\(ψ\)</span>.</p>
+<p>We can replace the H gate before the measurement with RX(
+:math:<a href="#id1"><span class="problematic" id="id2">`</span></a>frac{π}{2} ` ) gate to obtain the resulting quantum state
+related to the probability and the mapped and expected imaginary part.</p>
+</section>
+<section id="code-example">
+<h4>8.3.1.2 Code example<a class="headerlink" href="#code-example" title="永久链接至标题"></a></h4>
+<p>A code of <span class="math notranslate nohighlight">\(|\psi\rangle=\frac{|0\rangle+|1\rangle}{\sqrt{2}} \)</span> , Hadamard Test is as below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">pyqpanda</span> <span class="k">as</span> <span class="nn">pq</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+        <span class="n">machine</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">)</span>
+        <span class="n">cqv</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">tqv</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">prog</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">create_empty_qprog</span><span class="p">()</span>
+
+        <span class="c1"># Building quantum programs</span>
+        <span class="n">prog</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">cqv</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> \
+                <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">tqv</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> \
+                <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">tqv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">control</span><span class="p">([</span><span class="n">cqv</span><span class="p">[</span><span class="mi">0</span><span class="p">]]))</span>\
+                <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">cqv</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+        <span class="c1"># Perform probability measurements on quantum programs</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">prob_run_dict</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">cqv</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">pq</span><span class="o">.</span><span class="n">destroy_quantum_machine</span><span class="p">(</span><span class="n">machine</span><span class="p">)</span>
+
+        <span class="c1"># Print measurement results</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">key</span><span class="o">+</span><span class="s2">&quot;:&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>
+</pre></div>
+</div>
+<p>The output result shall be as shown below, with the probability of
+<span class="math notranslate nohighlight">\(\frac{1+\sqrt{2} / 2}{2}\)</span> and that of
+<span class="math notranslate nohighlight">\(1-\frac{1+\sqrt{2} / 2}{2}\)</span> to get <span class="math notranslate nohighlight">\(|0⟩\)</span> and <span class="math notranslate nohighlight">\(|1⟩\)</span>
+respectively:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">0</span><span class="p">:</span><span class="mf">0.853553</span>
+<span class="mi">1</span><span class="p">:</span><span class="mf">0.146447</span>
+</pre></div>
+</div>
+<p>Hadamard Test can be used for a wide range of purposes and has many
+forms among which one is basic SWAP Test of quantum circuits.</p>
+</section>
+</section>
+<section id="swap-test">
+<h3>8.3.2 SWAP Test<a class="headerlink" href="#swap-test" title="永久链接至标题"></a></h3>
+<p>With any two quantum states with the same dimension given, the fidelity
+of the two quantum states can be obtained through the SWAP Test circuit,
+which reflects the overlapping of the states.</p>
+<p>The fidelity of the two quantum states refers to the square value of
+inner product norm of the quantum states, <span class="math notranslate nohighlight">\(|⟨ϕ|ψ⟩|^2\)</span></p>
+<p>The quantum circuit diagram of SWAP Test is as below.</p>
+<figure class="align-default">
+<img alt="" src="../_images/8.2.png" />
+</figure>
+<p>The formula derivation and verification process for SWAP Test is
+completely similar to that for Hadamard Test, and the probability of
+<span class="math notranslate nohighlight">\(|0⟩\)</span>, <span class="math notranslate nohighlight">\(|1⟩\)</span> measured by the first register for the
+resulting quantum state is related to the fidelity of the two given
+quantum states.</p>
+<div class="math notranslate nohighlight">
+\[P_{0}=\frac{1+|\langle\psi \mid \phi\rangle|^{2}}{2}, P_{1}=1-P_{0}\]</div>
+<p>SWAP Test, as a special form of Hadamard, provides the measurement
+results related to the fidelity for the two given quantum states, which
+shows significance of application. Also, it plays an important role in
+the study on inner product of quantum states.</p>
+<p>If the controlled SWAP gate is replaced with a general controlled gate
+F, we can obtain the resulting quantum state of the general form of
+Hadamard Test.</p>
+<div class="math notranslate nohighlight">
+\[\frac{|0\rangle}{2}(I+F)|\phi\rangle|\psi\rangle+\frac{|1\rangle}{2}(I-F)|\phi\rangle|\psi\rangle\]</div>
+<section id="id3">
+<h4>8.3.2.1 Code example<a class="headerlink" href="#id3" title="永久链接至标题"></a></h4>
+<p>There lies a minor difference between the code example of SWAP Test and
+that of Hadamard Test.</p>
+<p>Take
+<span class="math notranslate nohighlight">\(|\phi\rangle=\frac{|0\rangle+|1\rangle}{\sqrt{2}},|\psi\rangle=|1\rangle\)</span>​
+, an example of SWAP Test code is as below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">pyqpanda</span> <span class="k">as</span> <span class="nn">pq</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">machine</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">)</span>
+    <span class="n">cqv</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">tqv</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">qvec</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">prog</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">create_empty_qprog</span><span class="p">()</span>
+
+    <span class="c1"># Building quantum programs</span>
+    <span class="n">prog</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">cqv</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> \
+        <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">tqv</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> \
+        <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">X</span><span class="p">(</span><span class="n">qvec</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> \
+        <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">SWAP</span><span class="p">(</span><span class="n">tqv</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">qvec</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">control</span><span class="p">([</span><span class="n">cqv</span><span class="p">[</span><span class="mi">0</span><span class="p">]]))</span>\
+        <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">cqv</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+    <span class="c1"># Perform probability measurements on quantum programs</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">prob_run_dict</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">cqv</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">pq</span><span class="o">.</span><span class="n">destroy_quantum_machine</span><span class="p">(</span><span class="n">machine</span><span class="p">)</span>
+
+    <span class="c1"># Print measurement results</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">key</span><span class="o">+</span><span class="s2">&quot;:&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>
+</pre></div>
+</div>
+<p>The output result shall be as shown below, with the probabilities of
+0.75 and 0.25 to get <span class="math notranslate nohighlight">\(|0⟩\)</span> and <span class="math notranslate nohighlight">\(|1⟩\)</span>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">0</span><span class="p">:</span><span class="mf">0.75</span>
+<span class="mi">1</span><span class="p">:</span><span class="mf">0.25</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="amplitude-magnification">
+<h2>8.4 Amplitude magnification<a class="headerlink" href="#amplitude-magnification" title="永久链接至标题"></a></h2>
+<p>The Amplitude Amplification circuit is mainly used to amplify the given
+pure state so as to adjust the probability distribution of its measured
+results.</p>
+<section id="background-of-algorithm">
+<h3>8.4.1 Background of algorithm<a class="headerlink" href="#background-of-algorithm" title="永久链接至标题"></a></h3>
+<p>For a finite set <span class="math notranslate nohighlight">\(Ω\)</span> of which the size is known and for which
+binary classification is available and standard <span class="math notranslate nohighlight">\(f\)</span> is determined
+by standard <span class="math notranslate nohighlight">\(f\)</span>, any of element from the set <span class="math notranslate nohighlight">\(|\Psi\rangle\)</span>
+can be expressed as the linear combination of two orthogonal ground
+states
+<span class="math notranslate nohighlight">\(\left|\Psi_{0}\right\rangle,\left|\Psi_{1}\right\rangle\)</span>​ based
+on the <span class="math notranslate nohighlight">\(f\)</span>.</p>
+<div class="math notranslate nohighlight">
+\[|\psi\rangle=\sin \theta\left|\varphi_{1}\right\rangle+\cos \theta\left|\varphi_{0}\right\rangle,\left|\varphi_{0}\right\rangle=\left|\varphi_{1}^{\perp}\right\rangle\]</div>
+<p>The amplitude amplification quantum circuit can amplify the amplitude of
+<span class="math notranslate nohighlight">\(\left|\Psi_{1}\right\rangle\)</span> in the expression of superposition
+state <span class="math notranslate nohighlight">\(\left|\Psi\right\rangle\)</span> , thus obtaining a resulting
+quantum state, so as to get the target quantum state
+<span class="math notranslate nohighlight">\(\left|\Psi_{1}\right\rangle\)</span> with a large probability.</p>
+<p>Suppose that we can construct a combination of quantum gate operations
+which is the amplitude amplification operator Q, and we can obtain the
+quantum state in the following form by acting Q on the quantum state
+<span class="math notranslate nohighlight">\(|\Psi\rangle\)</span>​ for k times.</p>
+<div class="math notranslate nohighlight">
+\[\left|\psi_{k}\right\rangle=\sin k \theta\left|\varphi_{1}\right\rangle+\cos k \theta\left|\varphi_{0}\right\rangle, k \theta \approx \frac{\pi}{2}\]</div>
+<p>Then, we complete the required construction of amplitude amplification
+quantum circuits.</p>
+<p>The quantum circuit diagram is as follows:</p>
+<figure class="align-default">
+<img alt="" src="../_images/8.3.png" />
+</figure>
+<p>Suppose that the quantum state <span class="math notranslate nohighlight">\(|\Psi\rangle\)</span> based on the set
+<span class="math notranslate nohighlight">\(Ω\)</span> and classification standard <span class="math notranslate nohighlight">\(f\)</span> has been prepared, which
+depends on the construction of amplitude amplification operator
+<span class="math notranslate nohighlight">\(Q\)</span>.</p>
+<p>The amplitude amplification operator is defined as below:</p>
+<div class="math notranslate nohighlight">
+\[P_{1}=I-2\left|\psi_{1}\right\rangle\left\langle\psi_{1}|, P=I-2| \psi\right\rangle\langle\psi|, Q=-P P_{1}\]</div>
+<div class="admonition-note admonition">
+<p class="admonition-title">Note</p>
+<p>How to prepare the quantum state through the set <span class="math notranslate nohighlight">\(Ω\)</span> and classification standard <span class="math notranslate nohighlight">\(f\)</span>? How are <span class="math notranslate nohighlight">\(P_{1}\)</span> and <span class="math notranslate nohighlight">\(P\)</span> implemented through the quantum circuit?</p>
+</div>
+<p>Through simple verification, we can know that the operation <span class="math notranslate nohighlight">\(Q\)</span> in
+the space formed by
+<span class="math notranslate nohighlight">\(\left\{\left|\varphi_{1}\right\rangle,\left|\varphi_{0}\right\rangle\right\}\)</span>​
+can be expressed as follows:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}Q=\left[\begin{array}{cc}
+\cos (2 \theta) &amp; -\sin (2 \theta) \\
+\sin (2 \theta) &amp; \cos (2 \theta)
+\end{array}\right]\end{split}\]</div>
+<p>Essentially, it can be considered as a rotating quantum gate operation
+with an angle of <span class="math notranslate nohighlight">\(2θ\)</span>. Therefore, we can get the following
+formula:</p>
+<div class="math notranslate nohighlight">
+\[Q^{n}|\psi\rangle=\sin (2 n+1) \theta\left|\varphi_{1}\right\rangle+\cos (2 n+1) \theta\left|\varphi_{0}\right\rangle\]</div>
+<p>The amplitude amplification quantum circuit can be completed by
+selecting a proper number of rotation n to make
+<span class="math notranslate nohighlight">\(\sin ^{2}(2 n+1) \theta\)</span> be closest to 1.</p>
+<p>Compared with the classical traversal classification method, the
+amplitude amplification quantum circuit can fully reflect the advantages
+of quantum computing.</p>
+</section>
+<section id="id4">
+<h3>8.4.2 Code example<a class="headerlink" href="#id4" title="永久链接至标题"></a></h3>
+<p>Take
+<span class="math notranslate nohighlight">\(\Omega=\{0,1\},|\psi\rangle=\frac{|0\rangle+|1\rangle}{2}, P_{1}=I-2|1\rangle\langle 1|=Z\)</span></p>
+<p>Below is an example of codes corresponding to the amplitude
+amplification quantum circuit:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">pyqpanda</span> <span class="k">as</span> <span class="nn">pq</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">pi</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">machine</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">)</span>
+    <span class="n">qvec</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">prog</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">create_empty_qprog</span><span class="p">()</span>
+
+    <span class="c1"># Building quantum programs</span>
+    <span class="n">prog</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">qvec</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">7</span><span class="p">):</span>
+         <span class="n">prog</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">RY</span><span class="p">(</span><span class="n">qvec</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span>
+
+    <span class="c1"># Perform probability measurements on quantum programs</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">prob_run_dict</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">qvec</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">pq</span><span class="o">.</span><span class="n">destroy_quantum_machine</span><span class="p">(</span><span class="n">machine</span><span class="p">)</span>
+
+    <span class="c1"># Print measurement results</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+         <span class="nb">print</span><span class="p">(</span><span class="n">key</span><span class="o">+</span><span class="s2">&quot;:&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>
+</pre></div>
+</div>
+<p>The output result shall be as shown below, with the probabilities of
+<span class="math notranslate nohighlight">\(1\)</span> and <span class="math notranslate nohighlight">\(0\)</span> to get <span class="math notranslate nohighlight">\(|0⟩\)</span> and <span class="math notranslate nohighlight">\(|1⟩\)</span> respectively:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span>
+<span class="mi">1</span><span class="p">:</span><span class="mi">0</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="quantum-fourier-transform">
+<h2>8.5 Quantum Fourier transform<a class="headerlink" href="#quantum-fourier-transform" title="永久链接至标题"></a></h2>
+<p>The quantum Fourier transform (QFT) is the quantum version of the
+classical inverse discrete Fourier transform.</p>
+<p>The quantum Fourier transform converts the data in the base vector to
+the data in the amplitude under certain conditions and vice versa.</p>
+<section id="basic-definition">
+<h3>8.5.1 Basic definition<a class="headerlink" href="#basic-definition" title="永久链接至标题"></a></h3>
+<p>QFT can be obtained by simply substituting IDFT. Both QFT and DFT are
+essentially different forms of expression of the same vector in two
+equivalent spaces, i.e., the substitution of base vectors.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+y_{k} &amp; \rightarrow \frac{1}{\sqrt{N}} \sum_{j=0}^{N-1} x_{j} e^{\frac{2 \pi i}{N} j k} \\
+|x\rangle &amp; \rightarrow \frac{1}{2^{\frac{n}{2}}} \Sigma_{k=0}^{2^{n}-1} e^{\frac{2 \pi i}{2^{n}} x k}|k\rangle
+\end{aligned}\end{split}\]</div>
+<p>Based on the definition, a certain vector
+<span class="math notranslate nohighlight">\(\Sigma_{x} \alpha_{x}|\mathrm{x}\rangle\)</span> in the space
+<span class="math notranslate nohighlight">\(span{|x⟩}\)</span> can be represented as the linear combination
+<span class="math notranslate nohighlight">\(\Sigma_{k} \beta_{k}|k\rangle\)</span> of base vectors in another
+equivalent space <span class="math notranslate nohighlight">\(span{|k⟩}\)</span> through Fourier transform, and the
+coefficient <span class="math notranslate nohighlight">\(\beta_{k}\)</span> of the linear combination depends on
+<span class="math notranslate nohighlight">\(|x⟩\)</span> and <span class="math notranslate nohighlight">\(\alpha_{k}\)</span> .</p>
+<div class="admonition-note admonition">
+<p class="admonition-title">Note</p>
+<p>The quantum Fourier transform/inverse transform can be essentially considered as a mutual transformation of amplitude and base vector.</p>
+</div>
+</section>
+<section id="construction-of-quantum-circuit">
+<h3>8.5.2 Construction of quantum circuit<a class="headerlink" href="#construction-of-quantum-circuit" title="永久链接至标题"></a></h3>
+<p>The implementation of quantum circuits of QFT requires the
+transformation of its expression to obtain the transformation process
+which can be implemented with the existing general quantum gate
+combination.</p>
+<section id="sum-form-and-tensor-product-form-of-qft">
+<h4>8.5.2.1 Sum form and tensor product form of QFT<a class="headerlink" href="#sum-form-and-tensor-product-form-of-qft" title="永久链接至标题"></a></h4>
+<p>By any given integer <span class="math notranslate nohighlight">\(x\)</span>,
+<span class="math notranslate nohighlight">\(k=\Sigma_{i=1}^{n} k_{i} 2^{n-i}\)</span>​ is expanded by the binary
+system, and the result of quantum Fourier transform of <span class="math notranslate nohighlight">\(|x⟩\)</span> can
+be expressed as below:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+&amp;Q F T(|x\rangle)=\frac{1}{2^{\frac{n}{2}}} \Sigma_{k=0}^{2^{n}-1} e^{\frac{2 \pi i i x k}{2^{n}}}|k\rangle=\frac{1}{2^{\frac{n}{2}}} \Sigma_{k_{1}=0}^{1} \cdots \Sigma_{k_{n}=0}^{1} e^{2 \pi i x k\left(\Sigma_{L}^{n} k l^{2}-\right)}\left|k_{1} \cdots k_{n}\right\rangle \\
+&amp;=\frac{1}{2^{\frac{n}{2}}} \Sigma_{k_{1}=0}^{1} \cdots \Sigma_{k_{n}=0}^{1} \otimes_{l=1}^{n} e^{2 \pi i x k l^{-l}}\left|k_{l}\right\rangle=\frac{1}{2^{\frac{n}{2}}} \otimes_{l=1}^{n}\left(|0\rangle+e^{2 \pi i x 2^{-l}}|1\rangle\right)
+\end{aligned}\end{split}\]</div>
+<p>As shown by the above formula, QFT can express the particular quantum
+state <span class="math notranslate nohighlight">\(|x⟩\)</span> as a linear combination of another set of base
+vectors, and such linear combination can also be expressed as the tensor
+product of multiple single-qubit states
+<span class="math notranslate nohighlight">\(\frac{1}{\sqrt{2}}\left(|0\rangle+e^{2 \pi i x 2^{-l}}|1\rangle\right)\)</span>
+.</p>
+<p>Therefore, for any given integer <span class="math notranslate nohighlight">\(x\)</span>, we, if able to construct a
+quantum state
+<span class="math notranslate nohighlight">\(\frac{1}{\sqrt{2}}\left(|0\rangle+e^{2 \pi i x 2^{-l}}|1\rangle\right)\)</span>
+with binary expansion qubits, can complete the construction of
+corresponding QFT quantum circuits through the QFT expression in the
+form of tensor product.</p>
+</section>
+<section id="binary-expansion-and-quantum-state-preparation">
+<h4>8.5.2.2 Binary expansion and quantum state preparation<a class="headerlink" href="#binary-expansion-and-quantum-state-preparation" title="永久链接至标题"></a></h4>
+<p>Binary expansion approximation for any given integer <span class="math notranslate nohighlight">\(x\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\frac{\mathrm{x}}{2^{m}} \approx \frac{\left[x_{1} \ldots x_{m}\right]}{2^{m}}=\left[0 . x_{1} \ldots x_{m}\right]=\sum_{k=1}^{m} x_{k} 2^{-k}\]</div>
+<p>while</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}  2 \pi \mathrm{ix} 2^{-l}=2 \pi i\left[x_{1} \ldots x_{n}\right] 2^{-l}=2 \pi i\left[0 . x_{n-l} \ldots x_{n}\right]\\Then, the preparation of\end{aligned}\end{align} \]</div>
+<p><span class="math notranslate nohighlight">\(\frac{1}{\sqrt{2}}\left(|0\rangle+e^{2 \pi i x 2^{-l}}|1\rangle\right)\)</span>
+is transformed into that of
+<span class="math notranslate nohighlight">\(\frac{1}{\sqrt{2}}\left(|0\rangle+e^{2 \pi i\left[0 . x_{n-l} \ldots x_{n}\right]}|1\rangle\right)\)</span></p>
+<p>It shall be noted that
+<span class="math notranslate nohighlight">\(\mathrm{H}|0\rangle=\frac{1}{\sqrt{2}}(|0\rangle+|1\rangle)=\frac{1}{\sqrt{2}}\left(|0\rangle+e^{2 \pi i\left[0 . x_{n}\right]}|1\rangle\right)\)</span>​
+while</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{gathered}
+\frac{1}{\sqrt{2}}\left(|0\rangle+e^{2 \pi i\left[0 x_{n-l} \ldots x_{n}\right]}|1\rangle\right)=\frac{1}{\sqrt{2}}\left(|0\rangle+e^{2 \pi i\left[0 . x_{n-1}\right]} e^{2 \pi i\left[0 . x_{n}\right]}|1\rangle\right) \\
+R_{m}|0\rangle=|0\rangle, \quad R_{m}|1\rangle=e^{2 \pi i \frac{1}{2^{m}}}|1\rangle
+\end{gathered}\end{split}\]</div>
+<p>The defined controlled rotating quantum gate
+<span class="math notranslate nohighlight">\((\mathrm{C}-\mathrm{R})_{j-k+1}\)</span> meets</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}  (\mathrm{C}-\mathrm{R})_{j-k+1} \frac{1}{\sqrt{2}}\left(|0\rangle+e^{2 \pi i\left[0 . x_{n-j}\right]}|1\rangle\right)\left|x_{n-k}\right\rangle=\frac{1}{\sqrt{2}}\left(|0\rangle+e^{2 \pi i\left[0 . x_{n-j}\right]}|1\rangle\right)\\Therefore, the preparation of quantum state\end{aligned}\end{align} \]</div>
+<p><span class="math notranslate nohighlight">\(\frac{1}{\sqrt{2}}\left(|0\rangle+e^{2 \pi i x 2^{-l}}|1\rangle\right)\)</span>
+can be achieved by using quantum gate H and
+<span class="math notranslate nohighlight">\((\mathrm{C}-\mathrm{R})_{j-k+1}\)</span> thus completing the quantum
+circuit of QFT.</p>
+<p>The quantum circuit diagram of QFT is as below.</p>
+<figure class="align-default">
+<img alt="" src="../_images/8.4.png" />
+</figure>
+<p>In particular, we have noticed that the resulting quantum state
+corresponding to the qubit with the initial quantum state being
+<span class="math notranslate nohighlight">\(\left|\mathrm{x}_{i}\right\rangle\)</span> is
+<span class="math notranslate nohighlight">\(\frac{1}{\sqrt{2}}\left(|0\rangle+e^{2 \pi i x 2^{n+1-l}}|1\rangle\right)\)</span>
+instead of
+<span class="math notranslate nohighlight">\(\frac{1}{\sqrt{2}}\left(|0\rangle+e^{2 \pi i x 2^{-l}}|1\rangle\right)\)</span>
+. Thus, we need add multiple sets of SWAP gates in actual applications.</p>
+</section>
+</section>
+<section id="code-implementation">
+<h3>8.5.3 Code implementation<a class="headerlink" href="#code-implementation" title="永久链接至标题"></a></h3>
+<p>QFT in one dimension is a Hadamard quantum gate. The QFT interface
+function based on pyQPanda is as below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">QFT</span><span class="p">(</span><span class="n">qlist</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The example where <span class="math notranslate nohighlight">\(|x⟩=|000⟩\)</span> is taken to verify the code example
+of QFT is as below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">pyqpanda</span> <span class="k">as</span> <span class="nn">pq</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">pi</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">machine</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">)</span>
+    <span class="n">qvec</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">prog</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">create_empty_qprog</span><span class="p">()</span>
+
+    <span class="c1"># Building quantum programs</span>
+    <span class="n">prog</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">QFT</span><span class="p">(</span><span class="n">qvec</span><span class="p">))</span>
+
+    <span class="c1"># Perform probability measurements on quantum programs</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">prob_run_dict</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">qvec</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">pq</span><span class="o">.</span><span class="n">destroy_quantum_machine</span><span class="p">(</span><span class="n">machine</span><span class="p">)</span>
+
+    <span class="c1"># Print measurement results</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+         <span class="nb">print</span><span class="p">(</span><span class="n">key</span><span class="o">+</span><span class="s2">&quot;:&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>
+</pre></div>
+</div>
+<p>According to the definition of QFT as given above and <span class="math notranslate nohighlight">\(|x⟩=|000⟩\)</span>,
+the output result be all the quantum states obtained based on the
+uniform probability of 1/8, i.e.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">000</span><span class="p">,</span> <span class="mf">0.125</span>
+<span class="mi">001</span><span class="p">,</span> <span class="mf">0.125</span>
+<span class="mi">010</span><span class="p">,</span> <span class="mf">0.125</span>
+<span class="mi">011</span><span class="p">,</span> <span class="mf">0.125</span>
+<span class="mi">100</span><span class="p">,</span> <span class="mf">0.125</span>
+<span class="mi">101</span><span class="p">,</span> <span class="mf">0.125</span>
+<span class="mi">110</span><span class="p">,</span> <span class="mf">0.125</span>
+<span class="mi">111</span><span class="p">,</span> <span class="mf">0.125</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="quantum-phase-estimation">
+<h2>8.6 Quantum phase estimation<a class="headerlink" href="#quantum-phase-estimation" title="永久链接至标题"></a></h2>
+<p>Quantum phase estimation (QPE) can serve to compute the phase of the
+eigenvalue of a given unitary operator (U), i.e., solve φ in
+<span class="math notranslate nohighlight">\(\mathrm{U}|\psi\rangle=e^{2 \pi i \varphi}|\psi\rangle \text { where }|\Psi\rangle\)</span>
+is the eigenvector of U.</p>
+<p>The QPE in classical form is constructed on the basis of QFT</p>
+<section id="overview-of-structure-of-quantum-circuit">
+<h3>8.6.1 Overview of structure of quantum circuit<a class="headerlink" href="#overview-of-structure-of-quantum-circuit" title="永久链接至标题"></a></h3>
+<p>Suppose that the eigenvector <span class="math notranslate nohighlight">\(|\Psi\rangle\)</span> has been constructed.
+Quantum phase estimation includes the steps below:</p>
+<p>1.The eigenvalue phase of U is decomposed and transferred to the
+amplitude of the auxiliary qubit through a series of special rotating
+quantum gate operations.</p>
+<p>2.IQFT is conducted for the auxiliary qubit to transfer the decomposed
+eigenvalue phases on the amplitude to the base vectors.</p>
+<p>3.The phase information of the eigenvalue can be obtained by measuring
+the base vectors of the auxiliary qubit.</p>
+<p>For an eigen quantum state <span class="math notranslate nohighlight">\(|\Psi\rangle\)</span> of the unitary operator
+U, we can extract the eigenvalue phase corresponding to the quantum
+state to the amplitude through specific quantum gate combination, but it
+is hard to accurately and effectively measure the amplitude of the
+quantum state.</p>
+<p>We have to integrate the eigenvalue phase data by virtue of quantum gate
+combinations, and can transfer the eigenvalue to the base vector by
+taking advantage of the function of IQFT to transfer amplitude to base
+vector.</p>
+<div class="admonition-note admonition">
+<p class="admonition-title">Note</p>
+<p>Quantum phase estimation is essentially used to extract the eigenvalue phases of unitary operators and output the phases in a form convenient for measurement.</p>
+</div>
+</section>
+<section id="id5">
+<h3>8.6.2 Construction of quantum circuit<a class="headerlink" href="#id5" title="永久链接至标题"></a></h3>
+<section id="eigen-quantum-state-and-eigenvalue-phase-extraction">
+<h4>8.6.2.1 Eigen quantum state and eigenvalue phase extraction<a class="headerlink" href="#eigen-quantum-state-and-eigenvalue-phase-extraction" title="永久链接至标题"></a></h4>
+<p>According to the definition of eigen quantum state
+<span class="math notranslate nohighlight">\(\mathrm{U}|\psi\rangle=e^{2 \pi i \varphi}|\psi\rangle\)</span></p>
+<p>Therefore, the unitary operator U can define a controlled quantum gate
+(C−U) to enable</p>
+<div class="math notranslate nohighlight">
+\[\left(\mathrm{C}-U^{2^{t}}\right)(\mathrm{a}|0\rangle+\mathrm{b}|1\rangle) \otimes|\psi\rangle=\left(\mathrm{a}|0\rangle+e^{2 \pi i \varphi 2^{t}} \mathrm{~b}|1\rangle\right) \otimes|\psi\rangle\]</div>
+<p>The eigenvalue phase <span class="math notranslate nohighlight">\(\psi\ \)</span> can be extracted into the amplitude
+through such controlled transformation.</p>
+</section>
+<section id="transfer-of-eigenvalue-phase-from-amplitude-to-base-vector">
+<h4>8.6.2.2 Transfer of eigenvalue phase from amplitude to base vector<a class="headerlink" href="#transfer-of-eigenvalue-phase-from-amplitude-to-base-vector" title="永久链接至标题"></a></h4>
+<p>We select a set of auxiliary qubits which are initialized to the maximum
+superposition state, and can extract the eigenvalue phase into the
+amplitude through the controlled quantum gate:</p>
+<div class="math notranslate nohighlight">
+\[\left(\mathrm{C}-U^{2^{\circ}}\right) \ldots\left(\mathrm{C}-U^{2^{n}}\right) \frac{1}{2^{\frac{n}{2}}} \otimes_{t=1}^{n}(|0\rangle+|1\rangle)=\left(|0\rangle+e^{2 \pi i \varphi 2^{1-1}}|1\rangle\right) \ldots\left(|0\rangle+e^{2 \pi i \varphi 2^{n-1}}|1\rangle\right)\]</div>
+<p>At this point, the form of quantum state in the auxiliary qubits is
+close to that of the resulting quantum state of QFT, and the following
+results can be obtained with the help of IQFT:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+&amp;\mathrm{QFT}^{-1} \frac{1}{2^{\frac{n}{2}}} \otimes_{t=1}^{n}\left(|0\rangle+e^{2 \pi i \varphi 2^{t-1}}|1\rangle\right) \\
+&amp;=\mathrm{QFT}^{-1} \frac{1}{2^{\frac{n}{2}}} \sum_{k=0}^{2^{n}-1} e^{2 \pi i \varphi k}|\mathrm{k}\rangle \\
+&amp;=\frac{1}{2^{n}} \sum_{k=0}^{2^{n}-1} \sum_{x=0}^{2^{n}-1} e^{-\frac{2 \pi i k}{2^{n}}\left(x-2^{n} \varphi\right)}|\mathrm{x}\rangle
+\end{aligned}\end{split}\]</div>
+<p>The quantum state obtained is measured and the measurement results can
+be divided into the two following categories:</p>
+<p>1.Where the positive integer <span class="math notranslate nohighlight">\(2^{n} \varphi \in Z\)</span> is available,
+can be obtained through measurement with a probability of
+<span class="math notranslate nohighlight">\(|\mathrm{x}\rangle=\left|2^{n} \varphi\right\rangle\)</span> .</p>
+<p>2.Otherwise, with probability of <span class="math notranslate nohighlight">\(\frac{4}{\pi^{2}}\)</span> , we can
+obtain the integer which is closest to <span class="math notranslate nohighlight">\(2^{n} \varphi\)</span> , thus to
+obtain the approximate solution.</p>
+<p>from the integer which is closest to <span class="math notranslate nohighlight">\(2^{n} \varphi\)</span> ? (Tip: continued fraction expansion)</p>
+<p>The measurement result is the approximate solution of phase
+<span class="math notranslate nohighlight">\(\varphi\)</span> of which the precision is related to the number of
+auxiliary qubits n. <span class="math notranslate nohighlight">\(2^{n} \varphi \in Z\)</span> indicates that the
+number of auxiliary qubits is already greater than that of binary
+expansion decimal places of <span class="math notranslate nohighlight">\(\varphi\)</span> so that the exact solution
+can be gotten.</p>
+</section>
+</section>
+<section id="quantum-circuit-diagram-and-code-implementation">
+<h3>8.6.3 Quantum circuit diagram and code implementation<a class="headerlink" href="#quantum-circuit-diagram-and-code-implementation" title="永久链接至标题"></a></h3>
+<p>The quantum circuit diagram of QPE is as below.</p>
+<figure class="align-default">
+<img alt="" src="../_images/8.5.png" />
+</figure>
+<p>As disclosed by the above definition, we can provide the function
+implementation of QPE directly based on QPanda-2.0.</p>
+<p>The quantum circuit can be divided into three parts, namely, eigen
+quantum state preparation, auxiliary qubit quantum state initialization,
+eigenvalue phase extraction and inverse quantum Fourier transform. The
+core contents of the program implementation are as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">pyqpanda</span> <span class="k">as</span> <span class="nn">pq</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">pi</span>
+
+<span class="k">def</span> <span class="nf">QPE</span><span class="p">(</span><span class="n">controlqlist</span><span class="p">,</span> <span class="n">targetqlist</span><span class="p">,</span> <span class="n">matrix</span><span class="p">):</span>
+   <span class="n">circ</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QCircuit</span><span class="p">()</span>
+   <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">controlqlist</span><span class="p">)):</span>
+          <span class="n">circ</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">controlqlist</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+   <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">controlqlist</span><span class="p">)):</span>
+          <span class="n">circ</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">controlUnitaryPower</span><span class="p">(</span><span class="n">targetqlist</span><span class="p">,</span> <span class="n">controlqlist</span><span class="p">[</span><span class="n">controlqlist</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> \
+           <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">i</span><span class="p">],</span> <span class="n">i</span><span class="p">,</span> <span class="n">matrix</span><span class="p">))</span>
+
+   <span class="n">circ</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">QFT</span><span class="p">(</span><span class="n">controlqlist</span><span class="p">)</span><span class="o">.</span><span class="n">dagger</span><span class="p">())</span>
+   <span class="k">return</span> <span class="n">circ</span>
+</pre></div>
+</div>
+<p>The parameter matrix in the figure refers to the matrix corresponding to
+the unitary operator U requiring eigenvalue estimation.</p>
+<p>When
+<span class="math notranslate nohighlight">\(\mathrm{U}=\operatorname{RY}\left(\frac{\pi}{4}\right),|\psi\rangle=|0\rangle+\mathrm{i}|1\rangle\)</span>
+is selected, the eigenvalue is <span class="math notranslate nohighlight">\(e^{-i \frac{\pi}{8}}\)</span>​ and the
+code example for QPE verification is as below.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">pyqpanda</span> <span class="k">as</span> <span class="nn">pq</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">pi</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+   <span class="n">machine</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">)</span>
+   <span class="n">qvec</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+   <span class="n">cqv</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+   <span class="n">prog</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">create_empty_qprog</span><span class="p">()</span>
+
+   <span class="c1"># Building quantum programs</span>
+   <span class="n">prog</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">cqv</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>\
+         <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">cqv</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>\
+         <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">S</span><span class="p">(</span><span class="n">qvec</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>\
+         <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">RY</span><span class="p">(</span><span class="n">qvec</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pi</span><span class="o">/</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">control</span><span class="p">(</span><span class="n">cqv</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>\
+         <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">RY</span><span class="p">(</span><span class="n">qvec</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pi</span><span class="o">/</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">control</span><span class="p">(</span><span class="n">cqv</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>\
+         <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">RY</span><span class="p">(</span><span class="n">qvec</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pi</span><span class="o">/</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">control</span><span class="p">(</span><span class="n">cqv</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>\
+         <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">QFT</span><span class="p">(</span><span class="n">cqv</span><span class="p">)</span><span class="o">.</span><span class="n">dagger</span><span class="p">())</span>
+
+   <span class="c1"># Perform probability measurements on quantum programs</span>
+   <span class="n">result</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">prob_run_dict</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">cqv</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+   <span class="n">pq</span><span class="o">.</span><span class="n">destroy_quantum_machine</span><span class="p">(</span><span class="n">machine</span><span class="p">)</span>
+
+   <span class="c1"># Print measurement results</span>
+   <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+         <span class="nb">print</span><span class="p">(</span><span class="n">key</span><span class="o">+</span><span class="s2">&quot;:&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>
+</pre></div>
+</div>
+<p>As implied above, the output result should be the quantum state
+<span class="math notranslate nohighlight">\(|0⟩\)</span> with a large probability</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">000</span><span class="p">,</span> <span class="mf">0.821067</span>
+<span class="mi">001</span><span class="p">,</span> <span class="mf">0.0732233</span>
+<span class="mi">010</span><span class="p">,</span> <span class="mf">0.0324864</span>
+<span class="mi">011</span><span class="p">,</span> <span class="mf">0.0732233</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="for-operations-of-quantum">
+<h2>8.7 For operations of quantum<a class="headerlink" href="#for-operations-of-quantum" title="永久链接至标题"></a></h2>
+<p>In particular cases, four basic operations shall be implemented in a
+quantum computer. The quantum adder and the four operations of quantum
+derived therefrom can meet the computing requirements</p>
+<section id="background-of-adder-algorithm">
+<h3>8.7.1 Background of adder algorithm<a class="headerlink" href="#background-of-adder-algorithm" title="永久链接至标题"></a></h3>
+<p>All quantum gate operations except measurement are unitary
+transformations, and thus the quantum circuit excluding measurement is
+reversible as a whole.</p>
+<p>The quantum circuit of a quantum adder shall also be reversible, so that
+the inputs and outputs are an equal number of qubits. The quantum
+circuit diagram is shown below.</p>
+<figure class="align-default">
+<img alt="" src="../_images/8.6.png" />
+</figure>
+<p>The figure above contains two quantum circuit modules MAJ and UMA which
+mainly serve to obtain the carry value and resulting value of the
+current binary qubit.</p>
+<section id="component-of-maj-quantum-circuit">
+<h4>8.7.1.1 Component of MAJ quantum circuit<a class="headerlink" href="#component-of-maj-quantum-circuit" title="永久链接至标题"></a></h4>
+<p>The quantum circuit diagram of MAJ is as below.</p>
+<figure class="align-default">
+<img alt="" src="../_images/8.7.png" />
+</figure>
+<figure class="align-default">
+<img alt="" src="../_images/8.8.png" />
+</figure>
+<p>The specific functions of MAJ quantum circuits are explained as follows.</p>
+<p>The inputs of MAJ quantum circuits are the carry value
+<span class="math notranslate nohighlight">\(\mathrm{c}_{i}\)</span> of the previous qubit and the two values to be
+added (<span class="math notranslate nohighlight">\(\mathrm{a}_{i}\)</span> and <span class="math notranslate nohighlight">\(\mathrm{b}_{i}\)</span> ) of the
+current qubit while the outputs are
+<span class="math notranslate nohighlight">\(\mathrm{a}_{i}+\mathrm{c}_{i}\)</span> mod 2,
+<span class="math notranslate nohighlight">\(\mathrm{a}_{i}+\mathrm{b}_{i}\)</span> mod 2 and the carry value
+<span class="math notranslate nohighlight">\(\mathrm{c}_{i+1}\)</span> of the current qubit.</p>
+<p>The MAJ module is to achieve carry bits. We want to get carry qubit
+<span class="math notranslate nohighlight">\(\mathrm{c}_{i+1}\)</span> , i.e., judge
+<span class="math notranslate nohighlight">\(\left(a_{i}+b_{i}+c_{i}\right) / 2\)</span> by starting from
+<span class="math notranslate nohighlight">\(\left(a_{i}+b_{i}+c_{i}\right)\)</span>.</p>
+<p>We select a number <span class="math notranslate nohighlight">\(\mathrm{a}_{i}\)</span>​ from the values to be added
+to enumerate the carry bits as follows:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+&amp;\text { 1. } a_{i}=0, \quad c_{i}=\left[\left(a_{i}+b_{i}\right) \% 2\right] *\left[\left(a_{i}+c_{i}\right) \% 2\right]; \\
+&amp;\text { 2. } a_{i}=1, \quad c_{i}=\left(\left[\left(a_{i}+b_{i}\right) \% 2\right] *\left[\left(a_{i}+c_{i}\right) \% 2\right]+1\right) \% 2 ;
+\end{aligned}\end{split}\]</div>
+<p>Therefore, we can judge the carry bits by only studying <span class="math notranslate nohighlight">\(\mathrm{a}_{i}\)</span>，</p>
+<div class="math notranslate nohighlight">
+\[\left[\left(a_{i}+b_{i}\right) \% 2\right] *\left[\left(a_{i}+c_{i}\right) \% 2\right]\]</div>
+<p>We can accurately judge the carry bits by starting from the existing
+quantum logic gate and preparing the quantum state
+<span class="math notranslate nohighlight">\(\mathrm{a}_{i}\)</span>,<span class="math notranslate nohighlight">\(\left[\left(a_{i}+b_{i}\right) \% 2\right] ,\left[\left(a_{i}+c_{i}\right) \% 2\right]\)</span>.The
+subject of study selected here is not unique. Other schemes will result
+in corresponding quantum circuits.</p>
+<p>The scheme for preparing three quantum states is shown in the figure
+above. We use CNOT gate to complete module 2 addition to obtain
+<span class="math notranslate nohighlight">\(\left(a_{i}+b_{i}\right) \% 2\)</span>，<span class="math notranslate nohighlight">\(\left(a_{i}+c_{i}\right) \% 2\)</span>,and
+Toffoli gate to complete the XOR operation of a and
+<span class="math notranslate nohighlight">\(\left[\left(a_{i}+b_{i}\right) \% 2\right] *\left[\left(a_{i}+c_{i}\right) \% 2\right]\)</span>.</p>
+</section>
+<section id="component-of-uma-quantum-circuit">
+<h4>8.7.1.2 Component of UMA quantum circuit<a class="headerlink" href="#component-of-uma-quantum-circuit" title="永久链接至标题"></a></h4>
+<p>The quantum circuit diagram of UMA is as below.</p>
+<figure class="align-default">
+<img alt="" src="../_images/8.9.png" />
+</figure>
+<figure class="align-default">
+<img alt="" src="../_images/8.10.png" />
+</figure>
+<p>The specific functions of UMA quantum circuits are explained as follows.</p>
+<p>The inputs of UMA quantum circuits are
+<span class="math notranslate nohighlight">\(a_{i}+c_{i} \bmod 2, a_{i}+b_{i} \bmod 2\)</span> , and the carry value
+<span class="math notranslate nohighlight">\(c_{i+1}\)</span> of the current bit while the outputs are
+<span class="math notranslate nohighlight">\(c_{i}, \mathrm{a}_{i}+\mathrm{b}_{i}+c_{i} \bmod 2:=\mathrm{s}_{i} \text { and } \mathrm{a}_{i}\)</span>
+.</p>
+<p>The UMA module is to achieve the results of current bits.
+We want to get current bit <span class="math notranslate nohighlight">\(\mathrm{s}_{i}\)</span> ,i.e.,
+<span class="math notranslate nohighlight">\(\left(a_{i}+b_{i}+c_{i}\right) \% 2\)</span></p>
+<p>By referring to the MAJ module, we get <span class="math notranslate nohighlight">\(a_{i}\)</span> from
+<span class="math notranslate nohighlight">\(c_{i+1}\)</span> through the TOffoli gate which is <span class="math notranslate nohighlight">\(c_{i+1}\)</span>
+through Toffoli gate which is completely opposite to that used by MAJ,
+and then get <span class="math notranslate nohighlight">\(c_{i}\)</span> through CNOT transformation which is opposite
+to that used by MAJ, thus to get
+<span class="math notranslate nohighlight">\(\left(a_{i}+b_{i}+c_{i}\right) \% 2\)</span> through simple CNOT gate in
+combination with the existing <span class="math notranslate nohighlight">\(a_{i}+b_{i}\)</span>mod2 .</p>
+<p>The first two steps of the whole process can be considered as the
+reverse transform of the corresponding quantum gate of MAJ.</p>
+<div class="admonition-note admonition">
+<p class="admonition-title">Note</p>
+<p>The implementation of quantum circuits of MAJ is not unique, so is UMA?</p>
+</div>
+</section>
+</section>
+<section id="id6">
+<h3>8.7.2 For operations of quantum<a class="headerlink" href="#id6" title="永久链接至标题"></a></h3>
+<section id="quantum-adder">
+<h4>8.7.2.1 Quantum adder<a class="headerlink" href="#quantum-adder" title="永久链接至标题"></a></h4>
+<p>The principle of a quantum adder is described as above.</p>
+</section>
+<section id="quantum-subtracter">
+<h4>8.7.2.2 Quantum subtracter<a class="headerlink" href="#quantum-subtracter" title="永久链接至标题"></a></h4>
+<p>A basic adder only supports addition of non-negative integers. For
+decimals, the addends a and b which are required to be inputted must
+have the same decimal places and the same length upon decimal point
+alignment.</p>
+<p>For a quantum addition with sign reversing, additional auxiliary qubits
+are required to record the sign bit. With any two target quantum states
+<span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span> given, specific complementary operation is
+performed for the second quantum state <span class="math notranslate nohighlight">\(B\)</span> which is then converted
+to <span class="math notranslate nohighlight">\(A−B=A+(−B)\)</span> where <span class="math notranslate nohighlight">\(−B\)</span> is not implemented by flipping
+the sign bit.</p>
+<p>The specific complementary operation is as follows: the sign qubit will
+remain unchanged if it is positive and will be flipped plus 1 if it is
+negative. Therefore, an additional auxiliary qubit is required to
+control whether to conduct complementary operation.</p>
+<p>A quantum subtracter is essentially the signed version of a quantum
+adder.</p>
+</section>
+<section id="quantum-multiplier">
+<h4>8.7.2.3 Quantum multiplier<a class="headerlink" href="#quantum-multiplier" title="永久链接至标题"></a></h4>
+<p>The quantum multiplier is completed based on the adder. The multiplier
+<span class="math notranslate nohighlight">\(A\)</span> is selected as the controlled qubit and the multiplier
+<span class="math notranslate nohighlight">\(B\)</span> as the control qubit by binary expansion bit by bit, and also
+the operation result of the controlled adder is added up to the
+auxiliary qubit. Upon each controlled addition as controlled by
+<span class="math notranslate nohighlight">\(B\)</span>, the multiplier <span class="math notranslate nohighlight">\(A\)</span> is moved by one place to the left
+with zero added at the final place.</p>
+<p>The values output by the controlled addition are then added up in the
+auxiliary qubits to obtain the multiplication result.</p>
+</section>
+<section id="quantum-divider">
+<h4>8.7.2.4 Quantum divider<a class="headerlink" href="#quantum-divider" title="永久链接至标题"></a></h4>
+<p>The quantum divider is completed based on the quantum subtracter. We
+complete the number comparison by checking whether the sign bit of
+dividend changes after subtraction and determine whether to terminate
+the division.</p>
+<p>If the dividend is subtracted from the divisor, the quotient shall be
+plus 1. After each subtraction, we re-compare the dividend and divisor
+until the dividend is divisible or the preset precision is reached.</p>
+<p>Consequently, we need an additional auxiliary qubit to store the
+precision parameter.</p>
+</section>
+</section>
+<section id="code-implementation-and-use-instructions">
+<h3>8.7.3 Code implementation and use instructions<a class="headerlink" href="#code-implementation-and-use-instructions" title="永久链接至标题"></a></h3>
+<section id="id7">
+<h4>8.7.3.1 Quantum adder<a class="headerlink" href="#id7" title="永久链接至标题"></a></h4>
+<p>The interface functions of adder in pyQPanda are as below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">QAdder</span><span class="p">(</span><span class="n">adder1</span><span class="p">,</span><span class="n">adder2</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">is_carry</span><span class="p">)</span>
+
+<span class="n">QAdderIgnoreCarry</span><span class="p">(</span><span class="n">adder1</span><span class="p">,</span><span class="n">adder2</span><span class="p">,</span><span class="n">c</span><span class="p">)</span>
+
+<span class="n">QAdd</span><span class="p">(</span><span class="n">adder1</span><span class="p">,</span><span class="n">adder2</span><span class="p">,</span><span class="n">k</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The difference between the first two interface functions lies in whether
+to retain the carry bit (is_carry), but both only support additions of
+positive numbers. The adder1 and adder2 among the parameters are the
+qubits which perform addition and in exactly the same format, and c is
+the auxiliary qubit.</p>
+<p>The third interface function is the signed adder, which is implemented
+based on the quantum subtracter. Sign bits are added to the numbers to
+be added and the corresponding auxiliary qubits change from <span class="math notranslate nohighlight">\(1-2\)</span>
+single-qubits to an adder<span class="math notranslate nohighlight">\(1.size()+2\)</span> qubit.</p>
+<p>The output bits of addition are all adder1 and other not-carry qubits
+remain unchanged.</p>
+</section>
+<section id="id8">
+<h4>8.7.3.2 Quantum subtracter<a class="headerlink" href="#id8" title="永久链接至标题"></a></h4>
+<p>The quantum subtracter is completed based on the basic adder and is the
+basis of the signed adder.</p>
+<p>The interface function of subtracter (signed adder) in pyQPanda is as
+below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">QSub</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">k</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The highest bit of the qubits of the two numbers to be subtracted is the
+sign bit and the auxiliary bit
+<span class="math notranslate nohighlight">\(k \cdot \operatorname{size}()=a \cdot \operatorname{size}()+2\)</span> ,
+which is the same as the signed adder.</p>
+<p>The output qubits of subtraction are a and other qubits remain
+unchanged.</p>
+</section>
+<section id="id9">
+<h4>8.7.3.3 Quantum multiplier<a class="headerlink" href="#id9" title="永久链接至标题"></a></h4>
+<p>The interface functions of multiplier in pyQPanda is as below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">QMultiplier</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">d</span><span class="p">)</span>
+
+<span class="n">QMul</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">d</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The input qubits to be multiplied of both the interface functions
+contain signed bits, but only QMul supports signed multiplications.</p>
+<p>Accordingly, in QMultiplier, the auxiliary qubit
+<span class="math notranslate nohighlight">\(k \cdot \operatorname{size}()=a \cdot \operatorname{size}()+1\)</span> ,
+and the resulting qubit
+<span class="math notranslate nohighlight">\(\text { d.size }()=2^{*} a \cdot \operatorname{size}()\)</span> .</p>
+<p>In QMul, the auxiliary qubit
+<span class="math notranslate nohighlight">\(k \cdot \operatorname{size}()=a \cdot \operatorname{size}()\)</span> ,
+and the resulting qubit
+<span class="math notranslate nohighlight">\(\text { d.size }()=2^{*} a \cdot \operatorname{size}()-1\)</span> .</p>
+<p>The output qubits of multiplication are all d and other qubits remain
+unchanged.</p>
+<p>If the input qubits a and b with equal length have any decimal point,
+the position coordinates of the decimal point in the output qubit d
+double those in the input qubits.</p>
+</section>
+<section id="id10">
+<h4>8.7.3.4 Quantum divider<a class="headerlink" href="#id10" title="永久链接至标题"></a></h4>
+<p>The interface functions of divider in pyQPanda are as below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">QDivider</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">t</span><span class="p">)</span>
+
+<span class="n">QDivider</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">f</span><span class="p">,</span><span class="n">s</span><span class="p">)</span>
+
+<span class="n">QDiv</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">t</span><span class="p">)</span>
+
+<span class="n">QDiv</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">f</span><span class="p">,</span><span class="n">s</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Similar with the multiplier, the divider is divided into two categories.
+Although the input qubits to be operated have a signed bit, the
+interfaces include signed operations and positive-only operations.</p>
+<p>k is the auxiliary qubit, and t or s is the classical bit that limits
+the number of QWhile loops.</p>
+<p>Moreover, the divider has the problem of indivisibility. Thus, it is
+provided with the above four kinds of interface functions and their
+corresponding input and output parameters show the following properties
+respectively:</p>
+<ol class="arabic simple">
+<li><p>When QDivider returns the remainder and quotient (stored in a and c
+respectively), <span class="math notranslate nohighlight">\(\text { c.size()=a.size() }\)</span> , but
+<span class="math notranslate nohighlight">\(k \cdot \operatorname{size}()=a^{*} \operatorname{size}()^{*} 2+2\)</span>
+;</p></li>
+<li><p>When QDivider returns the precision and quotient (stored in f and c
+respectively), <span class="math notranslate nohighlight">\(\text { c.size()=a.size() }\)</span> , but
+<span class="math notranslate nohighlight">\(k \cdot \operatorname{size}()=3^{*} \operatorname{size}()^{*} 2+5\)</span>
+;</p></li>
+<li><p>When QDiv returns the remainder and quotient (stored in a and c
+respectively),<span class="math notranslate nohighlight">\(\text { c.size()=a.size() }\)</span> , but
+<span class="math notranslate nohighlight">\(k \cdot \operatorname{size}()=a^{*} \operatorname{size}()^{*} 2+4\)</span>
+;</p></li>
+<li><p>When QDivider returns the precision and quotient (stored in f and c
+respectively), <span class="math notranslate nohighlight">\(\text { c.size()=a.size() }\)</span> , but
+<span class="math notranslate nohighlight">\(k \cdot \operatorname{size}()=a^{*} \operatorname{size}()^{*} 3+7\)</span>
+;</p></li>
+</ol>
+<p>If the parameters fail to satisfy the number of qubits required by the
+four operations of quantum, the computing will continue but the result
+will overflow.</p>
+<p>The output qubits of division are c, and a, b and k in the division with
+precision remain unchanged. Otherwise, b and k remain unchanged but the
+remainder is stored in a.</p>
+</section>
+</section>
+<section id="id11">
+<h3>8.7.4 Example<a class="headerlink" href="#id11" title="永久链接至标题"></a></h3>
+<p>Below is a simple code example for calling the four operations of
+quantum based on pyQPanda.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">pyqpanda</span> <span class="k">as</span> <span class="nn">pq</span>
+<span class="c1"># from numpy import pi</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1"># To save qubits, auxiliary qubits will be borrowed from each other</span>
+    <span class="n">qvm</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">)</span>
+
+    <span class="n">qdivvec</span> <span class="o">=</span> <span class="n">qvm</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">qmulvec</span> <span class="o">=</span> <span class="n">qdivvec</span><span class="p">[:</span><span class="mi">7</span><span class="p">]</span>
+    <span class="n">qsubvec</span> <span class="o">=</span> <span class="n">qmulvec</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">qvec1</span> <span class="o">=</span> <span class="n">qvm</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+    <span class="n">qvec2</span> <span class="o">=</span> <span class="n">qvm</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+    <span class="n">qvec3</span> <span class="o">=</span> <span class="n">qvm</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+    <span class="n">cbit</span> <span class="o">=</span> <span class="n">qvm</span><span class="o">.</span><span class="n">cAlloc</span><span class="p">()</span>
+    <span class="n">prog</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">create_empty_qprog</span><span class="p">()</span>
+
+    <span class="c1"># (4/1+1-3)*5=10</span>
+    <span class="n">prog</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">bind_data</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="n">qvec3</span><span class="p">))</span> \
+       <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">bind_data</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">qvec2</span><span class="p">))</span> \
+       <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">QDivider</span><span class="p">(</span><span class="n">qvec3</span><span class="p">,</span> <span class="n">qvec2</span><span class="p">,</span> <span class="n">qvec1</span><span class="p">,</span> <span class="n">qdivvec</span><span class="p">,</span> <span class="n">cbit</span><span class="p">))</span> \
+       <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">bind_data</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">qvec2</span><span class="p">))</span> \
+       <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">bind_data</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">qvec2</span><span class="p">))</span> \
+       <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">QAdd</span><span class="p">(</span><span class="n">qvec1</span><span class="p">,</span> <span class="n">qvec2</span><span class="p">,</span> <span class="n">qsubvec</span><span class="p">))</span> \
+       <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">bind_data</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">qvec2</span><span class="p">))</span> \
+       <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">bind_data</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="n">qvec2</span><span class="p">))</span> \
+       <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">QSub</span><span class="p">(</span><span class="n">qvec1</span><span class="p">,</span> <span class="n">qvec2</span><span class="p">,</span> <span class="n">qsubvec</span><span class="p">))</span> \
+       <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">bind_data</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="n">qvec2</span><span class="p">))</span> \
+       <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">bind_data</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="n">qvec2</span><span class="p">))</span> \
+       <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">QMul</span><span class="p">(</span><span class="n">qvec1</span><span class="p">,</span> <span class="n">qvec2</span><span class="p">,</span> <span class="n">qvec3</span><span class="p">,</span> <span class="n">qmulvec</span><span class="p">))</span> \
+       <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">bind_data</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="n">qvec2</span><span class="p">))</span>
+
+    <span class="c1"># Perform probability measurements on quantum programs</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">prob_run_dict</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">qmulvec</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">pq</span><span class="o">.</span><span class="n">destroy_quantum_machine</span><span class="p">(</span><span class="n">qvm</span><span class="p">)</span>
+
+    <span class="c1"># Print measurement results</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+       <span class="nb">print</span><span class="p">(</span><span class="n">key</span><span class="o">+</span><span class="s2">&quot;:&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>
+</pre></div>
+</div>
+<p>The computing performed is <span class="math notranslate nohighlight">\((4/1+1−3)∗5=10\)</span>, and thus the result
+should be <span class="math notranslate nohighlight">\(|10⟩\)</span> (i.e., <span class="math notranslate nohighlight">\(|1010⟩\)</span>)with the probability of 1.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">1010</span><span class="p">:</span><span class="mi">1</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="hhl-algorithm">
+<h2>8.8 HHL algorithm<a class="headerlink" href="#hhl-algorithm" title="永久链接至标题"></a></h2>
+<p>The HHL algorithm is a quantum algorithm used to solve linear equations
+which are widely used in many fields.</p>
+<section id="overview-of-background">
+<h3>8.8.1 Overview of background<a class="headerlink" href="#overview-of-background" title="永久链接至标题"></a></h3>
+<p>The problem of linear equations can be defined as follows: with matrix
+<span class="math notranslate nohighlight">\(A \in C^{N \times N}\)</span>and vector
+<span class="math notranslate nohighlight">\(\vec{b} \in C^{N}\)</span>given, find <span class="math notranslate nohighlight">\(\vec{x} \in C^{N}\)</span> to
+satisfy <span class="math notranslate nohighlight">\(A \vec{x}=\vec{b}\)</span>.</p>
+<p>The system of linear equations is called sparse system of linear
+equations if matrix A has at most s non-zero elements per row or column.
+The classical algorithm (conjugate gradient method) is used to solve
+N-dimensional sparse system of linear equations. The time complexity
+required is
+<span class="math notranslate nohighlight">\(O\left(N s k \log \left(\frac{1}{\varepsilon}\right)\right)\)</span>
+where K represents the number of conditions of the system and ε means
+the approximation precision. HHL is A quantum algorithm. In case that A
+is self-conjugate matrix, the time complexity of solving linear
+equations with HHL algorithm is
+<span class="math notranslate nohighlight">\(O\left(\log (\mathrm{N}) s^{2} \frac{k^{2}}{\varepsilon}\right)\)</span>
+.</p>
+<p>The HHL algorithm is exponentially faster than the classical algorithm,
+but the classical algorithm can give exact solutions while HHL can only
+return approximate ones.</p>
+<div class="admonition-note admonition">
+<p class="admonition-title">Note</p>
+<p>The HHL algorithm is a pure quantum algorithm. The emergence of HHL and its improved version are of great significance to prove the practicability of quantum algorithms.</p>
+</div>
+</section>
+<section id="principle-of-algorithm">
+<h3>8.8.2 Principle of algorithm<a class="headerlink" href="#principle-of-algorithm" title="永久链接至标题"></a></h3>
+<p>The HHL algorithm can be used to solve the system of linear equations
+subject to a certain format conversion. It mainly includes the following
+three steps and requires the use of three registers, i.e., right-hand
+item qubit, storage qubit and auxiliary qubit.</p>
+<p>We construct the right-hand item quantum state, perform phase estimation
+for the parameters of the storage qubit and the right-hand item qubit
+including the left-hand item matrix, and transfer all the integer
+eigenvalues of the left-hand item matrix to the base vector of the
+storage qubit.</p>
+<p>We rotate a series of parameters including eigenvalues in a controller
+manner to find out all the quantum states related to the eigenvalues and
+transfer the eigenvalues from the base vector storing qubits to the
+amplitude.</p>
+<p>We conduct inverse phase estimation for the eigen storage qubit and the
+right-hand item qubit, and integrate the eigenvalue on the amplitude of
+the storage qubit into the right-hand item qubit. When the measurement
+of auxiliary qubit reaches a specific state, we can get the quantum
+state of the solution on the right-hand item qubit.</p>
+<p>Before proceeding to the specific steps of the algorithm, we should
+perform specific transformation to solve the system of linear equations
+in classical form <span class="math notranslate nohighlight">\(A \vec{x}=\vec{b}\)</span> :</p>
+<p>Assume that the matrix A is self-conjugate without loss of generality.
+Otherwise, take</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}C_{A}=\left[\begin{array}{cc}
+0 &amp; A \\
+A^{H} &amp; 0
+\end{array}\right], C_{b}=\left[\begin{array}{l}
+b \\
+0
+\end{array}\right], C_{x}=\left[\begin{array}{l}
+0 \\
+x
+\end{array}\right]\end{split}\]</div>
+<p>So that <span class="math notranslate nohighlight">\(C_{A} \overrightarrow{C_{x}}=\overrightarrow{C_{b}}\)</span> is
+satisfied and also satisfy :math:<a href="#id12"><span class="problematic" id="id13">`</span></a>C_{A} ` self-conjugation.</p>
+<p>In the contents below, A will be defaulted as a self-conjugate matrix.</p>
+<p>The vector <span class="math notranslate nohighlight">\(\overrightarrow{b}\)</span> and <span class="math notranslate nohighlight">\(\overrightarrow{x}\)</span> are
+mapped to the quantum states<span class="math notranslate nohighlight">\(\text { |b }\rangle\)</span>and
+<span class="math notranslate nohighlight">\(\text { |x }\rangle\)</span> respectively by coding to the amplitude
+after normalization, and the original problem is converted into
+<span class="math notranslate nohighlight">\(\mathrm{A}|\mathrm{x}\rangle=|\mathrm{b}\rangle\)</span> .</p>
+<p>Matrix A is subject to spectral decomposition to get</p>
+<div class="math notranslate nohighlight">
+\[\mathrm{A}=\sum_{j=0}^{N-1} \lambda_{j}\left|u_{j}\right\rangle\left\langle u_{j}\right|, \quad \lambda_{j} \in R\]</div>
+<p>Where <span class="math notranslate nohighlight">\(\lambda_{j}\)</span> and <span class="math notranslate nohighlight">\(u_{j}\)</span> are the eigenpair (eigenvalue and corresponding eigenvector) of matrix A.</p>
+<p><span class="math notranslate nohighlight">\(\text { |b }\rangle\)</span>​ is expanded as an eigen vector base to
+get</p>
+<div class="math notranslate nohighlight">
+\[|\mathrm{b}\rangle=\sum_{j=0}^{N-1} b_{j}\left|u_{j}\right\rangle, \quad b_{j} \in C\]</div>
+<p>Then, the solution of the original system of equations can be written as
+below:</p>
+<div class="math notranslate nohighlight">
+\[|\mathrm{x}\rangle=A^{-1}|\mathrm{~b}\rangle=\sum_{j=0}^{N-1} \lambda_{j}^{-1} b_{j}\left|u_{j}\right\rangle\]</div>
+<p>Obviously, the basic idea of the algorithm should be constructing the
+quantum state <span class="math notranslate nohighlight">\(\text { |x }\rangle\)</span> by starting from the
+right-hand item quantum state <span class="math notranslate nohighlight">\(\text { |b }\rangle\)</span> .</p>
+<section id="extraction-of-eigenvalue-through-qpe">
+<h4>8.8.2.1 Extraction of eigenvalue through QPE<a class="headerlink" href="#extraction-of-eigenvalue-through-qpe" title="永久链接至标题"></a></h4>
+<p>The eigenvalue extraction shall be completed in order to extract the
+eigenvalue of matrix A to the amplitude of the solution quantum state.
+As shown above, the QPE quantum circuit can be used for eigenvalue
+extraction.</p>
+<p>A QPE operation is performed to
+<span class="math notranslate nohighlight">\(|0\rangle^{\otimes n}|b\rangle\)</span>​ to get</p>
+<div class="math notranslate nohighlight">
+\[\operatorname{OPE}\left(|0\rangle^{\otimes n}|b\rangle\right)=\sum_{j=0}^{N-1} b_{j}\left|\tilde{\lambda}_{j}\right\rangle\left|u_{j}\right\rangle\]</div>
+<p>Where <span class="math notranslate nohighlight">\(\tilde{\lambda}_{j}\)</span> is the approximate integer of the
+corresponding eigenvalue <span class="math notranslate nohighlight">\(\lambda_{j}\)</span> . The details are shown in
+QPE. Thus, the eigenvalue information of matrix A is stored in the base
+vector <span class="math notranslate nohighlight">\(\left|\tilde{\lambda}_{j}\right\rangle\)</span> .</p>
+</section>
+<section id="transfer-of-eigenvalue-through-controlled-rotation">
+<h4>8.8.2.2 Transfer of eigenvalue through controlled rotation<a class="headerlink" href="#transfer-of-eigenvalue-through-controlled-rotation" title="永久链接至标题"></a></h4>
+<p>We construct the following controlled rotation <span class="math notranslate nohighlight">\(CR（k）\)</span></p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\operatorname{CR}(\mathrm{k})(|a\rangle|j\rangle)=\left\{\begin{array}{cc}
+R Y\left(\arccos \frac{C}{k}\right)|a\rangle|k\rangle, \quad j=k \\
+|a\rangle|j\rangle, \quad j \neq k
+\end{array}\right.\end{split}\]</div>
+</section>
+<section id="output-of-resulting-quantum-state-through-inverse-qpe">
+<h4>8.8.2.3 Output of resulting quantum state through inverse QPE<a class="headerlink" href="#output-of-resulting-quantum-state-through-inverse-qpe" title="永久链接至标题"></a></h4>
+<p>In theory, the quantum state subject to controlled rotation can be able
+to get the quantum state of the solution <span class="math notranslate nohighlight">\(\text { |x }\rangle\)</span>
+through measurement.</p>
+<p>However, to avoid the quantum state
+<span class="math notranslate nohighlight">\(\frac{c}{\widetilde{\lambda}_{j}} b_{j}|1\rangle\left|\tilde{\lambda}_{j}\right\rangle\left|u_{j}\right\rangle\)</span>
+which is provided with the same <span class="math notranslate nohighlight">\(\left|u_{j}\right\rangle\)</span> but
+different <span class="math notranslate nohighlight">\(\left|\tilde{\lambda}_{j}\right\rangle\)</span> and
+requires merging, we shall choose inverse QPE operation to get the
+resulting quantum state in the form of
+<span class="math notranslate nohighlight">\(\frac{c}{\widetilde{\lambda}_{j}} b_{j}|1\rangle\left|\tilde{\lambda}_{j}\right\rangle\left|u_{j}\right\rangle\)</span>
+.</p>
+<p>Inverse QPE operation is performed to the rotating result to get</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+&amp;\left(\mathrm{I} \otimes Q P E^{\dagger}\right) \sum_{j=0}^{N-1}\left(\sqrt{1-\frac{C^{2}}{\tilde{\lambda}_{j}^{2}}}|0\rangle+\frac{C}{\widetilde{\lambda}_{j}}|1\rangle\right) b_{j}\left|\tilde{\lambda}_{j}\right\rangle\left|u_{j}\right\rangle \\
+&amp;=\sum_{j=0}^{N-1}\left(b_{j} \sqrt{1-\frac{C^{2}}{\tilde{\lambda}_{j}^{2}}}|0\rangle|0\rangle\left|u_{j}\right\rangle+b_{j} \frac{C}{\widetilde{\lambda}}|1\rangle|0\rangle\left|u_{j}\right\rangle\right)
+\end{aligned}\end{split}\]</div>
+<p>In fact, the resulting quantum state in this form, despite of an error,
+is still not be able to get the quantum state
+<span class="math notranslate nohighlight">\(|x\rangle=\sum_{j=0}^{N-1} \lambda_{j}^{-1} b_{j}\left|u_{j}\right\rangle\)</span>
+of the solution with probability of 1 when the first and the second
+quantum registers are <span class="math notranslate nohighlight">\(|1⟩\)</span> and <span class="math notranslate nohighlight">\(|0⟩\)</span> respectively.</p>
+<div class="admonition-note admonition">
+<p class="admonition-title">Note</p>
+<p>The HHL algorithm, by taking full advantage of the function of extracting eigenvalue information through quantum phase estimation, cleverly constructs a controlled rotating gate to capture eigenvalue from the base vector of the stored qubit and store it into the amplitude before restoring the stored qubit through inverse phase estimation thus to obtain the solution of the equation for which the amplitude contains eigenvalue.</p>
+</div>
+</section>
+</section>
+<section id="quantum-circuit-diagram-and-reference-code">
+<h3>8.8.3 Quantum circuit diagram and reference code<a class="headerlink" href="#quantum-circuit-diagram-and-reference-code" title="永久链接至标题"></a></h3>
+<p>The quantum circuit diagram of HHL is as below.</p>
+<figure class="align-default">
+<img alt="" src="../_images/8.16.png" />
+</figure>
+<p>The code implementation of HHL algorithm based on pyQPanda is quite
+lengthy, which will not be detailed here. The details are given in the
+HHL algorithm program source code under pyQPanda. Only several HHL
+algorithm calling interfaces provided in pyQPanda are introduced here.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">HHL</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">QuantumMachine</span><span class="p">)</span>
+
+<span class="n">HHL_solve_linear_equations</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>he first function interface is used to get the quantum circuit
+corresponding to the HHL algorithm while the second can input the matrix
+and the right-hand item of QStat format to return the solution vector.</p>
+<p>We select the simplest two-dimensional left-hand item identity matrix
+example to verify the availability of HHL interface function, with the
+code example as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">pyqpanda</span> <span class="k">as</span> <span class="nn">pq</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">machine</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">)</span>
+    <span class="n">prog</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">create_empty_qprog</span><span class="p">()</span>
+
+    <span class="c1"># Building quantum programs</span>
+    <span class="n">prog</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">build_HHL_circuit</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mf">0.6</span><span class="p">,</span><span class="mf">0.8</span><span class="p">],</span><span class="n">machine</span><span class="p">))</span>
+
+    <span class="n">pq</span><span class="o">.</span><span class="n">directly_run</span><span class="p">(</span><span class="n">prog</span><span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">machine</span><span class="o">.</span><span class="n">get_qstate</span><span class="p">())[:</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">pq</span><span class="o">.</span><span class="n">destroy_quantum_machine</span><span class="p">(</span><span class="n">machine</span><span class="p">)</span>
+
+    <span class="c1"># Print measurement results</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+         <span class="nb">print</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The output result should be <span class="math notranslate nohighlight">\([0.6,0.8]\)</span> same as the right-hand
+item vector because of minor disturbance of errors:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="mf">0.599999999999983</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span>
+<span class="p">(</span><span class="mf">0.7999999999999774</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="grover-algorithm-and-quantum-counting-algorithm">
+<h2>8.9 Grover algorithm and Quantum Counting algorithm<a class="headerlink" href="#grover-algorithm-and-quantum-counting-algorithm" title="永久链接至标题"></a></h2>
+<p>Both the Quantum Counting algorithm and Grover algorithm are derived
+from the division of set elements (into two categories). The Quantum
+Counting algorithm can get the number of the both types of elements in
+the set while the Grover algorithm can get one element of a specified
+type.</p>
+<section id="id14">
+<h3>8.9.1 Overview of background<a class="headerlink" href="#id14" title="永久链接至标题"></a></h3>
+<p>The previous study herein has introduced the problems of amplitude
+amplification quantum circuits and division of set elements into two
+categories, implying that, for a given finite set and the classification
+standard <span class="math notranslate nohighlight">\(Ω\)</span> and <span class="math notranslate nohighlight">\(f\)</span>, we can represent the set elements with
+the following quantum states:</p>
+<div class="math notranslate nohighlight">
+\[|\psi\rangle=\sin \theta\left|\varphi_{1}\right\rangle+\cos \theta\left|\varphi_{0}\right\rangle,\left|\varphi_{0}\right\rangle=\left|\varphi_{1}^{\perp}\right\rangle\]</div>
+<p>Now, we perform two extensions to this problem.</p>
+<section id="quantum-counting">
+<h4>8.9.1.1 Quantum Counting<a class="headerlink" href="#quantum-counting" title="永久链接至标题"></a></h4>
+<p>With <span class="math notranslate nohighlight">\(|\Omega|=N=2^{n}, \Omega \supseteq B,|B|=M \leq N\)</span>​ given,
+the discrimination function satisfies:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\left\{\begin{array}{c}
+f: \Omega \rightarrow\{0,1\} \\
+f(x)=\left\{\begin{array}{l}
+1, x \in B \\
+0, x \notin B
+\end{array}\right.
+\end{array}\right.\end{split}\]</div>
+<p>Find M.</p>
+<p>The traditional algorithm simply performs ergodic counting through
+<span class="math notranslate nohighlight">\(O(N)\)</span> operation to obtain the cardinal number of the set
+<span class="math notranslate nohighlight">\(M\)</span>. The time complexity of Quantum Counting algorithm is exactly
+the same as that of QPE, which is expressed as
+<span class="math notranslate nohighlight">\(O\left(\left(\log _{2} N\right)^{2}\right)\)</span> .</p>
+<div class="admonition-note admonition">
+<p class="admonition-title">Note</p>
+<p>The amplitude amplification operator applied to the QPE circuit can play a filtering and extraction role which is similar to the extraction of eigenvalue from the eigen quantum state.</p>
+</div>
+</section>
+<section id="search-for-solution-elements">
+<h4>8.9.1.2 Search for solution elements<a class="headerlink" href="#search-for-solution-elements" title="永久链接至标题"></a></h4>
+<p>In the set <span class="math notranslate nohighlight">\(\Omega\)</span> , there is an element
+<span class="math notranslate nohighlight">\(\omega \in \Omega\)</span>​ which is the solution of a specific
+problem，the discriminant function is defined as below:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\left\{\begin{array}{c}
+f: \Omega \rightarrow\{0,1\} \\
+f(x)=\left\{\begin{array}{l}
+1, x=\omega \\
+0, x \neq \omega
+\end{array}\right.
+\end{array}\right.\end{split}\]</div>
+<p>Find <span class="math notranslate nohighlight">\(\omega \in \Omega\)</span></p>
+<p>The process of Grover algorithm is exactly the same as that of the
+amplitude amplification quantum circuit. The time complexity of Grover
+algorithm is <span class="math notranslate nohighlight">\(\mathrm{O}(\sqrt{N})\)</span> which is greatly improved
+compared with <span class="math notranslate nohighlight">\(\mathrm{O}({N})\)</span> of the classical algorithm.</p>
+<div class="admonition-note admonition">
+<p class="admonition-title">Note</p>
+<p>In fact, the idea of obtaining the approximate solution of amplitude and base vector through amplitude amplification is not limited to the division of set elements into two categories.</p>
+</div>
+</section>
+</section>
+<section id="id15">
+<h3>8.9.2 Principle of algorithm<a class="headerlink" href="#id15" title="永久链接至标题"></a></h3>
+<p>The quantum states of set elements to be prepared by the two algorithms
+are of similar forms as below:</p>
+<div class="math notranslate nohighlight">
+\[|\psi\rangle=\sin \theta\left|\varphi_{1}\right\rangle+\cos \theta\left|\varphi_{0}\right\rangle,\left|\varphi_{0}\right\rangle=\left|\varphi_{1}^{\perp}\right\rangle\]</div>
+<p>However, their specific definitions and the targets to be solved are
+different. Thus, the algorithm principles derived from amplitude
+amplification quantum circuit are different, too.</p>
+<section id="qpe-process-based-on-amplitude-amplification-operator">
+<h4>8.9.2.1 QPE process based on amplitude amplification operator<a class="headerlink" href="#qpe-process-based-on-amplitude-amplification-operator" title="永久链接至标题"></a></h4>
+<p>The two basis quantum states in the Quantum Counting algorithm are
+defined on the basis of the set and discriminant function, i.e</p>
+<div class="math notranslate nohighlight">
+\[\left|\varphi_{0}\right\rangle=\frac{1}{\sqrt{N-M}} \sum_{x \notin B}|x\rangle,\left|\varphi_{1}\right\rangle=\frac{1}{\sqrt{M}} \sum_{x \in B}|x\rangle\]</div>
+<p>To convert the problem to the space
+<span class="math notranslate nohighlight">\(\left\{\left|\varphi_{0}\right\rangle,\left|\varphi_{1}\right\rangle\right\}\)</span>,
+we might consider <span class="math notranslate nohighlight">\(\sin \theta=\frac{\sqrt{M}}{\sqrt{N}}\)</span> , then
+we need to solve <span class="math notranslate nohighlight">\(θ\)</span>.</p>
+<p>The amplitude amplification operator
+<span class="math notranslate nohighlight">\(G=\left[\begin{array}{cc} \cos 2 \theta &amp; -\sin 2 \theta \\ \sin 2 \theta &amp; \cos 2 \theta \end{array}\right]\)</span>
+is directly defined in the space
+<span class="math notranslate nohighlight">\(\left\{\left|\varphi_{0}\right\rangle,\left|\varphi_{1}\right\rangle\right\}\)</span>
+.</p>
+<p>The following equation is satisfied:</p>
+<div class="math notranslate nohighlight">
+\[G\left(\cos \theta\left|\varphi_{0}\right\rangle+\sin \theta\left|\varphi_{1}\right\rangle\right)=\cos 3 \theta\left|\varphi_{0}\right\rangle+\sin 3 \theta\left|\varphi_{1}\right\rangle\]</div>
+<p>The eigen vector of amplitude amplification operator <span class="math notranslate nohighlight">\(G\)</span> can
+constitute a set of base vectors of space
+<span class="math notranslate nohighlight">\(\left\{\left|\varphi_{0}\right\rangle,\left|\varphi_{1}\right\rangle\right\}\)</span>
+, and thus <span class="math notranslate nohighlight">\(\Psi\)</span> can be decomposed into the linear combination of
+the eigen vector.</p>
+<p>The eigenvalue of <span class="math notranslate nohighlight">\(G\)</span> is <span class="math notranslate nohighlight">\(e^{\pm 2 i \theta}\)</span> . By virtue of
+the index qubit used in the preparation process of <span class="math notranslate nohighlight">\(\Psi\)</span> , we can
+accurately distinguish the corresponding eigen phase of the QPE process
+result constructed with <span class="math notranslate nohighlight">\(G\)</span> being <span class="math notranslate nohighlight">\(2θ\)</span> or <span class="math notranslate nohighlight">\(2π−2θ\)</span>.</p>
+<p>The solution to <span class="math notranslate nohighlight">\(θ\)</span> can then be completed by the QPE process based
+on <span class="math notranslate nohighlight">\(G\)</span>. With <span class="math notranslate nohighlight">\(N\)</span> given, the solution to <span class="math notranslate nohighlight">\(M\)</span> can be
+obtained.</p>
+<div class="admonition-note admonition">
+<p class="admonition-title">Note</p>
+<p>Why can we determine that the eigen vector of amplitude amplification operator <span class="math notranslate nohighlight">\(G\)</span> can constitute a set of base vectors of space <span class="math notranslate nohighlight">\(\left\{\left|\varphi_{0}\right\rangle,\left|\varphi_{1}\right\rangle\right\}\)</span> ?</p>
+</div>
+<p>For the given quantum state
+<span class="math notranslate nohighlight">\(|\psi\rangle=\sin \theta\left|\varphi_{1}\right\rangle+\cos \theta\left|\varphi_{0}\right\rangle\)</span>​
+, we can directly refer to the amplitude amplification quantum circuit
+and give Grover operator, thus obtaining</p>
+<div class="math notranslate nohighlight">
+\[\left|\psi_{k}\right\rangle=\sin (2 k+1) \theta\left|\varphi_{1}\right\rangle+\cos (2 k+1) \theta\left|\varphi_{0}\right\rangle,(2 k+1) \theta \approx \frac{\pi}{2}\]</div>
+<p>However, the Grover operator
+<span class="math notranslate nohighlight">\(G=-(I-2|\omega\rangle\langle\omega|)(I-2|\psi\rangle\langle\psi|)\)</span>
+constructed directly through mirror transform involves large computing
+amount in actual programming realization and operation process.
+Therefore, we shall consider how to implement multiplication by using
+basic general quantum gates.</p>
+<p>The original problem is converted into the space
+<span class="math notranslate nohighlight">\(\{|\omega\rangle,|\psi\rangle\} \text { left } \mid \text { Omegaright } \mid=\mathrm{N}^{\prime}\)</span>,
+and it can be known from
+<span class="math notranslate nohighlight">\(\langle\varphi \mid \omega\rangle=\frac{1}{\sqrt{N}},\langle\varphi \mid \varphi\rangle=1\)</span>​
+that</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}U_{\omega}=(I-2|\omega\rangle\langle\omega|)=\left[\begin{array}{cc}
+-1 &amp; -\frac{2}{\sqrt{N}} \\
+0 &amp; 1
+\end{array}\right], U_{s}=2|\varphi\rangle\langle\varphi|-I=\left[\begin{array}{cc}
+-1 &amp; 0 \\
+\frac{2}{\sqrt{N}} &amp; 1
+\end{array}\right]\end{split}\]</div>
+<p>Let
+<span class="math notranslate nohighlight">\(\sin \theta=\frac{1}{\sqrt{N}}, a=e^{i \theta}, \quad \frac{1}{\sqrt{N}}=\frac{a-a^{-1}}{2 i}\)</span>​
+, then</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}U_{\omega} U_{s}=\frac{1}{a^{2}+1}\left[\begin{array}{cc}
+-i &amp; i \\
+a &amp; a^{-1}
+\end{array}\right]\left[\begin{array}{cc}
+a^{2} &amp; 0 \\
+0 &amp; a^{-2}
+\end{array}\right]\left[\begin{array}{cc}
+i &amp; a \\
+-a^{2} i &amp; a
+\end{array}\right]\end{split}\]</div>
+<p>Let <span class="math notranslate nohighlight">\(Q=U_{s} U_{\omega}\)</span> , then
+<span class="math notranslate nohighlight">\(Q|\varphi\rangle=\frac{N-4}{N}|\varphi\rangle+\frac{2}{\sqrt{N}}|\omega\rangle\)</span>​
+and</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}Q^{k}=\frac{1}{a^{2}+1}\left[\begin{array}{cc}
+-i &amp; i \\
+a &amp; a^{-1}
+\end{array}\right]\left[\begin{array}{cc}
+a^{2 k} &amp; 0 \\
+0 &amp; a^{-2 k}
+\end{array}\right]\left[\begin{array}{cc}
+i &amp; a \\
+-a^{2} i &amp; a
+\end{array}\right]\end{split}\]</div>
+<p>Upon performing quantum gate <span class="math notranslate nohighlight">\(Q^{k}\)</span> , we measure the first
+register to get the probability of quantum state
+<span class="math notranslate nohighlight">\(|\omega\rangle\)</span>​ as</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}P(\omega)=\left\langle\omega\left|Q^{k}\right| \varphi\right\rangle=\left[\begin{array}{ll}
+\langle\omega \mid \omega\rangle &amp; \langle\omega \mid \varphi\rangle]\left(U_{s} U_{\omega}\right)^{k}\left[\begin{array}{l}
+0 \\
+1
+\end{array}\right]=\frac{a^{2 k+1}-a^{-(2 k+1)}}{2 i}=\sin ((2 k+1) \theta)
+\end{array}\right.\end{split}\]</div>
+<p>According to the solution of <span class="math notranslate nohighlight">\((2 k+1) \theta=\frac{\pi}{2}\)</span> , we
+can get the solution <span class="math notranslate nohighlight">\(|\omega\rangle\)</span> with the probability of
+approaching 1 through measurement after
+<span class="math notranslate nohighlight">\(k=\left[\frac{\pi}{4} \arcsin ^{-1} \frac{1}{\sqrt{N}}-\frac{1}{2}\right] \approx O(N)\)</span>
+Q quantum gate operations.</p>
+<p>8.9.3 Quantum circuit diagram and reference code</p>
+<p>The core of Quantum Counting algorithm and Grover algorithm is the
+amplitude amplification operator, and the algorithm structure is
+basically consistent with that of QPE and amplitude amplification
+quantum circuit.</p>
+<p>The quantum circuit diagram of Quantum Counting algorithm is as below.</p>
+<figure class="align-default">
+<img alt="" src="../_images/8.11.png" />
+</figure>
+<p>The quantum circuit diagram of Grover algorithm is as below.</p>
+<figure class="align-default">
+<img alt="" src="../_images/8.12.png" />
+</figure>
+<p>The process of implementing Quantum Counting algorithm based on pyQPanda
+is almost the same as the QPE process, and thus the source code is
+combined with the Grover algorithm. The program implementation of the
+two algorithms is shown in the program source code of Quantum Counting
+algorithm and Grover algorithm under pyQPanda.</p>
+<p>The following is an introduction to an interface function and a example
+code implementation of the Grover algorithm based on pyQPanda. The
+program example of Quantum Counting algorithm will not be repeated here
+as it has no essential difference with the code implementation of QPE.</p>
+<div class="admonition-note admonition">
+<p class="admonition-title">Note</p>
+<p>The experimental state preparation based on the set ω and the discriminant function F is an important premise of both algorithms, and, together with the amplitude amplification operator, constitutes the core component of the algorithms.</p>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Grover</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">Classical_condition</span><span class="p">,</span> <span class="n">QuantumMachine</span><span class="p">,</span> <span class="n">qlist</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The input parameters are algorithm search space, search condition,
+quantum simulator, output result storage qubit and number of
+iteration(s), with an executable Grover quantum circuit returned. The
+Grover algorithm also has other interface functions which will not be
+described here.</p>
+<p>Below is a one-dimensional Grover example program code.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">pyqpanda</span> <span class="k">as</span> <span class="nn">pq</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+   <span class="n">machine</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">)</span>
+   <span class="n">x</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">cAlloc</span><span class="p">()</span>
+   <span class="n">prog</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">create_empty_qprog</span><span class="p">()</span>
+
+   <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
+   <span class="n">grover_result</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">Grover_search</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">x</span><span class="o">==</span><span class="mi">6</span><span class="p">,</span> <span class="n">machine</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+   <span class="nb">print</span><span class="p">(</span><span class="n">grover_result</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>The output results are the coordinates of the number 6 in the list, as
+shown below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">7</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="shor-s-algorithm">
+<h2>8.10 Shor’s Algorithm<a class="headerlink" href="#shor-s-algorithm" title="永久链接至标题"></a></h2>
+<p>Shor’s Algorithm, also known as prime factorization algorithm, plays an
+important role in breaking RSA encryption.</p>
+<section id="background-of-problem">
+<h3>8.10.1 Background of problem<a class="headerlink" href="#background-of-problem" title="永久链接至标题"></a></h3>
+<p>Given a large integer <span class="math notranslate nohighlight">\(N=pq\)</span> where <span class="math notranslate nohighlight">\(p\)</span> and <span class="math notranslate nohighlight">\(q\)</span> are
+unknown primes, solve <span class="math notranslate nohighlight">\(p\)</span> and <span class="math notranslate nohighlight">\(q\)</span>. Shor’s Algorithm includes
+three parts: solving common divisor implemented by the classical
+algorithm, converting prime factorization into periodic solution of
+function, and periodic solution of function implemented by such quantum
+algorithms as quantum Fourier transform.</p>
+<p>Compared with the classical algorithm, Shor’s Algorithm greatly reduces
+the computing resource consumption and computing time complexity, making
+it possible for the quantum algorithm to solve the super-large mass
+factor decomposition problem which cannot be solved by the classical
+algorithm.</p>
+<div class="admonition-note admonition">
+<p class="admonition-title">Note</p>
+<p>The computing time and space resources theoretically required by the solving of RSA problem of extremely large number of qubits that Shor’s Algorithm tries to solve are almost unsatisfied by using the classical algorithm. In addition to reflecting the relative advantages of quantum computing, Shor’s Algorithm reveals the irreplaceability and absolute advantages of quantum computing on specific problems.</p>
+</div>
+</section>
+<section id="id16">
+<h3>8.10.2 Principle of algorithm<a class="headerlink" href="#id16" title="永久链接至标题"></a></h3>
+<p>The specific steps of Shor’s decomposition algorithm are as below:</p>
+<ol class="arabic simple">
+<li><p><span class="math notranslate nohighlight">\(\forall 1&lt;x&lt;N, x \in \mathbb{Z}\)</span>;</p></li>
+<li><p><span class="math notranslate nohighlight">\(g c d(x, N) \neq 1\)</span>;</p></li>
+<li><p>Finding r makes <span class="math notranslate nohighlight">\(x^{r} \bmod N \equiv 1\)</span>;</p></li>
+<li><p><span class="math notranslate nohighlight">\(r \bmod 2 \equiv 1\)</span>, return 1 take <span class="math notranslate nohighlight">\(\dot{x} \neq x\)</span>;</p></li>
+<li><p><span class="math notranslate nohighlight">\(x^{\frac{r}{2}} \bmod N \equiv-1\)</span>,return 1 take
+<span class="math notranslate nohighlight">\(\dot{x} \neq x\)</span>;</p></li>
+<li><p><span class="math notranslate nohighlight">\(g c d\left(x^{\frac{r}{2}}-1, N\right) g c d\left(x^{\frac{r}{2}}+1, N\right)=N\)</span>.</p></li>
+</ol>
+<p>Where gcd represents the Greatest Common Divisor.</p>
+<p>In the above steps, the difficulty lies on solving the modular
+exponentiation inverse element of the remainder 1 specified in Step 3.
+Step 3 is transformed into the following problem which is solved by a
+quantum algorithm:</p>
+<p>Given <span class="math notranslate nohighlight">\(f(x)=x^{a} \bmod \mathrm{N}, f(a+r)=f(a)\)</span> , find the
+minimum r.</p>
+<p>Below is an introduction to the core content of quantum algorithm used
+to solve the modular exponentiation inverse element which mainly
+consists of three parts.</p>
+<p>1.Pre-lemma required for formula deformation.</p>
+<p>2.Available modular multiplication quantum gate operations are
+constructed to iteratively complete the construction of quantum state of
+the modular exponentiation inverse element.</p>
+<p>3.We refer to QPE to obtain the modular exponentiation inverse element
+through inverse quantum Fourier transform of the results of modular
+multiplication in the form of summation as constructed.</p>
+<p>Due to space constraints, the pre-lemma in Part I will be briefly
+introduced rather than proved.</p>
+<section id="pre-lemma">
+<h4>8.10.2.1 Pre-lemma<a class="headerlink" href="#pre-lemma" title="永久链接至标题"></a></h4>
+<p>Define:</p>
+<div class="math notranslate nohighlight">
+\[\left|u_{s}\right\rangle \equiv \frac{1}{\sqrt{r}} \Sigma_{k=0}^{r-1} e^{-\frac{2 \pi i k s}{r}}\left|x^{k} \bmod N\right\rangle, x^{r} \bmod N \equiv 1\]</div>
+<p>Lemma1:</p>
+<div class="math notranslate nohighlight">
+\[\frac{1}{\sqrt{r}} \Sigma_{s=0}^{r-1} e^{\frac{2 \pi i k s}{r}}\left|u_{s}\right\rangle=\left|x^{k} \bmod N\right\rangle\]</div>
+<p>Lemma2:</p>
+<div class="math notranslate nohighlight">
+\[\exists U, U|y\rangle=|x y \bmod N\rangle, \text { s.t. } U\left|u_{s}\right\rangle=e^{\frac{2 \pi i s}{r}}\left|u_{s}\right\rangle\]</div>
+<p>Lemma3:</p>
+<div class="math notranslate nohighlight">
+\[\frac{1}{\sqrt{r}} \Sigma_{s=0}^{r-1}\left|u_{s}\right\rangle=|1\rangle\]</div>
+<p>With lemmas 1, 2, and 3 given, we can relate all the modular
+exponentiation quantum states, the special quantum state defined <span class="math notranslate nohighlight">\(\left|u_{s}\right\rangle\)</span>, the ground state <span class="math notranslate nohighlight">\(\left|1\right\rangle\)</span>
+and the modular exponentiation inverse element r through quantum
+Fourier transform/inverse transform and the definition transform/inverse
+transform of <span class="math notranslate nohighlight">\(\left|u_{s}\right\rangle\)</span></p>
+</section>
+<section id="construction-of-modular-multiplication-quantum-gate">
+<h4>8.10.2.2 Construction of modular multiplication quantum gate<a class="headerlink" href="#construction-of-modular-multiplication-quantum-gate" title="永久链接至标题"></a></h4>
+<p>Define quantum gate operation
+<span class="math notranslate nohighlight">\(U^{j}|y\rangle=\left|y x^{j} \bmod N\right\rangle\)</span></p>
+<p>For any given integer Z, through binary expansion with t digits, we know
+that</p>
+<div class="math notranslate nohighlight">
+\[U^{2^{t-1} / t-1} U^{2^{t-2} / t-2} \cdots U^{2^{0} z_{0}}|1\rangle \approx\left|1 * x^{z} \bmod N\right\rangle\]</div>
+<p>Based on the above, the modular exponentiation operation can be
+implemented by using the modular exponentiation quantum gate.</p>
+</section>
+<section id="solving-of-modular-exponentiation-inverse-element">
+<h4>8.10.2.3 Solving of modular exponentiation inverse element<a class="headerlink" href="#solving-of-modular-exponentiation-inverse-element" title="永久链接至标题"></a></h4>
+<p>We investigate the quantum
+state<span class="math notranslate nohighlight">\(|0\rangle^{\otimes t}\left(|0\rangle^{\otimes L-1}|1\rangle\right)=|0\rangle^{\otimes t}|1\rangle_{L}\)</span>​
+composed of two registers, and initialize the first register to the
+maximum superposition state to get</p>
+<div class="math notranslate nohighlight">
+\[\left(H^{\otimes t} \otimes I^{\otimes L}\right)\left(|0\rangle^{\otimes t}|1\rangle_{L}\right)=|+\rangle^{\otimes t} \otimes|1\rangle_{L}\]</div>
+<p>Based on the quantum gate operation <span class="math notranslate nohighlight">\(U^{j}\)</span> , we can define the
+controlled modular exponentiation quantum gate <span class="math notranslate nohighlight">\(C-U^{j}\)</span> . We take
+the jth item of <span class="math notranslate nohighlight">\(|+\rangle^{\otimes t}\)</span> as the control qubit to
+perform t times of <span class="math notranslate nohighlight">\(C-U^{2^{j-1}}\)</span> to
+<span class="math notranslate nohighlight">\(|+\rangle^{\otimes t} \otimes|1\rangle_{L}\)</span>​ to complete the
+controlled modular exponentiation quantum gate operation, thus getting</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+&amp;\prod_{j=1}^{t}\left(C-U^{2^{j-1}}\right)\left(|+\rangle^{\otimes t} \otimes|1\rangle_{L}\right) \\
+&amp;=\frac{1}{\sqrt{2} t} \sum_{j=0}^{2^{t}-1}|j\rangle\left|x^{j} \bmod N\right\rangle \\
+&amp;=\frac{1}{\sqrt{r 2^{2}}} \Sigma_{j=0}^{2^{t}-1} \Sigma_{s=0}^{r-1} e^{\frac{2 \pi i j s}{r}}|j\rangle\left|u_{s}\right\rangle=:|\psi\rangle
+\end{aligned}\end{split}\]</div>
+<p>IQFT is performed to the first register to get</p>
+<div class="math notranslate nohighlight">
+\[\left(\mathrm{QFT}^{-1} \otimes I^{\otimes L}\right)|\psi\rangle=\frac{1}{\sqrt{r}} \sum_{s=0}^{r-1}\left|\frac{2^{t} s}{r}\right\rangle\left|u_{s}\right\rangle\]</div>
+<p>We measure the first register to get any quantum state rather than <a href="#id17"><span class="problematic" id="id18">|</span></a>0⟩ , thus to obtain the integer <span class="math notranslate nohighlight">\([\frac{2^{t} s}{r}]\)</span> which is
+closest to the real number <span class="math notranslate nohighlight">\(\frac{2^{t} s}{r}\)</span>. Then, we get
+<span class="math notranslate nohighlight">\(\frac{s}{r}\)</span> through continued fraction expansion of the real
+number <span class="math notranslate nohighlight">\(\frac{\left[\frac{2 t_{s}}{r}\right]}{2^{t}}\)</span> , thus
+obtaining the denominator r.</p>
+<p>Here <span class="math notranslate nohighlight">\(L=n=\left[\log _{2} N\right]\)</span> . If
+<span class="math notranslate nohighlight">\(t=2 n+1+\left[\log \left(2+\frac{1}{2 \varepsilon}\right)\right]\)</span>
+, we can obtain the phase estimation result with a binary expansion
+precision of 2n+1 bits, and the probability of the result obtained is at
+least <span class="math notranslate nohighlight">\(\frac{1-\varepsilon}{r}\)</span> . Generally, we take t=2n.</p>
+</section>
+</section>
+<section id="id19">
+<h3>8.10.3 Quantum circuit diagram and reference code<a class="headerlink" href="#id19" title="永久链接至标题"></a></h3>
+<p>The quantum circuit diagram of Shor’s Algorithm is as below.</p>
+<figure class="align-default">
+<img alt="" src="../_images/8.13.png" />
+</figure>
+<p>The source code of Shor’s Algorithm based on pyQPanda is shown in the
+Shor’s Algorithm program source code under pyQPanda.</p>
+<p>Below is the Shor’s Algorithm calling interface provided in pyQPanda.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Shor_factorization</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The input parameter is the large number decomposed by prime
+factorization, with a 2D list returned. The contents are whether the
+computing process is successful and the list of decomposed prime factor
+pairs.</p>
+<p>We take N=15 to verify the code of Shor’s Algorithm as below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">pyqpanda</span> <span class="k">as</span> <span class="nn">pq</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">N</span><span class="o">=</span><span class="mi">15</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">Shor_factorization</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The prime factor decomposition result of 15 should be 15=3∗5, and
+therefore the algorithm success sign should be returned together with
+the two prime factors 3 and 5.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="quantum-imaginary-time-evolution">
+<h2>8.11 Quantum imaginary time evolution<a class="headerlink" href="#quantum-imaginary-time-evolution" title="永久链接至标题"></a></h2>
+<p>Imaginary time evolution is a powerful tool for studying quantum
+systems. As a classical quantum hybrid algorithm, the imaginary time
+evolution algorithm can approximately get the ground state vector of any
+system where the Hamiltonian H is given which is the eigen vector
+corresponding to the minimum eigenvalue of math:<code class="docutils literal notranslate"><span class="pre">H</span></code>. This algorithm
+is provided with a quantum circuit easy to be implemented and
+characterized by a wide range of applications. It can solve some
+problems which are hard to be solved by the classical algorithm.</p>
+<section id="id20">
+<h3>8.11.1 Overview of background<a class="headerlink" href="#id20" title="永久链接至标题"></a></h3>
+<p>A system where the Hamiltonian H is given evolves according to the
+propagator <span class="math notranslate nohighlight">\(e^{-i H t}\)</span> over time <span class="math notranslate nohighlight">\(t\)</span>. The corresponding
+virtual time <span class="math notranslate nohighlight">\((\tau=i t)\)</span> propagator is <span class="math notranslate nohighlight">\(e^{ -H t}\)</span> which is
+a non-unitary operator.</p>
+<p>With the Hamiltonian H and initial state <span class="math notranslate nohighlight">\(|\psi\rangle\)</span>​ given,
+the normalized imaginary time evolution is defined as below.</p>
+<div class="math notranslate nohighlight">
+\[|\psi(\tau)\rangle=A(\tau) e^{-H t}|\psi(0)\rangle, A(\tau)=\left(\left\langle\psi(0)\left|e^{-2 H t}\right| \psi(0)\right\rangle\right)^{\frac{1}{2}}\]</div>
+<p>A(<span class="math notranslate nohighlight">\(\tau\)</span>) is the normalized factor. Generally, the Hamiltonian H
+of a multibody system is <span class="math notranslate nohighlight">\(H=\sum_{i} \lambda_{i} h_{i}\)</span> where
+<span class="math notranslate nohighlight">\(\lambda_{i}\)</span> is the real coefficient and <span class="math notranslate nohighlight">\(h_{i}\)</span> is the
+observables and can be expressed as the direct product of Pauli
+matrices.</p>
+<p>Thus, we obtain the following equivalent Schrodinger Equation:</p>
+<div class="math notranslate nohighlight">
+\[\frac{\partial|\psi(\tau)\rangle}{\partial \tau}=-\left(H-\frac{A^{\prime}(\tau)}{A(\tau)}\right)|\psi(\tau)\rangle=-\left(H-E_{\tau}\right)|\psi(\tau)\rangle\]</div>
+<div class="admonition-note admonition">
+<p class="admonition-title">Note</p>
+<p>In practical applications, the real difficulty of QITE lies in how to transform the original problem into the ground state problem of Hamiltonian system and how to give the Hamiltonian to the Hamiltonian system.</p>
+</div>
+</section>
+<section id="id21">
+<h3>8.11.2 Principle of algorithm<a class="headerlink" href="#id21" title="永久链接至标题"></a></h3>
+<p>The quantum imaginary time evolution algorithm consists of 2 parts:</p>
+<p>Based on the given problem system Hamiltonian, we construct the
+corresponding Schrodinger Equation and transform the solution problem of
+Schrodinger Equation into that of a system of linear equations.</p>
+<p>We solve the system of linear equations to obtain the time evolution
+function of key variables. Also, we get the ground state corresponding
+to the lowest energy of the system by taking advantage of the
+characteristics of imaginary time evolution, so as to solve the problem.</p>
+<p>The quantum imaginary time evolution algorithm is applicable to solving
+the state at any time and the final steady state from the initial state
+in any Hamiltonian system with the Hamiltonian known.</p>
+<section id="approximate-solution-from-schrodinger-equation-to-differential-equation">
+<h4>8.11.2.1 Approximate solution from Schrodinger Equation to differential equation<a class="headerlink" href="#approximate-solution-from-schrodinger-equation-to-differential-equation" title="永久链接至标题"></a></h4>
+<p>Consider the Wick rotation of the Schrodinger Equation satisfied by the
+given Hamiltonian H</p>
+<div class="math notranslate nohighlight">
+\[\left(\frac{\partial}{\partial \tau}-\left(H-E_{\tau}\right)\right)|\psi(\tau)\rangle=0, E_{\tau}=\langle\psi(\tau)|H| \psi(\tau)\rangle\]</div>
+<p>Apply the McLachlan variational principle to get</p>
+<div class="math notranslate nohighlight">
+\[\delta \|\left(\frac{\partial}{\partial \tau}-\left(H-E_{\tau}\right)\right)|\psi(\tau)\rangle \|=0\]</div>
+<p>Take the test state
+<span class="math notranslate nohighlight">\(|\phi(\vec{\theta}(\tau))\rangle, \vec{\theta}(\tau)=\left(\theta_{1}(\tau), \theta_{2}(\tau), \cdots, \theta_{N}(\tau)\right)\)</span>
+to approximate the solution <span class="math notranslate nohighlight">\(|\psi(\tau)\rangle\)</span></p>
+<p>Write
+<span class="math notranslate nohighlight">\(\dot{\theta}_{j}=\frac{\partial \theta_{j}}{\partial \tau}, S=\left(\frac{\partial}{\partial \tau}-\left(H-E_{\tau}\right)\right)\)</span>
+and meanwhile consider the normalization condition
+<span class="math notranslate nohighlight">\(\langle\phi \mid \phi\rangle=1\)</span>​ to get</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+&amp;\frac{\partial \| S|\phi(\tau)\rangle \|}{\partial \dot{\theta}_{i}} \\
+&amp;=\sum_{i, j} \frac{\partial\langle\phi|}{\partial \theta_{i}} \frac{\partial|\phi\rangle}{\partial \theta_{j}} \dot{\theta}_{j}+\sum_{i}\left(\frac{\partial\langle\phi|}{\partial \theta_{i}} H|\phi\rangle+\langle\phi| H \frac{\partial|\phi\rangle}{\partial \theta_{i}}\right) \\
+&amp;=\sum_{j} A_{i j} \dot{\theta}_{j}-C_{j}=0
+\end{aligned}\end{split}\]</div>
+<p>Where</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+A_{i j} &amp;=\operatorname{Re}\left(\frac{\partial\langle\phi|}{\partial \theta_{i}} \frac{\partial|\phi\rangle}{\partial \theta_{i}}\right) \\
+C_{i} &amp;=-\operatorname{Re}\left(\frac{\partial\langle\phi|}{\partial \theta_{i}} H|\phi\rangle\right)
+\end{aligned}\end{split}\]</div>
+<p>Thus, the original Schrodinger Equation is transformed into a system of
+linear equations of which the solution is <span class="math notranslate nohighlight">\(\dot{\theta}_{j}\)</span>.</p>
+</section>
+<section id="imaginary-time-evolution-approaching-ground-state">
+<h4>8.11.2.2 Imaginary time evolution approaching ground state<a class="headerlink" href="#imaginary-time-evolution-approaching-ground-state" title="永久链接至标题"></a></h4>
+<p><span class="math notranslate nohighlight">\(x^{\dagger} A x&gt;0\)</span> shows that A is positive definite, so is its
+generalized inverse <span class="math notranslate nohighlight">\(A^{−1}\)</span>.</p>
+<p>Therefore, the average energy <span class="math notranslate nohighlight">\(E_{\tau}\)</span> of the system is as
+below.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+&amp;\frac{d E_{\tau}}{d \tau}=\frac{d\langle\psi(\tau)|H| \psi(\tau)\rangle}{d \tau} \\
+&amp;=\sum_{i} \operatorname{Re}\left(\frac{\partial\langle\phi|}{\partial \theta_{i}} H|\phi\rangle \dot{\theta}_{i}\right)=-\sum_{i} C_{i} \dot{\theta}_{i}=-\sum_{i, j} C_{i} A_{i, j}^{-1} C_{j} \leq 0
+\end{aligned}\end{split}\]</div>
+<p>As shown above, the application of quantum imaginary time evolution
+algorithm will result in continuous decrease of the average energy of
+the whole system.</p>
+<p>Take the test state
+<span class="math notranslate nohighlight">\(|\phi(\vec{\theta})\rangle=V(\vec{\theta})|\overline{0}\rangle=U_{N}\left(\theta_{N}\right) \cdots U_{2}\left(\theta_{2}\right) U_{1}\left(\theta_{1}\right)|\overline{0}\rangle\)</span>,where
+<span class="math notranslate nohighlight">\(U_{i}\)</span> is the unitary operator,<span class="math notranslate nohighlight">\(\overline{0}\)</span> is the
+initial state of the system (instead of the ground state <a href="#id22"><span class="problematic" id="id23">|</span></a>0⟩).</p>
+<p>Without loss of generality, we can assume that each <span class="math notranslate nohighlight">\(U_{i}\)</span>
+depends on only one parameter, <span class="math notranslate nohighlight">\(\theta_{i}\)</span> is a rotating or controlled rotating gate, and its
+derivative can be expressed as
+<span class="math notranslate nohighlight">\(\frac{\partial U_{i}\left(\theta_{i}\right)}{\partial \theta_{i}}=\sum_{k} f_{k, i} U_{i}\left(\theta_{i}\right) \sigma_{k, i}\)</span>
+,where <span class="math notranslate nohighlight">\(\delta_{k, i}\)</span> are unitary operators and <span class="math notranslate nohighlight">\(f_{k, i}\)</span>
+are scalar functions. Consequently, the derivative of the test state can
+be expressed as
+<span class="math notranslate nohighlight">\(\frac{\partial \phi(\tau)}{\partial \theta_{i}}=\sum_{k} f_{k, i} \tilde{V}_{k, i}|\overline{0}\rangle\)</span></p>
+<p>where</p>
+<div class="math notranslate nohighlight">
+\[\tilde{V}_{k, i}=U_{N}\left(\theta_{N}\right) \cdots U_{i+1}\left(\theta_{i+1}\right) U_{i}\left(\theta_{i}\right) \sigma_{k, i} \cdots U_{2}\left(\theta_{2}\right) U_{1}\left(\theta_{1}\right)\]</div>
+<p>Then, the differential equation
+<span class="math notranslate nohighlight">\(\sum_{j} A_{i j} \dot{\theta}_{j}=C_{j}\)</span>​ satisfies</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+&amp;A_{i j}=\operatorname{Re}\left(\sum_{k, l} f_{k, i}^{*} f_{l, i}\left\langle\overline{0}\left|\tilde{V}_{k, i}^{\dagger} \tilde{V}_{l, j}\right| \overline{0}\right\rangle\right) \\
+&amp;C_{i}=-\operatorname{Re}\left(\sum_{k, l} f_{k, i}^{*} \lambda_{l}\left\langle\overline{0}\left|\tilde{V}_{k, i}^{\dagger} h_{l} V\right| \overline{0}\right\rangle\right)
+\end{aligned}\end{split}\]</div>
+<p>The above two expressions are in line with the general form
+<span class="math notranslate nohighlight">\(a \operatorname{Re}\left(e^{i \theta}\langle 0|U| \overline{0}\rangle\right)\)</span>,
+and thus we can use a quantum circuit to construct <span class="math notranslate nohighlight">\(A_{ij}\)</span>  as below:</p>
+<div class="math notranslate nohighlight">
+\[\left\langle\overline{0}\left|\hat{V}_{k, i}^{\dagger} \tilde{V}_{l, j}\right| \overline{0}\right\rangle=\left\langle\overline{0}\left|\mathrm{U}_{1}^{\dagger} \cdots \mathrm{U}_{i-1}^{\dagger} \sigma_{k, i}^{\dagger} \mathrm{U}_{i}^{\dagger} \cdots \mathrm{U}_{j-1}^{\dagger} \sigma_{i, j} \mathrm{U}_{j}^{\dagger} \cdots U_{1}\right| \overline{0}\right\rangle\]</div>
+<p><span class="math notranslate nohighlight">\(C_{ij}\)</span> is provided with the similar result. Thus, we can use a
+quantum circuit to construct <span class="math notranslate nohighlight">\(A_{ij}\)</span>  and <span class="math notranslate nohighlight">\(C_{ij}\)</span>.</p>
+<p>Therefore, we can introduce the quantum algorithm of system of linear
+equations, and obtain
+<span class="math notranslate nohighlight">\(\dot{\theta}_{j}=\frac{\partial \theta_{j}}{\partial \tau}\)</span> upon
+solving. Furthermore, imaginary time revolution can be performed to
+<span class="math notranslate nohighlight">\(\phi(\vec{\theta})\)</span> to obtain the ground state <span class="math notranslate nohighlight">\(\theta\)</span>
+under stable state of the system.</p>
+<p>Thus, we complete the approximate solution of the ground state
+corresponding to any given Hamiltonian H.</p>
+</section>
+</section>
+<section id="id24">
+<h3>8.11.3 Quantum circuit diagram and reference code<a class="headerlink" href="#id24" title="永久链接至标题"></a></h3>
+<p>Below is the quantum circuit diagram of the left-hand item matrix and
+right one for constructing the system of linear equations in QITE
+algorithm.</p>
+<figure class="align-default">
+<img alt="" src="../_images/8.14.png" />
+</figure>
+<p>The code implementation of QITE algorithm based on pyQPanda is shown in
+the QITE algorithm program source code under pyQPanda. The codes related
+to QITE algorithm in pyQPanda are included a category. Below is an
+introduction to all relevant input and output interface functions.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">qite</span><span class="o">=</span><span class="n">QITE</span><span class="p">()</span>
+<span class="n">qite</span><span class="o">.</span><span class="n">set_Hamiltonian</span><span class="p">(</span><span class="n">Hamiltonian</span><span class="p">)</span>
+<span class="n">qite</span><span class="o">.</span><span class="n">set_ansatz_gate</span><span class="p">(</span><span class="n">ansatz</span><span class="p">)</span>
+<span class="n">qite</span><span class="o">.</span><span class="n">set_iter_num</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="n">qite</span><span class="o">.</span><span class="n">set_delta_tau</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="n">qite</span><span class="o">.</span><span class="n">set_upthrow_num</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="n">qite</span><span class="o">.</span><span class="n">set_para_update_mode</span><span class="p">(</span><span class="n">GD_VALUE</span><span class="o">/</span><span class="n">GD_DIRECTION</span><span class="p">)</span>
+<span class="n">qite</span><span class="o">.</span><span class="n">exec</span><span class="p">()</span>
+<span class="n">qite</span><span class="o">.</span><span class="n">get_result</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Among the above functions, the first function is the constructor of a
+class, and the following 6 ones serve to set the Hamiltonian, set the
+number of iteration(s) and the change rate of τ, reset the number of
+iteration(s) and the reference gradient value or direction of
+convergence mode, perform imaginary time evolution and obtain the
+probability result of the list.</p>
+<p>We can apply the quantum variational imaginary time evolution algorithm
+to the importance ranking of network nodes and quickly solve the
+importance weight of the nodes based on the existing conclusions. We
+select the importance ranking of network nodes as shown below for code
+implementation.</p>
+<figure class="align-default">
+<img alt="" src="../_images/8.15.png" />
+</figure>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">pyqpanda</span> <span class="k">as</span> <span class="nn">pq</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">node7graph</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span> <span class="p">,</span><span class="mi">0</span> <span class="p">,</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                 <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span> <span class="p">,</span><span class="mi">1</span> <span class="p">,</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                 <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span> <span class="p">,</span><span class="mi">0</span> <span class="p">,</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                 <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span> <span class="p">,</span><span class="mi">1</span> <span class="p">,</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                 <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span> <span class="p">,</span><span class="mi">1</span> <span class="p">,</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                 <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span> <span class="p">,</span><span class="mi">1</span> <span class="p">,</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                 <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span> <span class="p">,</span><span class="mi">0</span> <span class="p">,</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],]</span>
+
+    <span class="n">problem</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">NodeSortProblemGenerator</span><span class="p">()</span>
+    <span class="n">problem</span><span class="o">.</span><span class="n">set_problem_graph</span><span class="p">(</span><span class="n">node7graph</span><span class="p">)</span>
+    <span class="n">problem</span><span class="o">.</span><span class="n">exec</span><span class="p">()</span>
+    <span class="n">ansatz_vec</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">get_ansatz</span><span class="p">()</span>
+
+    <span class="n">cnt_num</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">iter_num</span> <span class="o">=</span> <span class="mi">100</span>
+    <span class="n">upthrow_num</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">delta_tau</span> <span class="o">=</span> <span class="mf">2.6</span>
+    <span class="n">update_mode</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">UpdateMode</span><span class="o">.</span><span class="n">GD_DIRECTION</span>
+
+    <span class="k">for</span> <span class="n">cnt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cnt_num</span><span class="p">):</span>
+        <span class="n">qite</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QITE</span><span class="p">()</span>
+        <span class="n">qite</span><span class="o">.</span><span class="n">set_Hamiltonian</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">get_Hamiltonian</span><span class="p">())</span>
+        <span class="n">qite</span><span class="o">.</span><span class="n">set_ansatz_gate</span><span class="p">(</span><span class="n">ansatz_vec</span><span class="p">)</span>
+        <span class="n">qite</span><span class="o">.</span><span class="n">set_iter_num</span><span class="p">(</span><span class="n">iter_num</span><span class="p">)</span>
+        <span class="n">qite</span><span class="o">.</span><span class="n">set_delta_tau</span><span class="p">(</span><span class="n">delta_tau</span><span class="p">)</span>
+        <span class="n">qite</span><span class="o">.</span><span class="n">set_upthrow_num</span><span class="p">(</span><span class="n">upthrow_num</span><span class="p">)</span>
+        <span class="n">qite</span><span class="o">.</span><span class="n">set_para_update_mode</span><span class="p">(</span><span class="n">update_mode</span><span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">qite</span><span class="o">.</span><span class="n">exec</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">ret</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
+        <span class="n">qite</span><span class="o">.</span><span class="n">get_result</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Below is an example of the QITE solution code.</p>
+<p>We can directly deduce that the node with the greatest importance in
+this 7-node network diagram shall be No. 3 node. Therefore, the result
+shall throw out No. 3 node, i.e., the most important node, written as
+00000100:1.00. The output result as shown below satisfies the
+expectation.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">4</span> <span class="mf">0.999967</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../chapter7/index.html" class="btn btn-neutral float-left" title="7 VQC" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> 上一页</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2021, BYLZ.</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用了 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a>开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

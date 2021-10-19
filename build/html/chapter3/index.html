@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3 Quantum program information &mdash; pyQPanda 1.0.0 文档</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/translations.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="4 Compiling of quantum program" href="../chapter4/index.html" />
+    <link rel="prev" title="2 Deep learning" href="../chapter2/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> pyQPanda
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="在文档中搜索" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../chapter1/index.html">1 Basic Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter2/index.html">2 Deep learning</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">3 Quantum program information</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#nodeiter">3.1 NodeIter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#interface-introduction">3.1.1 Interface introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example">3.1.2 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#logic-gate-statistics">3.2 Logic gate statistics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#introduction">3.2.1 Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">3.2.2 Interface introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">3.2.3 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#counting-quantum-program-clock-cycle">3.3 Counting quantum program clock cycle</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id3">3.3.1 Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">3.3.2 Interface introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">3.3.3 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#get-the-corresponding-matrix-of-the-quantum-circuit">3.4 Get the corresponding matrix of the quantum circuit</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id6">3.4.1 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#judge-whether-quantum-logic-gate-matches-with-the-quantum-topology">3.5 Judge whether quantum logic gate matches with the quantum topology</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id7">3.5.1 Interface introduction</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#get-adjacent-quantum-logic-gates-at-the-designated-position">3.6 Get adjacent quantum logic gates at the designated position.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id8">3.6.1 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#judge-whether-two-quantum-logic-gates-are-interchanged-for-their-positions">3.7 Judge whether two quantum logic gates are interchanged for their positions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id9">3.7.1 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#judge-whether-the-logic-gates-are-of-a-set-of-quantum-logic-gates-supported-by-the-quantum-chip">3.8 Judge whether the logic gates are of a set of quantum logic gates supported by the quantum chip</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#character-drawing-of-quantum-circuit">3.9 Character drawing of quantum circuit</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id10">3.9.1 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#quantum-volume">3.10 Quantum volume</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id11">3.10.1 Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#interface-description">3.10.2 Interface description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id12">3.10.3 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#random-benchmark">3.11 Random benchmark</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id13">3.11.1 Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id14">3.11.2 Interface description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id15">3.11.3 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#cross-entropy-benchmark">3.12 Cross-entropy benchmark</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id16">3.12.1 Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id17">3.12.2 Interface description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id18">3.12.3 Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter4/index.html">4 Compiling of quantum program</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter5/index.html">5 Utility tool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter6/index.html">6 Component</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter7/index.html">7 VQC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter8/index.html">8 Basis of quantum algorithm</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pyQPanda</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>3 Quantum program information</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/chapter3/index.rst.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="quantum-program-information">
+<h1>3 Quantum program information<a class="headerlink" href="#quantum-program-information" title="永久链接至标题"></a></h1>
+<section id="nodeiter">
+<h2>3.1 NodeIter<a class="headerlink" href="#nodeiter" title="永久链接至标题"></a></h2>
+<p>NodeIter is QProg or QCircuit iterator externally provided by pyQPanda.
+We can control our quantum programs conveniently through NodeIter.</p>
+<section id="interface-introduction">
+<h3>3.1.1 Interface introduction<a class="headerlink" href="#interface-introduction" title="永久链接至标题"></a></h3>
+<p>At present, NodeIter has the main operations below:</p>
+<p>obtaining the next node</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">iter</span> <span class="o">=</span> <span class="nb">iter</span><span class="o">.</span><span class="n">get_next</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>obtaining the previous node</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">iter</span> <span class="o">=</span> <span class="nb">iter</span><span class="o">.</span><span class="n">get_pre</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>obtaining the node type</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="o">=</span> <span class="nb">iter</span><span class="o">.</span><span class="n">get_node_type</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>configuring QProg through iterator</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="o">=</span> <span class="nb">iter</span><span class="o">.</span><span class="n">get_node_type</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">pq</span><span class="o">.</span><span class="n">NodeType</span><span class="o">.</span><span class="n">PROG_NODE</span> <span class="o">==</span> <span class="nb">type</span><span class="p">:</span>
+    <span class="n">prog</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QProg</span><span class="p">(</span><span class="nb">iter</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>configuring the quantum circuit QCircuit through iterator</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="o">=</span> <span class="nb">iter</span><span class="o">.</span><span class="n">get_node_type</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">pq</span><span class="o">.</span><span class="n">NodeType</span><span class="o">.</span><span class="n">CIRCUIT_NODE</span> <span class="o">==</span> <span class="nb">type</span><span class="p">:</span>
+    <span class="n">cir</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QCircuit</span><span class="p">(</span><span class="nb">iter</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>configuring QGate through iterator</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="o">=</span> <span class="nb">iter</span><span class="o">.</span><span class="n">get_node_type</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">pq</span><span class="o">.</span><span class="n">NodeType</span><span class="o">.</span><span class="n">GATE_NODE</span> <span class="o">==</span> <span class="nb">type</span><span class="p">:</span>
+    <span class="n">gate</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QGate</span><span class="p">(</span><span class="nb">iter</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>configuring QIfProg through iterator</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="o">=</span> <span class="nb">iter</span><span class="o">.</span><span class="n">get_node_type</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">pq</span><span class="o">.</span><span class="n">NodeType</span><span class="o">.</span><span class="n">QIF_START_NODE</span> <span class="o">==</span> <span class="nb">type</span><span class="p">:</span>
+    <span class="n">if_prog</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QIfProg</span><span class="p">(</span><span class="nb">iter</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>configuring QWhileProg through iterator</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="o">=</span> <span class="nb">iter</span><span class="o">.</span><span class="n">get_node_type</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">pq</span><span class="o">.</span><span class="n">NodeType</span><span class="o">.</span><span class="n">WHILE_START_NODE</span> <span class="o">==</span> <span class="nb">type</span><span class="p">:</span>
+    <span class="n">while_prog</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QWhileProg</span><span class="p">(</span><span class="nb">iter</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>configuring QMeasure through iterator</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="o">=</span> <span class="nb">iter</span><span class="o">.</span><span class="n">get_node_type</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">pq</span><span class="o">.</span><span class="n">NodeType</span><span class="o">.</span><span class="n">MEASURE_GATE</span> <span class="o">==</span> <span class="nb">type</span><span class="p">:</span>
+    <span class="n">measure_gate</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QMeasure</span><span class="p">(</span><span class="nb">iter</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="example">
+<h3>3.1.2 Example<a class="headerlink" href="#example" title="永久链接至标题"></a></h3>
+<p>The following example program has the function to browse one QProg
+through NodeIter and output the types of node logic gates:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pyqpanda.pyQPanda</span> <span class="k">as</span> <span class="nn">pq</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
+<span class="n">machine</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">)</span>
+<span class="n">q</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">cAlloc_many</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">prog</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QProg</span><span class="p">()</span>
+
+<span class="n">prog</span> <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">S</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">CNOT</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>\
+ <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">CZ</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">CR</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+<span class="nb">iter</span> <span class="o">=</span> <span class="n">prog</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span>
+<span class="n">iter_end</span> <span class="o">=</span> <span class="n">prog</span><span class="o">.</span><span class="n">end</span><span class="p">()</span>
+<span class="k">while</span>  <span class="nb">iter</span> <span class="o">!=</span> <span class="n">iter_end</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">pq</span><span class="o">.</span><span class="n">NodeType</span><span class="o">.</span><span class="n">GATE_NODE</span> <span class="o">==</span> <span class="nb">iter</span><span class="o">.</span><span class="n">get_node_type</span><span class="p">():</span>
+        <span class="n">gate</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QGate</span><span class="p">(</span><span class="nb">iter</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">gate</span><span class="o">.</span><span class="n">gate_type</span><span class="p">())</span>
+    <span class="nb">iter</span> <span class="o">=</span> <span class="nb">iter</span><span class="o">.</span><span class="n">get_next</span><span class="p">()</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Traversal End.</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+<span class="n">pq</span><span class="o">.</span><span class="n">destroy_quantum_machine</span><span class="p">(</span><span class="n">machine</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Reverse browsing:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pyqpanda.pyQPanda</span> <span class="k">as</span> <span class="nn">pq</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
+<span class="n">machine</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">)</span>
+<span class="n">q</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">cAlloc_many</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">prog</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QProg</span><span class="p">()</span>
+
+<span class="n">prog</span> <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">S</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">CNOT</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>\
+ <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">CZ</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">CR</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">iter_head</span> <span class="o">=</span> <span class="n">prog</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<span class="nb">iter</span> <span class="o">=</span> <span class="n">prog</span><span class="o">.</span><span class="n">last</span><span class="p">()</span>
+<span class="k">while</span>  <span class="nb">iter</span> <span class="o">!=</span> <span class="n">iter_head</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">pq</span><span class="o">.</span><span class="n">NodeType</span><span class="o">.</span><span class="n">GATE_NODE</span> <span class="o">==</span> <span class="nb">iter</span><span class="o">.</span><span class="n">get_node_type</span><span class="p">():</span>
+        <span class="n">gate</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QGate</span><span class="p">(</span><span class="nb">iter</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">gate</span><span class="o">.</span><span class="n">gate_type</span><span class="p">())</span>
+    <span class="nb">iter</span> <span class="o">=</span> <span class="nb">iter</span><span class="o">.</span><span class="n">get_pre</span><span class="p">()</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Traversal End.</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="logic-gate-statistics">
+<h2>3.2 Logic gate statistics<a class="headerlink" href="#logic-gate-statistics" title="永久链接至标题"></a></h2>
+<section id="introduction">
+<h3>3.2.1 Introduction<a class="headerlink" href="#introduction" title="永久链接至标题"></a></h3>
+<p>Logic gate statistics refers to a method for counting the number of the
+quantum logic gates (including measurement gates) in quantum programs,
+quantum circuits, quantum cycle control or quantum condition control.</p>
+</section>
+<section id="id1">
+<h3>3.2.2 Interface introduction<a class="headerlink" href="#id1" title="永久链接至标题"></a></h3>
+<p>We create one quantum program firstly through pyqpanda:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">prog</span> <span class="o">=</span> <span class="n">QProg</span><span class="p">()</span>
+<span class="n">prog</span> <span class="o">&lt;&lt;</span> <span class="n">X</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">Y</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>\
+     <span class="o">&lt;&lt;</span> <span class="n">H</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">RX</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mf">3.14</span><span class="p">)</span>\
+     <span class="o">&lt;&lt;</span> <span class="n">Measure</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">cbits</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>invoke <code class="docutils literal notranslate"><span class="pre">get_qgate_num</span></code> to count the number of quantum logic gates;</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">number</span> <span class="o">=</span> <span class="n">get_qgate_num</span><span class="p">(</span><span class="n">prog</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition-note admonition">
+<p class="admonition-title">Note</p>
+<p>The method of counting the number of quantum logic gates in <code class="docutils literal notranslate"><span class="pre">QCircuit</span></code>, <code class="docutils literal notranslate"><span class="pre">QWhileProg</span></code> and <code class="docutils literal notranslate"><span class="pre">QIfProg</span></code> is similar to the method of counting <code class="docutils literal notranslate"><span class="pre">QProg</span></code>.</p>
+</div>
+</section>
+<section id="id2">
+<h3>3.2.3 Example<a class="headerlink" href="#id2" title="永久链接至标题"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyqpanda</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">qvm</span> <span class="o">=</span> <span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">)</span>
+    <span class="n">qubits</span> <span class="o">=</span> <span class="n">qvm</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">cbits</span> <span class="o">=</span> <span class="n">qvm</span><span class="o">.</span><span class="n">cAlloc_many</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">prog</span> <span class="o">=</span> <span class="n">QProg</span><span class="p">()</span>
+
+    <span class="c1"># Building quantum programs</span>
+    <span class="n">prog</span> <span class="o">&lt;&lt;</span> <span class="n">X</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">Y</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>\
+        <span class="o">&lt;&lt;</span> <span class="n">H</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">RX</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mf">3.14</span><span class="p">)</span>\
+        <span class="o">&lt;&lt;</span> <span class="n">Measure</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">cbits</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="c1"># Statistics the number of logical gates</span>
+    <span class="n">number</span> <span class="o">=</span> <span class="n">get_qgate_num</span><span class="p">(</span><span class="n">prog</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;QGate number: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">number</span><span class="p">))</span>
+
+    <span class="n">qvm</span><span class="o">.</span><span class="n">finalize</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Output results are as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">QGate</span> <span class="n">number</span><span class="p">:</span> <span class="mi">4</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">警告</p>
+<p>The interface name in the new version is changed, and the old interface <code class="docutils literal notranslate"><span class="pre">count_gate</span></code> is replaced by <code class="docutils literal notranslate"><span class="pre">get_qgate_num</span></code>. Please note that <code class="docutils literal notranslate"><span class="pre">count_gate</span></code> will be removed in the next version.</p>
+</div>
+</section>
+</section>
+<section id="counting-quantum-program-clock-cycle">
+<h2>3.3 Counting quantum program clock cycle<a class="headerlink" href="#counting-quantum-program-clock-cycle" title="永久链接至标题"></a></h2>
+<section id="id3">
+<h3>3.3.1 Introduction<a class="headerlink" href="#id3" title="永久链接至标题"></a></h3>
+<p>Estimate the running time of a quantum program under the known running
+time of the quantum logic gates. The time of the quantum logic gates is
+set to the item metadata configuration file <code class="docutils literal notranslate"><span class="pre">QPandaConfig.xml</span></code>; a default
+is given if such time is not set, where the time of single quantum gate
+is defaulted as 2, and that of the double quantum gates is defaulted as
+5.</p>
+<p>The configuration file can be set according to the following example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;QGate&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;SingleGate&quot;</span><span class="p">:{</span>
+        <span class="s2">&quot;U3&quot;</span><span class="p">:{</span><span class="s2">&quot;time&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;DoubleGate&quot;</span><span class="p">:{</span>
+        <span class="s2">&quot;CNOT&quot;</span><span class="p">:{</span><span class="s2">&quot;time&quot;</span><span class="p">:</span><span class="mi">2</span><span class="p">},</span>
+        <span class="s2">&quot;CZ&quot;</span><span class="p">:{</span><span class="s2">&quot;time&quot;</span><span class="p">:</span><span class="mi">2</span><span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="id4">
+<h3>3.3.2 Interface introduction<a class="headerlink" href="#id4" title="永久链接至标题"></a></h3>
+<p>We create one quantum program firstly through pyqpanda:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">prog</span> <span class="o">=</span> <span class="n">QProg</span><span class="p">()</span>
+<span class="n">prog</span> <span class="o">&lt;&lt;</span> <span class="n">H</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">CNOT</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">qubits</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>\
+     <span class="o">&lt;&lt;</span> <span class="n">iSWAP</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">qubits</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">RX</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>invoke <code class="docutils literal notranslate"><span class="pre">get_qprog_clock_cycle</span></code> interface to get the clock cycle of the
+quantum program</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">clock_cycle</span> <span class="o">=</span> <span class="n">get_qprog_clock_cycle</span><span class="p">(</span><span class="n">qvm</span><span class="p">,</span> <span class="n">prog</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id5">
+<h3>3.3.3 Example<a class="headerlink" href="#id5" title="永久链接至标题"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyqpanda</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">qvm</span> <span class="o">=</span> <span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">)</span>
+    <span class="n">qubits</span> <span class="o">=</span> <span class="n">qvm</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+    <span class="n">cbits</span> <span class="o">=</span> <span class="n">qvm</span><span class="o">.</span><span class="n">cAlloc_many</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+
+    <span class="c1"># Building quantum programs</span>
+    <span class="n">prog</span> <span class="o">=</span> <span class="n">QProg</span><span class="p">()</span>
+    <span class="n">prog</span> <span class="o">&lt;&lt;</span> <span class="n">H</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">CNOT</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">qubits</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>\
+         <span class="o">&lt;&lt;</span> <span class="n">iSWAP</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">qubits</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">RX</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">4</span><span class="p">)</span>
+
+    <span class="c1"># Statistical quantum program clock cycle</span>
+    <span class="n">clock_cycle</span> <span class="o">=</span> <span class="n">get_qprog_clock_cycle</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">qvm</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">clock_cycle</span><span class="p">)</span>
+    <span class="n">destroy_quantum_machine</span><span class="p">(</span><span class="n">qvm</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Output results are as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">5</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">警告</p>
+<p>The interface name in the new version is changed, and the old interface <code class="docutils literal notranslate"><span class="pre">get_clock_cycle</span></code> will be replaced by <code class="docutils literal notranslate"><span class="pre">get_qprog_clock_cycle</span></code>. Please note that <code class="docutils literal notranslate"><span class="pre">get_clock_cycle</span></code> will be removed in the next version.</p>
+</div>
+</section>
+</section>
+<section id="get-the-corresponding-matrix-of-the-quantum-circuit">
+<h2>3.4 Get the corresponding matrix of the quantum circuit<a class="headerlink" href="#get-the-corresponding-matrix-of-the-quantum-circuit" title="永久链接至标题"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">get_matrix</span></code> interface can get the corresponding matrix of the input
+circuit and has three output parameters, where one parameter is quantum
+circuit QCircuit (or Qprog), and other two parameters are optional
+parameters: the starting and ending positions of the iterator are used
+for designating one circuit interval to get corresponding matrix
+information; if the parameters are null, the matrix information of the
+entire quantum circuit is obtained.</p>
+<div class="admonition-note admonition">
+<p class="admonition-title">Note</p>
+<p>It should be noted in use of <code class="docutils literal notranslate"><span class="pre">get_matrix</span></code> that the quantum circuit does not involve measurement.</p>
+</div>
+<section id="id6">
+<h3>3.4.1 Example<a class="headerlink" href="#id6" title="永久链接至标题"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pyqpanda.pyQPanda</span> <span class="k">as</span> <span class="nn">pq</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
+<span class="k">class</span> <span class="nc">InitQMachine</span><span class="p">:</span>
+<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quBitCnt</span><span class="p">,</span> <span class="n">cBitCnt</span><span class="p">,</span>\
+ <span class="n">machineType</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_machine</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">machineType</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_qlist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">m_machine</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="n">quBitCnt</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_clist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">m_machine</span><span class="o">.</span><span class="n">cAlloc_many</span><span class="p">(</span><span class="n">cBitCnt</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_prog</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QProg</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">pq</span><span class="o">.</span><span class="n">destroy_quantum_machine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m_machine</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">test_get_matrix</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+    <span class="n">prog</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QProg</span><span class="p">()</span>
+
+    <span class="c1"># Building quantum programs</span>
+    <span class="n">prog</span> <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> \
+        <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">S</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> \
+        <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">CNOT</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> \
+        <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">CZ</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> \
+        <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">CR</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="c1"># Obtain the line corresponding matrix</span>
+    <span class="n">result_mat</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">get_matrix</span><span class="p">(</span><span class="n">prog</span><span class="p">)</span>
+
+    <span class="c1"># Print matrix information</span>
+    <span class="n">pq</span><span class="o">.</span><span class="n">print_matrix</span><span class="p">(</span><span class="n">result_mat</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span><span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">init_machine</span> <span class="o">=</span> <span class="n">InitQMachine</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
+    <span class="n">qlist</span> <span class="o">=</span> <span class="n">init_machine</span><span class="o">.</span><span class="n">m_qlist</span>
+    <span class="n">clist</span> <span class="o">=</span> <span class="n">init_machine</span><span class="o">.</span><span class="n">m_clist</span>
+    <span class="n">machine</span> <span class="o">=</span> <span class="n">init_machine</span><span class="o">.</span><span class="n">m_machine</span>
+
+    <span class="n">test_get_matrix</span><span class="p">(</span><span class="n">qlist</span><span class="p">,</span> <span class="n">clist</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Test over.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The specific steps are as follows:</p>
+<ol class="arabic simple">
+<li><p>Initialize a quantum simulator object with <code class="docutils literal notranslate"><span class="pre">init_quantum_machine</span></code> (pq.QMachineType.CPU) in order to manage a series of subsequent behaviors</p></li>
+<li><p>Initialize the number of qubits and classical registers with <code class="docutils literal notranslate"><span class="pre">machine.qAlloc_many()</span></code> and  <code class="docutils literal notranslate"><span class="pre">machine.cAlloc_many()</span></code>, where respective 8 qubits and classical register are applied.</p></li>
+<li><p>Create prog</p></li>
+<li><p>Determine the circuit interval of computing matrix information, namely setting of <code class="docutils literal notranslate"><span class="pre">iter_start</span></code> and <code class="docutils literal notranslate"><span class="pre">iter_end</span></code></p></li>
+<li><p>Invoke <code class="docutils literal notranslate"><span class="pre">get_matrix</span></code> interface to output the corresponding matrix of the quantum circuit, and print obtained matrix information through <code class="docutils literal notranslate"><span class="pre">print_mat</span></code> interface.</p></li>
+</ol>
+</section>
+</section>
+<section id="judge-whether-quantum-logic-gate-matches-with-the-quantum-topology">
+<h2>3.5 Judge whether quantum logic gate matches with the quantum topology<a class="headerlink" href="#judge-whether-quantum-logic-gate-matches-with-the-quantum-topology" title="永久链接至标题"></a></h2>
+<p>Each quantum chip has its own particular qubit topology, for example,
+<code class="docutils literal notranslate"><span class="pre">ibmq_16_melbourne</span></code> provided by IBMQ:</p>
+<figure class="align-default">
+<img alt="" src="../_images/3.1.png" />
+</figure>
+<p>It can be seen from the Figure that the qubits in the quantum chip are
+not connected in pairs, and those not interconnected cannot directly
+execute multi-gate operations. Therefore, it is necessary to judge
+whether the double-gate (multi-gate) operation in the quantum program is
+in conformity with the qubit topology prior to the execution of the
+quantum program.</p>
+<section id="id7">
+<h3>3.5.1 Interface introduction<a class="headerlink" href="#id7" title="永久链接至标题"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">is_match_topology</span></code> is to judge whether the quantum logic gate is in
+conformity with the qubit topology. The first input parameter is the
+target quantum logic gate QGate, the second input parameter is the qubit
+topology, and the returned value is Boolean value. This indicates
+whether the target quantum logic gate is in conformity with the qubit
+topology. True means that the target quantum logic gate is in conformity
+with the qubit topology. False means that the target quantum logic gate
+is not in conformity with the qubit topology.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pyqpanda.pyQPanda</span> <span class="k">as</span> <span class="nn">pq</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
+<span class="k">class</span> <span class="nc">InitQMachine</span><span class="p">:</span>
+<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quBitCnt</span><span class="p">,</span> <span class="n">cBitCnt</span><span class="p">,</span>\
+<span class="n">machineType</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_machine</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">machineType</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_qlist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">m_machine</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="n">quBitCnt</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_clist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">m_machine</span><span class="o">.</span><span class="n">cAlloc_many</span><span class="p">(</span><span class="n">cBitCnt</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_prog</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QProg</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">pq</span><span class="o">.</span><span class="n">destroy_quantum_machine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m_machine</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">test_is_match_topology</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+    <span class="n">cx</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">CNOT</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+
+    <span class="c1"># Building a Topology</span>
+    <span class="n">qubits_topology</span> <span class="o">=</span> \
+<span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]]</span>
+
+    <span class="c1"># Determine whether the logic gate conforms to the quantum topology</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">is_match_topology</span><span class="p">(</span><span class="n">cx</span><span class="p">,</span><span class="n">qubits_topology</span><span class="p">))</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Match !</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Not match.&#39;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span><span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">init_machine</span> <span class="o">=</span> <span class="n">InitQMachine</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
+    <span class="n">qlist</span> <span class="o">=</span> <span class="n">init_machine</span><span class="o">.</span><span class="n">m_qlist</span>
+    <span class="n">clist</span> <span class="o">=</span> <span class="n">init_machine</span><span class="o">.</span><span class="n">m_clist</span>
+    <span class="n">machine</span> <span class="o">=</span> <span class="n">init_machine</span><span class="o">.</span><span class="n">m_machine</span>
+    <span class="n">test_is_match_topology</span><span class="p">(</span><span class="n">qlist</span><span class="p">,</span> <span class="n">clist</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Test over.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Prior to the use of <code class="docutils literal notranslate"><span class="pre">is_match_topology</span></code>, the adjacency matrix
+<code class="docutils literal notranslate"><span class="pre">qubits_topology</span></code> of the qubit topology of the designated quantum chip
+should be created.</p>
+<p>It can be seen from the above example, <code class="docutils literal notranslate"><span class="pre">qubits_topology</span></code> includes 5
+qubits. The qubit topological diagram is shown below:</p>
+<figure class="align-default">
+<img alt="" src="../_images/3.2.png" />
+</figure>
+<p>CNOT logic gate operates qubits 1# and 3#. However, it can be seen from
+the topological diagram that qubits 1# and 3# are interconnected, and
+therefore the result should be true.</p>
+</section>
+</section>
+<section id="get-adjacent-quantum-logic-gates-at-the-designated-position">
+<h2>3.6 Get adjacent quantum logic gates at the designated position.<a class="headerlink" href="#get-adjacent-quantum-logic-gates-at-the-designated-position" title="永久链接至标题"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">get_adjacent_qgate_type</span></code> interface can get designated adjacent
+quantum logic gates in the quantum program. The first input parameter is
+the target quantum program QProg, the second input parameter is the
+iterator of the target quantum logic gate in the quantum program, and
+the returned result is a set of iterators of adjacent target quantum
+logic gates.</p>
+<section id="id8">
+<h3>3.6.1 Example<a class="headerlink" href="#id8" title="永久链接至标题"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pyqpanda.pyQPanda</span> <span class="k">as</span> <span class="nn">pq</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
+<span class="k">class</span> <span class="nc">InitQMachine</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quBitCnt</span><span class="p">,</span> <span class="n">cBitCnt</span><span class="p">,</span> <span class="n">machineType</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_machine</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">machineType</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_qlist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">m_machine</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="n">quBitCnt</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_clist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">m_machine</span><span class="o">.</span><span class="n">cAlloc_many</span><span class="p">(</span><span class="n">cBitCnt</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_prog</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QProg</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">pq</span><span class="o">.</span><span class="n">destroy_quantum_machine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m_machine</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">test_get_adjacent_qgate_type</span><span class="p">(</span><span class="n">qlist</span><span class="p">,</span> <span class="n">clist</span><span class="p">):</span>
+    <span class="n">prog</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QProg</span><span class="p">()</span>
+
+    <span class="c1"># Building quantum programs</span>
+    <span class="n">prog</span> <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">T</span><span class="p">(</span><span class="n">qlist</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> \
+        <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">CNOT</span><span class="p">(</span><span class="n">qlist</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">qlist</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> \
+        <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">Reset</span><span class="p">(</span><span class="n">qlist</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> \
+        <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">qlist</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span> \
+        <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">qlist</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
+
+    <span class="nb">iter</span> <span class="o">=</span> <span class="n">prog</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span>
+    <span class="nb">iter</span> <span class="o">=</span> <span class="nb">iter</span><span class="o">.</span><span class="n">get_next</span><span class="p">()</span>
+    <span class="nb">type</span> <span class="o">=</span><span class="nb">iter</span><span class="o">.</span><span class="n">get_node_type</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">pq</span><span class="o">.</span><span class="n">NodeType</span><span class="o">.</span><span class="n">GATE_NODE</span> <span class="o">==</span> <span class="nb">type</span><span class="p">:</span>
+        <span class="n">gate</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QGate</span><span class="p">(</span><span class="nb">iter</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">gate</span><span class="o">.</span><span class="n">gate_type</span><span class="p">())</span>
+
+    <span class="c1"># Gets the types of logical gates before and after the specified location</span>
+    <span class="nb">list</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">get_adjacent_qgate_type</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span><span class="nb">iter</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">m_target_qubits</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">m_is_dagger</span><span class="p">)</span>
+
+    <span class="n">node_type</span> <span class="o">=</span> <span class="nb">list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">m_node_type</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">node_type</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">node_type</span> <span class="o">==</span> <span class="n">pq</span><span class="o">.</span><span class="n">NodeType</span><span class="o">.</span><span class="n">GATE_NODE</span><span class="p">:</span>
+        <span class="n">gateFront</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QGate</span><span class="p">(</span><span class="nb">list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">m_iter</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">gateFront</span><span class="o">.</span><span class="n">gate_type</span><span class="p">())</span>
+
+    <span class="n">node_type</span> <span class="o">=</span> <span class="nb">list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">m_node_type</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">node_type</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">node_type</span> <span class="o">==</span> <span class="n">pq</span><span class="o">.</span><span class="n">NodeType</span><span class="o">.</span><span class="n">GATE_NODE</span><span class="p">:</span>
+        <span class="n">gateBack</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QGate</span><span class="p">(</span><span class="nb">list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">m_iter</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">gateBack</span><span class="o">.</span><span class="n">gate_type</span><span class="p">())</span>
+
+<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span><span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">init_machine</span> <span class="o">=</span> <span class="n">InitQMachine</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
+    <span class="n">qlist</span> <span class="o">=</span> <span class="n">init_machine</span><span class="o">.</span><span class="n">m_qlist</span>
+    <span class="n">clist</span> <span class="o">=</span> <span class="n">init_machine</span><span class="o">.</span><span class="n">m_clist</span>
+    <span class="n">machine</span> <span class="o">=</span> <span class="n">init_machine</span><span class="o">.</span><span class="n">m_machine</span>
+    <span class="n">test_get_adjacent_qgate_type</span><span class="p">(</span><span class="n">qlist</span><span class="p">,</span> <span class="n">clist</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Test over.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The above example shows how to use <code class="docutils literal notranslate"><span class="pre">get_adjacent_qgate_type</span></code> interface:</p>
+<ol class="arabic simple">
+<li><p>Create one quantum program prog;</p></li>
+<li><p>Designate position information, namely setting of iter</p></li>
+<li><p>Invoke <code class="docutils literal notranslate"><span class="pre">get_adjacent_qgate_type</span></code> interface to get a set of iterators
+of adjacent iter logic gates. The types of obtained logic gates are
+respectively printed in the last four rows of the example code</p></li>
+</ol>
+<p>When using <code class="docutils literal notranslate"><span class="pre">get_adjacent_qgate_type</span></code> interface, we need to note the
+following points:</p>
+<ol class="arabic simple">
+<li><p>A set of the iterators of adjacent target quantum logic gates always
+includes two elements; The first element is an iterator of the
+previous quantum logic gate, and the second element is an iterator of
+the next logic gate.</p></li>
+<li><p>If the target quantum logic gate is the first node of the quantum
+program, only the iterator of the following target quantum logic gate
+can be obtained in a set of iterators of adjacent target quantum
+logic gates (as the output parameter), and the first element in the
+set is the null iterator.</p></li>
+<li><p>If the target quantum logic gate is the last quantum logic gate in
+the quantum program, only the iterator of the previous target quantum
+logic gate can be obtained in a set of iterators of adjacent target
+quantum logic gates (as the output parameter), and the second element
+in the set is the null iterator.</p></li>
+<li><p>If the previous node of the target quantum logic gate is QIf or
+QWhile, only the iterator of the following target quantum logic gate
+can be obtained in a set of iterators of adjacent target quantum
+logic gates (as the output parameter), and the first element in the
+set is the null iterator.</p></li>
+<li><p>If the following node of the target quantum logic gate is QIf or
+QWhile, only the iterator of the previous target quantum logic gate
+can be obtained in a set of iterators of adjacent target quantum
+logic gates (as the output parameter), and the second element in the
+set is the null iterator.</p></li>
+<li><p>If the target quantum logic gate is the first quantum logic gate of
+QWhile, only the iterator of the following target quantum logic gate
+can be obtained in a set of iterators of adjacent target quantum
+logic gates (as the output parameter), and the first element in the
+set is the null iterator.</p></li>
+<li><p>If the target quantum logic gate is the last quantum logic gate of
+QWhile, only the iterator of the previous target quantum logic gate
+can be obtained in a set of iterators of adjacent target quantum
+logic gates (as the output parameter), and the second element in the
+set is the null iterator.</p></li>
+</ol>
+</section>
+</section>
+<section id="judge-whether-two-quantum-logic-gates-are-interchanged-for-their-positions">
+<h2>3.7 Judge whether two quantum logic gates are interchanged for their positions<a class="headerlink" href="#judge-whether-two-quantum-logic-gates-are-interchanged-for-their-positions" title="永久链接至标题"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">is_swappable</span></code> interface can judge whether two designated quantum
+logic gates in the quantum program are interchanged for their positions.
+The first input parameter is the quantum program QProg; the second and
+third input parameters are the iterators of two quantum logic gates to
+be judged. The returned value is Boolean value; True represents the
+interchangeable position; and False represents the non-interchangeable
+position.</p>
+<section id="id9">
+<h3>3.7.1 Example<a class="headerlink" href="#id9" title="永久链接至标题"></a></h3>
+<p>The following example demonstrates how to use <code class="docutils literal notranslate"><span class="pre">is_swappable</span></code> interface.</p>
+<ol class="arabic simple">
+<li><p>Create a quantum program prog. Here, a slightly complex quantum
+program with nested nodes is enumerated;</p></li>
+<li><p>Get iterators at two designated positions of the nested node cir:
+iter_first and iter_second;</p></li>
+<li><p>Invoke <code class="docutils literal notranslate"><span class="pre">is_swappable</span></code> interface to judge whether two designated logic
+gates are interchanged for their positions, and output changeable
+judgement results on the console.</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">math</span>
+
+<span class="k">class</span> <span class="nc">InitQMachine</span><span class="p">:</span>
+<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quBitCnt</span><span class="p">,</span> <span class="n">cBitCnt</span><span class="p">,</span>\
+ <span class="n">machineType</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_machine</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">machineType</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_qlist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">m_machine</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="n">quBitCnt</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_clist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">m_machine</span><span class="o">.</span><span class="n">cAlloc_many</span><span class="p">(</span><span class="n">cBitCnt</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_prog</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QProg</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">pq</span><span class="o">.</span><span class="n">destroy_quantum_machine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m_machine</span><span class="p">)</span>
+
+<span class="c1"># Test interface: judge whether two designated logic gates are interchanged</span>
+<span class="c1"># for their positions</span>
+<span class="k">def</span> <span class="nf">test_is_swappable</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+    <span class="n">prog</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QProg</span><span class="p">()</span>
+    <span class="n">cir</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QCircuit</span><span class="p">()</span>
+    <span class="n">cir2</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QCircuit</span><span class="p">()</span>
+<span class="n">cir2</span> <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">RX</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">T</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>\
+<span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">RY</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">RZ</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">cir2</span><span class="o">.</span><span class="n">set_dagger</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">cir</span> <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">cir2</span> <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">CR</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">prog</span> <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">S</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> \
+    <span class="o">&lt;&lt;</span> <span class="n">cir</span>\
+    <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">CNOT</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">CZ</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">measure_all</span><span class="p">(</span><span class="n">q</span><span class="p">,</span><span class="n">c</span><span class="p">)</span>
+
+    <span class="n">iter_first</span> <span class="o">=</span> <span class="n">cir</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span>
+
+    <span class="n">iter_second</span> <span class="o">=</span> <span class="n">cir2</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span>
+    <span class="c1">#iter_second = iter_second.get_next()</span>
+    <span class="c1">#iter_second = iter_second.get_next()</span>
+    <span class="c1">#iter_second = iter_second.get_next()</span>
+
+    <span class="nb">type</span> <span class="o">=</span><span class="n">iter_first</span><span class="o">.</span><span class="n">get_node_type</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">pq</span><span class="o">.</span><span class="n">NodeType</span><span class="o">.</span><span class="n">GATE_NODE</span> <span class="o">==</span> <span class="nb">type</span><span class="p">:</span>
+        <span class="n">gate</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QGate</span><span class="p">(</span><span class="n">iter_first</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">gate</span><span class="o">.</span><span class="n">gate_type</span><span class="p">())</span>
+
+    <span class="nb">type</span> <span class="o">=</span><span class="n">iter_second</span><span class="o">.</span><span class="n">get_node_type</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">pq</span><span class="o">.</span><span class="n">NodeType</span><span class="o">.</span><span class="n">GATE_NODE</span> <span class="o">==</span> <span class="nb">type</span><span class="p">:</span>
+        <span class="n">gate</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QGate</span><span class="p">(</span><span class="n">iter_second</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">gate</span><span class="o">.</span><span class="n">gate_type</span><span class="p">())</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">is_swappable</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">iter_first</span><span class="p">,</span> <span class="n">iter_second</span><span class="p">))</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Could be swapped !</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Could NOT be swapped.&#39;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span><span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">init_machine</span> <span class="o">=</span> <span class="n">InitQMachine</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
+    <span class="n">qlist</span> <span class="o">=</span> <span class="n">init_machine</span><span class="o">.</span><span class="n">m_qlist</span>
+    <span class="n">clist</span> <span class="o">=</span> <span class="n">init_machine</span><span class="o">.</span><span class="n">m_clist</span>
+    <span class="n">machine</span> <span class="o">=</span> <span class="n">init_machine</span><span class="o">.</span><span class="n">m_machine</span>
+
+    <span class="n">test_is_swappable</span><span class="p">(</span><span class="n">qlist</span><span class="p">,</span> <span class="n">clist</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Test over.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="judge-whether-the-logic-gates-are-of-a-set-of-quantum-logic-gates-supported-by-the-quantum-chip">
+<h2>3.8 Judge whether the logic gates are of a set of quantum logic gates supported by the quantum chip<a class="headerlink" href="#judge-whether-the-logic-gates-are-of-a-set-of-quantum-logic-gates-supported-by-the-quantum-chip" title="永久链接至标题"></a></h2>
+<p>A set of quantum logic gates supported by the quantum chip can be
+configured in the metadata configuration file QPandaConfig.xml. If we do
+not set the configuration files, QPanda sets a default set of quantum
+logic gates.</p>
+<p>The default collection is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">single_gates</span><span class="o">.</span><span class="n">push_back</span><span class="p">(</span><span class="s2">&quot;RX&quot;</span><span class="p">);</span>
+<span class="n">single_gates</span><span class="o">.</span><span class="n">push_back</span><span class="p">(</span><span class="s2">&quot;RY&quot;</span><span class="p">);</span>
+<span class="n">single_gates</span><span class="o">.</span><span class="n">push_back</span><span class="p">(</span><span class="s2">&quot;RZ&quot;</span><span class="p">);</span>
+<span class="n">single_gates</span><span class="o">.</span><span class="n">push_back</span><span class="p">(</span><span class="s2">&quot;X1&quot;</span><span class="p">);</span>
+<span class="n">single_gates</span><span class="o">.</span><span class="n">push_back</span><span class="p">(</span><span class="s2">&quot;H&quot;</span><span class="p">);</span>
+<span class="n">single_gates</span><span class="o">.</span><span class="n">push_back</span><span class="p">(</span><span class="s2">&quot;S&quot;</span><span class="p">);</span>
+
+<span class="n">double_gates</span><span class="o">.</span><span class="n">push_back</span><span class="p">(</span><span class="s2">&quot;CNOT&quot;</span><span class="p">);</span>
+<span class="n">double_gates</span><span class="o">.</span><span class="n">push_back</span><span class="p">(</span><span class="s2">&quot;CZ&quot;</span><span class="p">);</span>
+<span class="n">double_gates</span><span class="o">.</span><span class="n">push_back</span><span class="p">(</span><span class="s2">&quot;ISWAP&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The configuration file can be set according to the following example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;QGate&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;SingleGate&quot;</span><span class="p">:{</span>
+        <span class="s2">&quot;U3&quot;</span><span class="p">:{</span><span class="s2">&quot;time&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;DoubleGate&quot;</span><span class="p">:{</span>
+        <span class="s2">&quot;CNOT&quot;</span><span class="p">:{</span><span class="s2">&quot;time&quot;</span><span class="p">:</span><span class="mi">2</span><span class="p">},</span>
+        <span class="s2">&quot;CZ&quot;</span><span class="p">:{</span><span class="s2">&quot;time&quot;</span><span class="p">:</span><span class="mi">2</span><span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>It can be seen from the above examples that the quantum chip supports
+RX, RY, RZ, S, H, X1, CNOT, CZ and ISWAP gates. We may call the
+interface <code class="docutils literal notranslate"><span class="pre">is_supported_qgate_type</span></code> upon the configuration of the
+configuration file, to determine whether the logic gate falls into the
+quantum logic gate set that the quantum chip supports. The interface
+<code class="docutils literal notranslate"><span class="pre">is_supported_qgate_type</span></code> only has one parameter: target quantum logic
+gate.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pyqpanda.pyQPanda</span> <span class="k">as</span> <span class="nn">pq</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
+<span class="k">class</span> <span class="nc">InitQMachine</span><span class="p">:</span>
+<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quBitCnt</span><span class="p">,</span> <span class="n">cBitCnt</span><span class="p">,</span>\
+ <span class="n">machineType</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_machine</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">machineType</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_qlist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">m_machine</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="n">quBitCnt</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_clist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">m_machine</span><span class="o">.</span><span class="n">cAlloc_many</span><span class="p">(</span><span class="n">cBitCnt</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_prog</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QProg</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">pq</span><span class="o">.</span><span class="n">destroy_quantum_machine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m_machine</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">test_support_qgate_type</span><span class="p">():</span>
+    <span class="n">machine</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">)</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">cAlloc_many</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+
+    <span class="n">prog</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QProg</span><span class="p">()</span>
+    <span class="n">prog</span> <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">is_supported_qgate_type</span><span class="p">(</span><span class="n">prog</span><span class="o">.</span><span class="n">begin</span><span class="p">())</span>
+    <span class="k">if</span> <span class="n">result</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Support !</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Unsupport !&#39;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span><span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">init_machine</span> <span class="o">=</span> <span class="n">InitQMachine</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
+    <span class="n">qlist</span> <span class="o">=</span> <span class="n">init_machine</span><span class="o">.</span><span class="n">m_qlist</span>
+    <span class="n">clist</span> <span class="o">=</span> <span class="n">init_machine</span><span class="o">.</span><span class="n">m_clist</span>
+    <span class="n">machine</span> <span class="o">=</span> <span class="n">init_machine</span><span class="o">.</span><span class="n">m_machine</span>
+
+    <span class="n">test_support_qgate_type</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Test over.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition-note admonition">
+<p class="admonition-title">Note</p>
+<p>The user may access the default configuration file QPandaConfig.json through the following link, and place it under the same directory as the executive program, which will automatically parse the file.</p>
+</div>
+</section>
+<section id="character-drawing-of-quantum-circuit">
+<h2>3.9 Character drawing of quantum circuit<a class="headerlink" href="#character-drawing-of-quantum-circuit" title="永久链接至标题"></a></h2>
+<p>At present, PyQPanda provides three visualization methods of quantum
+circuit. Please refer to the following examples for specific usage
+methods.</p>
+<section id="id10">
+<h3>3.9.1 Example<a class="headerlink" href="#id10" title="永久链接至标题"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pyqpanda.pyQPanda</span> <span class="k">as</span> <span class="nn">pq</span>
+<span class="kn">from</span> <span class="nn">pyqpanda.Visualization.circuit_draw</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="k">class</span> <span class="nc">InitQMachine</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quBitCnt</span><span class="p">,</span> <span class="n">cBitCnt</span><span class="p">,</span> <span class="n">machineType</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_machine</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">machineType</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_qlist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">m_machine</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="n">quBitCnt</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_clist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">m_machine</span><span class="o">.</span><span class="n">cAlloc_many</span><span class="p">(</span><span class="n">cBitCnt</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">pq</span><span class="o">.</span><span class="n">destroy_quantum_machine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m_machine</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">test_print_qcircuit</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+    <span class="c1"># Building quantum programs</span>
+    <span class="n">prog</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QCircuit</span><span class="p">()</span>
+    <span class="n">prog</span> <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">CU</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">S</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>\
+         <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">CNOT</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">CZ</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>\
+ <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">CR</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">prog</span><span class="o">.</span><span class="n">set_dagger</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;draw_qprog:&#39;</span><span class="p">)</span>
+
+<span class="c1"># Through print directly outputs the character drawing of quantum</span>
+<span class="c1"># circuit. This method will output the quantum circuit in the console,</span>
+<span class="c1"># and the output format is uft8 encoding. Therefore, in the console</span>
+<span class="c1"># with non-uft8 encoding, the character drawing of output will be</span>
+<span class="c1"># garbled.</span>
+
+<span class="c1"># At the same time, this method will save the current quantum circuit</span>
+<span class="c1">#character drawing information to the file named  QCircuitTextPic.txt</span>
+<span class="c1"># the file is encoded with uft8 and saved under the face path.</span>
+<span class="c1"># Therefore, users can also view quantum circuit information through</span>
+<span class="c1"># this file. Note that the file must be opened in uft8 format,</span>
+<span class="c1"># otherwise garbled characters will appear.</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">prog</span><span class="p">)</span>
+<span class="c1"># Output quantum circuit character drawing through draw_qprog</span>
+<span class="c1"># interface. The function of this method is the same as print method,</span>
+<span class="c1"># but the difference is that this interface can specify the console</span>
+<span class="c1"># encoding type to ensure that the quantum circuit character drawing</span>
+<span class="c1"># output on the console can be displayed normally.</span>
+<span class="c1"># The &quot;console_encode_type&quot; parameter is used to specify the console</span>
+<span class="c1"># type. Currently, two encoding modes are supported: utf8 and gbk. The</span>
+<span class="c1"># default is utf8</span>
+    <span class="n">draw_qprog</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="n">console_encode_type</span><span class="o">=</span><span class="s1">&#39;gbk&#39;</span><span class="p">)</span>
+<span class="c1"># The draw_qprog interface can also save the quantum circuit as a</span>
+<span class="c1"># picture, called as follows. The “filename” parameter is used to</span>
+<span class="c1"># specify a filename to save.</span>
+    <span class="n">draw_qprog</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="s1">&#39;pic&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;D:/test_cir_draw.png&#39;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span><span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">init_machine</span> <span class="o">=</span> <span class="n">InitQMachine</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
+    <span class="n">qlist</span> <span class="o">=</span> <span class="n">init_machine</span><span class="o">.</span><span class="n">m_qlist</span>
+    <span class="n">clist</span> <span class="o">=</span> <span class="n">init_machine</span><span class="o">.</span><span class="n">m_clist</span>
+    <span class="n">machine</span> <span class="o">=</span> <span class="n">init_machine</span><span class="o">.</span><span class="n">m_machine</span>
+
+    <span class="n">test_print_qcircuit</span><span class="p">(</span><span class="n">qlist</span><span class="p">,</span> <span class="n">clist</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The above example demonstrates the <code class="docutils literal notranslate"><span class="pre">draw_qprog</span></code> interface, respectively.
+The output from the above code is as follows:</p>
+<figure class="align-default">
+<img alt="" src="../_images/3.3.png" />
+</figure>
+<p>The output quantum circuit picture effect is as follows:</p>
+<figure class="align-default">
+<img alt="" src="../_images/3.6.png" />
+</figure>
+<p>The parameters of <code class="docutils literal notranslate"><span class="pre">draw_qprog()</span></code> are described as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="sd">&quot;&quot;&quot;Draw a quantum circuit to different formats (set by output parameter):</span>
+
+<span class="sd">**text**: ASCII art TextDrawing that can be printed in the console.</span>
+
+<span class="sd">**pic**: images with color rendered purely in Python.</span>
+
+<span class="sd">Args:</span>
+<span class="sd">    prog : the quantum circuit to draw</span>
+<span class="sd">    scale (float): scale of image to draw (shrink if &lt; 1). Only used by the ``pic`` outputs.</span>
+<span class="sd">    filename (str): file path to save image to</span>
+<span class="sd">    NodeIter_first: circuit printing start position.</span>
+<span class="sd">    NodeIter_second: circuit printing end position.</span>
+<span class="sd">    console_encode_type(str): Target console encoding type.</span>
+<span class="sd">        Mismatching of encoding types may result in character confusion, &#39;utf8&#39; and &#39;gbk&#39; are supported.</span>
+<span class="sd">        Only used by the ``pic`` outputs.</span>
+<span class="sd">    line_length (int): Sets the length of the lines generated by `text` output type.</span>
+
+<span class="sd">Returns: no return</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span> <span class="nf">draw_qprog</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">line_length</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">NodeIter_first</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> \
+<span class="n">NodeIter_second</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">console_encode_type</span> <span class="o">=</span> <span class="s1">&#39;utf8&#39;</span><span class="p">):</span>
+</pre></div>
+</div>
+<p>As a demonstration, we change the <code class="docutils literal notranslate"><span class="pre">test_print_qcircuit()</span></code> interface
+implementation from the example code above to the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">prog</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QCircuit</span><span class="p">()</span>
+<span class="n">prog</span> <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">CU</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">S</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">CNOT</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">CZ</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">pq</span><span class="o">.</span><span class="n">CR</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">iter_start</span> <span class="o">=</span> <span class="n">prog</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span>
+<span class="n">iter_end</span> <span class="o">=</span> <span class="n">iter_start</span><span class="o">.</span><span class="n">get_next</span><span class="p">()</span>
+<span class="n">iter_end</span> <span class="o">=</span> <span class="n">iter_end</span><span class="o">.</span><span class="n">get_next</span><span class="p">()</span>
+<span class="n">iter_end</span> <span class="o">=</span> <span class="n">iter_end</span><span class="o">.</span><span class="n">get_next</span><span class="p">()</span>
+<span class="n">prog</span><span class="o">.</span><span class="n">set_dagger</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">draw_qprog</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="n">NodeIter_first</span><span class="o">=</span><span class="n">iter_start</span><span class="p">,</span> <span class="n">NodeIter_second</span><span class="o">=</span><span class="n">iter_end</span><span class="p">,</span> <span class="n">console_encode_type</span><span class="o">=</span><span class="s1">&#39;gbk&#39;</span><span class="p">)</span>
+<span class="n">draw_qprog</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="s1">&#39;pic&#39;</span><span class="p">,</span> <span class="n">NodeIter_first</span><span class="o">=</span><span class="n">iter_start</span><span class="p">,</span> <span class="n">NodeIter_second</span><span class="o">=</span><span class="n">iter_end</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;D:/test_cir_draw.jpg&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The above example code will output only the first 4 logical gate nodes
+of prog, users can replace the above code to the previous example
+program, run to view the results, not repeated here.</p>
+</section>
+</section>
+<section id="quantum-volume">
+<h2>3.10 Quantum volume<a class="headerlink" href="#quantum-volume" title="永久链接至标题"></a></h2>
+<section id="id11">
+<h3>3.10.1 Introduction<a class="headerlink" href="#id11" title="永久链接至标题"></a></h3>
+<p>Quantum volume is a protocol used to evaluate the performance of the
+quantum computing system. It represents the random circuit with the
+maximum equal width depth that can be performed on the system. The
+higher the operating fidelity of the quantum computing system is, the
+higher the correlation is; the larger the gate operation set calibrated
+is, the higher the quantum volume is. Quantum volume relates to the
+overall performance of the system, including the overall error rate of
+the system, potential physical qubit correlation, and gate operation
+parallelism. Generally speaking, quantum volume is practical method for
+making an overall evaluation of the quantum computing system in the near
+future; the higher the value is, the lower the overall error rate of the
+system is, the better the performance is.</p>
+<p>To measure the quantum volume in a standard way is to perform random
+circuit operations for the system with specified quantum circuit model,
+entangle qubits as far as possible, and compare the experimental results
+with the simulated results. The statistical results are analyzed as
+required.</p>
+<p>Quantum volume is defined in the exponential form:</p>
+<div class="math notranslate nohighlight">
+\[V_{Q}=2^{n}\]</div>
+<p>Where n is the maximum logical depth of system operation under the given
+number of qubits m (m is greater than n) and the completion of computing
+tasks; if the maximum executive logical depth of the chip n is greater
+than the number of qubits m, the quantum volume of the system is</p>
+<div class="math notranslate nohighlight">
+\[2^M\]</div>
+</section>
+<section id="interface-description">
+<h3>3.10.2 Interface description<a class="headerlink" href="#interface-description" title="永久链接至标题"></a></h3>
+<p>The input parameters of <code class="docutils literal notranslate"><span class="pre">calculate_quantum_volume</span></code> are the noise
+simulator or quantum cloud machine, qubit to be measured, number of
+random iterations, and number of measurements. The output is size_t,
+which is the quantum volume size.</p>
+</section>
+<section id="id12">
+<h3>3.10.3 Example<a class="headerlink" href="#id12" title="永久链接至标题"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyqpanda</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span><span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1"># Create a noise simulator and set noise parameters</span>
+    <span class="n">qvm</span> <span class="o">=</span> <span class="n">NoiseQVM</span><span class="p">()</span>
+    <span class="n">qvm</span><span class="o">.</span><span class="n">init_qvm</span><span class="p">()</span>
+    <span class="n">qvm</span><span class="o">.</span><span class="n">set_noise_model</span><span class="p">(</span><span class="n">NoiseModel</span><span class="o">.</span><span class="n">DEPOLARIZING_KRAUS_OPERATOR</span><span class="p">,</span> <span class="n">GateType</span><span class="o">.</span><span class="n">CZ_GATE</span><span class="p">,</span> <span class="mf">0.005</span><span class="p">)</span>
+
+<span class="c1"># You can also apply for cloud computing machines (using real chips), using real chips</span>
+<span class="c1"># to consider the chip structure</span>
+    <span class="c1">#qvm = QCloud()</span>
+    <span class="c1">#qvm.init_qvm(&quot;898D47CF515A48CEAA9F2326394B85C6&quot;)</span>
+
+<span class="c1"># Construct the qubit combination to be measured, where the qubit combination is two</span>
+<span class="c1"># groups; the qubit 3 and 4 are a group, qubits 2, 3, and 5 are a group.</span>
+<span class="n">qubit_lists</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">]]</span>
+
+    <span class="c1"># Set the number of random iterations</span>
+    <span class="n">ntrials</span> <span class="o">=</span> <span class="mi">100</span>
+
+    <span class="c1"># Set the measurement times, namely real chip or noise simulator shots value</span>
+    <span class="n">shots</span> <span class="o">=</span> <span class="mi">2000</span>
+    <span class="n">qv_result</span> <span class="o">=</span> <span class="n">calculate_quantum_volume</span><span class="p">(</span><span class="n">qvm</span><span class="p">,</span> <span class="n">qubit_lists</span><span class="p">,</span> <span class="n">ntrials</span><span class="p">,</span> <span class="n">shots</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Quantum Volume : &quot;</span><span class="p">,</span> <span class="n">qv_result</span><span class="p">)</span>
+    <span class="n">qvm</span><span class="o">.</span><span class="n">finalize</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Running results:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Quantum Volume ： 8
+</pre></div>
+</div>
+</section>
+</section>
+<section id="random-benchmark">
+<h2>3.11 Random benchmark<a class="headerlink" href="#random-benchmark" title="永久链接至标题"></a></h2>
+<section id="id13">
+<h3>3.11.1 Introduction<a class="headerlink" href="#id13" title="永久链接至标题"></a></h3>
+<p>Random benchmark (RB) is a benchmark test for quantum gates with a
+randomization method. Since the complete process tomography doesn’t work
+for the large system, more attention is paid to the extensible method,
+to characterize noise that affects the quantum system. An extensible and
+robust algorithm (a system comprising n qubits) is put forward in
+<a class="reference external" href="https://arxiv.org/pdf/1009.3639">[1]</a>, i.e. benchmark test is
+performed for the whole Clifford gate by a single parameter with the
+randomizing technique.</p>
+</section>
+<section id="id14">
+<h3>3.11.2 Interface description<a class="headerlink" href="#id14" title="永久链接至标题"></a></h3>
+<p>The input parameters of <code class="docutils literal notranslate"><span class="pre">single_qubit_rb</span></code> are the noise simulator or
+quantum cloud machine, qubit to be measured, a different number of
+combinations of random circuit clifford gate sets, number of random
+circuits, number of measurements, verification of basic logic gate
+(default: none), output being <code class="docutils literal notranslate"><span class="pre">std::map</span></code> data, key value being the number
+of clifford gate sets, and value corresponding to the expected
+probability.</p>
+<p>The input parameters of <code class="docutils literal notranslate"><span class="pre">double_qubit_rb</span></code> are the noise simulator or
+quantum cloud machine, qubit 0 to be measured, qubit 1 to be measured, a
+different number of combinations of random circuit clifford gate sets,
+number of random circuits, number of measurements, verification of basic
+logic gate (default: none), output being <code class="docutils literal notranslate"><span class="pre">std::map</span></code> data, key value being
+the number of clifford gate sets, and value corresponding to the
+expected probability.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyqpanda</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span><span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1"># Build a noise simulator and adjust the noise to simulate the real chip</span>
+    <span class="n">qvm</span> <span class="o">=</span> <span class="n">NoiseQVM</span><span class="p">()</span>
+    <span class="n">qvm</span><span class="o">.</span><span class="n">init_qvm</span><span class="p">()</span>
+    <span class="n">qvm</span><span class="o">.</span><span class="n">set_noise_model</span><span class="p">(</span><span class="n">NoiseModel</span><span class="o">.</span><span class="n">DEPOLARIZING_KRAUS_OPERATOR</span><span class="p">,</span> <span class="n">GateType</span><span class="o">.</span><span class="n">CZ_GATE</span><span class="p">,</span> <span class="mf">0.005</span><span class="p">)</span>
+<span class="n">qvm</span><span class="o">.</span><span class="n">set_noise_model</span><span class="p">(</span><span class="n">NoiseModel</span><span class="o">.</span><span class="n">DEPOLARIZING_KRAUS_OPERATOR</span><span class="p">,</span> <span class="n">GateType</span><span class="o">.</span><span class="n">PAULI_Y_GATE</span><span class="p">,</span>\ <span class="mf">0.005</span><span class="p">)</span>
+    <span class="n">qv</span> <span class="o">=</span> <span class="n">qvm</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+
+    <span class="c1"># You can also apply for cloud computing machines (with real chips)</span>
+    <span class="c1"># qvm =  QCloud()</span>
+    <span class="c1"># qvm.init_qvm(&quot;898D47CF515A48CEAA9F2326394B85C6&quot;)</span>
+
+    <span class="c1"># Set the number of Clifford gates in a random line</span>
+    <span class="nb">range</span> <span class="o">=</span> <span class="p">[</span> <span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">15</span> <span class="p">]</span>
+
+    <span class="c1"># Measuring a single qubit random reference</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">single_qubit_rb</span><span class="p">(</span><span class="n">qvm</span><span class="p">,</span> <span class="n">qv</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">range</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+
+    <span class="c1"># It is also possible to measure two-qubit random datum</span>
+    <span class="c1">#res = double_qubit_rb(qvm, qv[0], qv[1], range, 10, 1000)</span>
+
+<span class="c1"># With the influence of noise, the larger the noise value is, the smaller the result</span>
+<span class="c1"># is. And with the increase of Clifford gate set, the smaller the result is.</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+
+    <span class="n">qvm</span><span class="o">.</span><span class="n">finalize</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="id15">
+<h3>3.11.3 Example<a class="headerlink" href="#id15" title="永久链接至标题"></a></h3>
+<p>Running results:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="mi">5</span><span class="p">:</span> <span class="mf">0.9996</span><span class="p">,</span> <span class="mi">10</span><span class="p">:</span> <span class="mf">0.9999</span><span class="p">,</span> <span class="mi">15</span><span class="p">:</span> <span class="mf">0.9993000000000001</span><span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="cross-entropy-benchmark">
+<h2>3.12 Cross-entropy benchmark<a class="headerlink" href="#cross-entropy-benchmark" title="永久链接至标题"></a></h2>
+<section id="id16">
+<h3>3.12.1 Introduction<a class="headerlink" href="#id16" title="永久链接至标题"></a></h3>
+<p>Cross-entropy benchmark (xeb) is a method used to evaluate the gate
+performance by applying the random circuits and measuring the
+cross-entropy between the observed values of bit strings and the
+expected probability of such bit strings obtained from the simulation.</p>
+</section>
+<section id="id17">
+<h3>3.12.2 Interface description<a class="headerlink" href="#id17" title="永久链接至标题"></a></h3>
+<p>The input parameters of <code class="docutils literal notranslate"><span class="pre">double_gate_xeb</span></code> are the noise simulator or
+quantum cloud machine, qubit 0 to be measured, qubit 1 to be measured,
+different layers of circuits, number of random circuits, number of
+measurements, verification of double-gate type (default: CZ gate),
+output being std::map data, key value being the number of circuit
+layers, and value corresponding to the expected probability.</p>
+</section>
+<section id="id18">
+<h3>3.12.3 Example<a class="headerlink" href="#id18" title="永久链接至标题"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyqpanda</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span><span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="c1"># Build a noise simulator and adjust the noise to simulate the real chip</span>
+    <span class="n">qvm</span> <span class="o">=</span> <span class="n">NoiseQVM</span><span class="p">()</span>
+    <span class="n">qvm</span><span class="o">.</span><span class="n">init_qvm</span><span class="p">()</span>
+    <span class="n">qv</span> <span class="o">=</span> <span class="n">qvm</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+
+    <span class="c1"># Setting noise Parameters</span>
+    <span class="n">qvm</span><span class="o">.</span><span class="n">set_noise_model</span><span class="p">(</span><span class="n">NoiseModel</span><span class="o">.</span><span class="n">DEPOLARIZING_KRAUS_OPERATOR</span><span class="p">,</span> <span class="n">GateType</span><span class="o">.</span><span class="n">CZ_GATE</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+
+    <span class="c1"># You can also apply for cloud computing machines (with real chips)</span>
+    <span class="c1"># qvm =  QCloud()</span>
+    <span class="c1"># qvm.init_qvm(&quot;898D47CF515A48CEAA9F2326394B85C6&quot;)</span>
+
+    <span class="c1"># Set different layer combinations</span>
+    <span class="nb">range</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">10</span><span class="p">]</span>
+    <span class="c1"># Currently, the main testable dual-gate types are CZ CNOT SWAP ISWAP SQISWAP</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">double_gate_xeb</span><span class="p">(</span><span class="n">qvm</span><span class="p">,</span> <span class="n">qv</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">qv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">range</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">GateType</span><span class="o">.</span><span class="n">CZ_GATE</span><span class="p">)</span>
+<span class="c1"># With the influence of noise, the larger the noise value is, the smaller the result</span>
+<span class="c1"># will be; and the number of layer increases, the smaller the result will be.</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+
+    <span class="n">qvm</span><span class="o">.</span><span class="n">finalize</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Running results:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="mi">2</span><span class="p">:</span> <span class="mf">0.9922736287117004</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span> <span class="mf">0.9303175806999207</span><span class="p">,</span> <span class="mi">6</span><span class="p">:</span> <span class="mf">0.7203856110572815</span><span class="p">,</span> <span class="mi">8</span><span class="p">:</span> <span class="mf">0.7342230677604675</span><span class="p">,</span> <span class="mi">10</span><span class="p">:</span> <span class="mf">0.7967881560325623</span><span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../chapter2/index.html" class="btn btn-neutral float-left" title="2 Deep learning" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> 上一页</a>
+        <a href="../chapter4/index.html" class="btn btn-neutral float-right" title="4 Compiling of quantum program" accesskey="n" rel="next">下一页 <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2021, BYLZ.</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用了 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a>开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,934 @@
+.. pyQPanda documentation master file, created by
+   sphinx-quickstart on Sat Oct  9 14:45:08 2021.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+
+**3 量子程序信息**
+==================
+
+**3.1 NodeIter**
+----------------
+
+NodeIter，是pyQPanda对外提供的 QProg 或者 QCircuit
+遍历迭代器，我们可以通过NodeIter很方便的管理我们的量子程序。
+
+3.1.1 接口介绍
+~~~~~~~~~~~~~~
+
+目前NodeIter主要提供以下几种操作：
+
+获取下一个节点
+
+::
+
+    iter = iter.get_next()
+
+获取前项节点
+
+::
+
+    iter = iter.get_pre()
+
+获取节点类型
+
+::
+
+    type = iter.get_node_type()
+
+通过迭代器构造QProg
+
+::
+
+    type = iter.get_node_type()
+    if pq.NodeType.PROG_NODE == type:
+        prog = pq.QProg(iter)
+
+通过迭代器构造量子线路QCircuit
+
+::
+
+    type = iter.get_node_type()
+    if pq.NodeType.CIRCUIT_NODE == type:
+        cir = pq.QCircuit(iter)
+
+通过迭代器构造QGate
+
+::
+
+    type = iter.get_node_type()
+    if pq.NodeType.GATE_NODE == type:
+        gate = pq.QGate(iter)
+
+通过迭代器构造QIfProg
+
+::
+
+    type = iter.get_node_type()
+    if pq.NodeType.QIF_START_NODE == type:
+        if_prog = pq.QIfProg(iter)
+
+通过迭代器构造QWhileProg
+
+::
+
+    type = iter.get_node_type()
+    if pq.NodeType.WHILE_START_NODE == type:
+        while_prog = pq.QWhileProg(iter)
+
+通过迭代器构造QMeasure
+
+::
+
+    type = iter.get_node_type()
+    if pq.NodeType.MEASURE_GATE == type:
+        measure_gate = pq.QMeasure(iter)
+
+3.1.2 实例
+~~~~~~~~~~
+
+以下实例程序是通过 NodeIter
+实现遍历一个QProg，并输出各个节点逻辑门类型的功能：
+
+::
+
+    import pyqpanda.pyQPanda as pq
+    import math
+
+    machine = pq.init_quantum_machine(pq.QMachineType.CPU)
+    q = machine.qAlloc_many(8)
+    c = machine.cAlloc_many(8)
+    prog = pq.QProg()
+
+    prog << pq.H(q[0]) << pq.S(q[2]) << pq.CNOT(q[0], q[1]) << pq.CZ(q[1], q[2]) << pq.CR(q[1], q[2], math.pi/2)
+    iter = prog.begin()
+    iter_end = prog.end()
+    while  iter != iter_end:
+        if pq.NodeType.GATE_NODE == iter.get_node_type():
+            gate = pq.QGate(iter)
+            print(gate.gate_type())
+        iter = iter.get_next()
+    else:
+        print('Traversal End.\n')
+
+    pq.destroy_quantum_machine(machine)
+
+反向遍历：
+
+::
+
+    import pyqpanda.pyQPanda as pq
+    import math
+
+    machine = pq.init_quantum_machine(pq.QMachineType.CPU)
+    q = machine.qAlloc_many(8)
+    c = machine.cAlloc_many(8)
+    prog = pq.QProg()
+
+    prog << pq.H(q[0]) << pq.S(q[2]) << pq.CNOT(q[0], q[1]) << pq.CZ(q[1], q[2]) << pq.CR(q[1], q[2], math.pi/2)
+    iter_head = prog.head()
+    iter = prog.last()
+    while  iter != iter_head:
+        if pq.NodeType.GATE_NODE == iter.get_node_type():
+            gate = pq.QGate(iter)
+            print(gate.gate_type())
+        iter = iter.get_pre()
+    else:
+        print('Traversal End.\n')
+
+**3.2 逻辑门统计**
+------------------
+
+3.2.1 简介
+~~~~~~~~~~
+
+逻辑门的统计是指统计量子程序、量子线路、量子循环控制或量子条件控制中所有的量子逻辑门（这里也会将测量门统计进去）个数方法。
+
+3.2.2 接口介绍
+~~~~~~~~~~~~~~
+
+我们先用pyqpanda构建一个量子程序：
+
+::
+
+    prog = QProg()
+    prog << X(qubits[0]) << Y(qubits[1])\
+         << H(qubits[0]) << RX(qubits[0], 3.14)\
+         << Measure(qubits[0], cbits[0])
+
+然后调用接口 get\_qgate\_num 统计量子逻辑门的个数
+
+::
+
+    number = get_qgate_num(prog)
+
+*注解：*
+
+统计 QCircuit 、 QWhileProg 、QIfProg 中量子逻辑门的个数和 QProg 类似。
+
+3.2.3 实例
+~~~~~~~~~~
+
+::
+
+    from pyqpanda import *
+
+    if __name__ == "__main__":
+        qvm = init_quantum_machine(QMachineType.CPU)
+        qubits = qvm.qAlloc_many(2)
+        cbits = qvm.cAlloc_many(2)
+
+        prog = QProg()
+
+        # 构建量子程序
+        prog << X(qubits[0]) << Y(qubits[1])\
+            << H(qubits[0]) << RX(qubits[0], 3.14)\
+            << Measure(qubits[0], cbits[0])
+
+        # 统计逻辑门个数
+        number = get_qgate_num(prog)
+        print("QGate number: " + str(number))
+
+        qvm.finalize()
+
+运行结果：
+
+::
+
+    QGate number: 4
+
+*警告：*
+
+新版本中接口名有所调整，旧接口 count\_gate 将由 get\_qgate\_num 替代。
+
+count\_gate 将于下版本去除，请读者知悉。
+
+3.3 **统计量子程序时钟周期**
+----------------------------
+
+3.3.1 简介
+~~~~~~~~~~
+
+已知每个量子逻辑门在运行时所需时间的条件下，估算一个量子程序运行所需要的时间。每个量子逻辑门的时间设置在项目的元数据配置文件
+QPandaConfig.xml 中，
+如果未设置则会给定一个默认值，单量子门的默认时间为2，双量子门的时间为5。
+
+配置文件可仿照下面设置：
+
+::
+
+    "QGate": {
+        "SingleGate":{
+            "U3":{"time":1}
+        },
+        "DoubleGate":{
+            "CNOT":{"time":2},
+            "CZ":{"time":2}
+        }
+    }
+
+3.3.2 接口介绍
+~~~~~~~~~~~~~~
+
+我们先用pyQPanda构建一个量子程序：
+
+::
+
+    prog = QProg()
+    prog << H(qubits[0]) << CNOT(qubits[0], qubits[1])\
+         << iSWAP(qubits[1], qubits[2]) << RX(qubits[3], np.pi / 4)
+
+然后调用 get\_qprog\_clock\_cycle 接口得到量子程序的时钟周期
+
+::
+
+    clock_cycle = get_qprog_clock_cycle(qvm, prog)
+
+3.3.3 实例
+~~~~~~~~~~
+
+::
+
+    from pyqpanda import *
+    import numpy as np
+
+    if __name__ == "__main__":
+        qvm = init_quantum_machine(QMachineType.CPU)
+        qubits = qvm.qAlloc_many(4)
+        cbits = qvm.cAlloc_many(4)
+
+        # 构建量子程序
+        prog = QProg()
+        prog << H(qubits[0]) << CNOT(qubits[0], qubits[1])\
+             << iSWAP(qubits[1], qubits[2]) << RX(qubits[3], np.pi / 4)
+
+        # 统计量子程序时钟周期
+        clock_cycle = get_qprog_clock_cycle(prog, qvm)
+
+        print(clock_cycle)
+        destroy_quantum_machine(qvm)
+
+输出结果如下：
+
+::
+
+    5
+
+*警告：*
+
+新版本中接口名有所调整，旧接口
+get\_clock\_cycle将由get\_qprog\_clock\_cycle 替代。
+
+get\_clock\_cycle 将于下版本去除，请读者知悉。
+
+3.4 **获取量子线路对应矩阵**
+----------------------------
+
+接口 get\_matrix
+可以获得输入线路的对应矩阵，有3个输出参数，一个量子线路QCircuit(或者Qprog)，另外两个是可选参数：迭代器开始位置和结束位置，用于指定一个要获取对应矩阵信息的线路区间，如果这两个参数为空，代表要获取整个量子线路的矩阵信息。
+
+*注解：*
+
+使用 get\_matrix 需要注意的是量子线路中不能包含测量操作。
+
+3.4.1 实例
+~~~~~~~~~~
+
+::
+
+    import pyqpanda.pyQPanda as pq
+    import math
+
+    class InitQMachine:
+        def __init__(self, quBitCnt, cBitCnt, machineType = pq.QMachineType.CPU):
+            self.m_machine = pq.init_quantum_machine(machineType)
+            self.m_qlist = self.m_machine.qAlloc_many(quBitCnt)
+            self.m_clist = self.m_machine.cAlloc_many(cBitCnt)
+            self.m_prog = pq.QProg()
+
+        def __del__(self):
+            pq.destroy_quantum_machine(self.m_machine)
+
+    def test_get_matrix(q, c):
+        prog = pq.QProg()
+
+        # 构建量子程序
+        prog << pq.H(q[0]) \
+            << pq.S(q[2]) \
+            << pq.CNOT(q[0], q[1]) \
+            << pq.CZ(q[1], q[2]) \
+            << pq.CR(q[1], q[2], math.pi/2)
+
+        # 获取线路对应矩阵
+        result_mat = pq.get_matrix(prog)
+
+        # 打印矩阵信息
+        pq.print_matrix(result_mat)
+
+    if __name__=="__main__":
+        init_machine = InitQMachine(16, 16)
+        qlist = init_machine.m_qlist
+        clist = init_machine.m_clist
+        machine = init_machine.m_machine
+
+        test_get_matrix(qlist, clist)
+        print("Test over.")
+
+具体步骤如下:
+
+1. 首先在主程序中用 init\_quantum\_machine(pq.QMachineType.CPU)
+   初始化一个量子虚拟机对象，用于管理后续一系列行为
+2. 接着用 machine.qAlloc\_many() 和 machine.cAlloc\_many()
+   初始化量子比特与经典寄存器数目，这里分别申请8个量子比特和8个经典寄存器
+3. 然后构建 prog
+4. 确定计算矩阵信息的线路区间，即设置 iter\_start 和 iter\_end 的值
+5. 最后调用接口 get\_matrix 输出量子线路的对应矩阵, 可通过接口
+   print\_mat 接口打印获取到的矩阵信息
+
+3.5 **判断量子逻辑门是否匹配量子拓扑结构**
+------------------------------------------
+
+每一款量子芯片都有其特殊的量子比特拓扑结构,例如IBMQ 提供的
+ibmq\_16\_melbourne：
+
+.. figure:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/ibmq_16_melbourne.png
+   :alt: img
+
+   img
+从图中可知，量子芯片中的每个量子比特不是两两相连的，不相连的量子比特之间是不能直接执行多门操作的。所以在执行量子程序之前需要先判断量子程序中的双门（多门）操作是否适配量子比特拓扑结构。
+
+3.5.1 接口介绍
+~~~~~~~~~~~~~~
+
+is\_match\_topology：判断量子逻辑门是否符合量子比特拓扑结构。第一个输入参数是目标量子逻辑门QGate，第二个输入参数是量子比特拓扑结构，返回值为布尔值，表示目标量子逻辑门是否满足量子比特拓扑结构。True为满足，False为不满足。
+
+::
+
+    import pyqpanda.pyQPanda as pq
+    import math
+
+    class InitQMachine:
+        def __init__(self, quBitCnt, cBitCnt, machineType = pq.QMachineType.CPU):
+            self.m_machine = pq.init_quantum_machine(machineType)
+            self.m_qlist = self.m_machine.qAlloc_many(quBitCnt)
+            self.m_clist = self.m_machine.cAlloc_many(cBitCnt)
+            self.m_prog = pq.QProg()
+
+        def __del__(self):
+            pq.destroy_quantum_machine(self.m_machine)
+
+    def test_is_match_topology(q, c):
+        cx = pq.CNOT(q[1], q[3])
+
+        # 构建拓扑结构
+        qubits_topology = [[0,1,0,0,0],[1,0,1,1,0],[0,1,0,0,0],[0,1,0,0,1],[0,0,0,1,0]]
+
+        #判断逻辑门是否符合量子拓扑结构
+        if (pq.is_match_topology(cx,qubits_topology)) == True:
+            print('Match !\n')
+        else:
+            print('Not match.')
+
+    if __name__=="__main__":
+        init_machine = InitQMachine(16, 16)
+        qlist = init_machine.m_qlist
+        clist = init_machine.m_clist
+        machine = init_machine.m_machine
+        test_is_match_topology(qlist, clist)
+        print("Test over.")
+
+在使用 is\_match\_topology
+前需要先构建指定量子芯片的量子比特拓扑结构邻接矩阵qubits\_topology。
+
+从以上示例可以看出，qubits\_topology有5个量子比特，量子比特拓扑图如下：
+
+.. figure:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/ibmq_ourense.png
+   :alt: img
+
+   img
+CNOT逻辑门操作的是1,3号量子比特，而从图中可以看出1,3号量子比特是相连的，所以得到的结果为true。
+
+3.6 **获得指定位置的量子逻辑门的相邻量子逻辑门**
+------------------------------------------------
+
+接口 get\_adjacent\_qgate\_type
+可以获得量子程序中指定位置的量子逻辑门的相邻逻辑门。第一个输入参数为目标量子程序QProg，第二个是目标量子逻辑门在量子程序中的迭代器，返回结果是目标量子逻辑门的相邻量子逻辑门迭代器的集合。
+
+3.6.1 实例
+~~~~~~~~~~
+
+::
+
+    import pyqpanda.pyQPanda as pq
+    import math
+
+    class InitQMachine:
+        def __init__(self, quBitCnt, cBitCnt, machineType = pq.QMachineType.CPU):
+            self.m_machine = pq.init_quantum_machine(machineType)
+            self.m_qlist = self.m_machine.qAlloc_many(quBitCnt)
+            self.m_clist = self.m_machine.cAlloc_many(cBitCnt)
+            self.m_prog = pq.QProg()
+
+        def __del__(self):
+            pq.destroy_quantum_machine(self.m_machine)
+
+    def test_get_adjacent_qgate_type(qlist, clist):
+        prog = pq.QProg()
+
+        # 构建量子程序
+        prog << pq.T(qlist[0]) \
+            << pq.CNOT(qlist[1], qlist[2]) \
+            << pq.Reset(qlist[1]) \
+            << pq.H(qlist[3]) \
+            << pq.H(qlist[4])
+
+        iter = prog.begin()
+        iter = iter.get_next()
+        type =iter.get_node_type()
+        if pq.NodeType.GATE_NODE == type:
+            gate = pq.QGate(iter)
+            print(gate.gate_type())
+
+        # 获取指定位置前后逻辑门类型
+        list = pq.get_adjacent_qgate_type(prog,iter)
+        print(len(list))
+        print(len(list[0].m_target_qubits))
+        print(list[1].m_is_dagger)
+
+        node_type = list[0].m_node_type
+        print(node_type)
+        if node_type == pq.NodeType.GATE_NODE:
+            gateFront = pq.QGate(list[0].m_iter)
+            print(gateFront.gate_type())
+
+        node_type = list[1].m_node_type
+        print(node_type)
+        if node_type == pq.NodeType.GATE_NODE:
+            gateBack = pq.QGate(list[1].m_iter)
+            print(gateBack.gate_type())
+
+    if __name__=="__main__":
+        init_machine = InitQMachine(16, 16)
+        qlist = init_machine.m_qlist
+        clist = init_machine.m_clist
+        machine = init_machine.m_machine
+        test_get_adjacent_qgate_type(qlist, clist)
+        print("Test over.")
+
+以上实例展示 get\_adjacent\_qgate\_type 接口的使用方式：
+
+1. 构建一个量子程序prog；
+2. 指定位置信息，即设置iter
+3. 调用 get\_adjacent\_qgate\_type
+   接口获取iter的相邻逻辑门的迭代器集合。示例代码最后4行分别打印了获取到的逻辑门的类型
+
+在使用 get\_adjacent\_qgate\_type 接口时，我们需要注意以下几点：
+
+1. 目标量子逻辑门相邻量子逻辑门迭代器的集合永远包含两个元素；第一个元素是前一个量子逻辑门的迭代器，第二个元素是后一个量子逻辑门的迭代器。
+2. 如果目标量子逻辑门是量子程序的第一个节点，那么输出的参数目标量子逻辑门相邻量子逻辑门迭代器的集合中则只能获取目标量子逻辑门后一个量子逻辑门的迭代器，集合的第一个元素为空迭代器。
+3. 如果目标量子逻辑门是量子程序的最后一个量子逻辑门，那么输出的参数目标量子逻辑门相邻量子逻辑门迭代器的集合中则只能获取目标量子逻辑门前一个量子逻辑门的迭代器，集合的第二个元素为空迭代器。
+4. 如果目标量子逻辑门前一个节点是QIf或者QWhile，那么输出的参数目标量子逻辑门相邻量子逻辑门迭代器的集合中则只能获取目标量子逻辑门后一个量子逻辑门的迭代器，集合的第一个元素为空迭代器。
+5. 如果目标量子逻辑门后一个节点是QIf或者QWhile，那么输出的参数目标量子逻辑门相邻量子逻辑门迭代器的集合中则只能获取目标量子逻辑门前一个量子逻辑门的迭代器，集合的第二个元素为空迭代器。
+6. 如果目标量子逻辑门是QWhile的第一个量子逻辑门，那么输出的参数目标量子逻辑门相邻量子逻辑门迭代器的集合中则只能获取目标量子逻辑门后一个量子逻辑门的迭代器，集合的第一个元素为空迭代器。
+7. 如果目标量子逻辑门是QWhile的最后量子逻辑门，那么输出的参数目标量子逻辑门相邻量子逻辑门迭代器的集合中则只能获取目标量子逻辑门前一个量子逻辑门的迭代器，集合的第二个元素为空迭代器。
+
+3.7 **判断两个量子逻辑门是否可交换位置**
+----------------------------------------
+
+接口 is\_swappable
+可判断量子程序中两个指定位置的量子逻辑门是否可以交换位置。输入参数一为量子程序QProg，输入参数二，三是需要判断的两个量子逻辑门的迭代器。返回值为布尔值，True表示可交换，False表示不可交换。
+
+3.7.1 实例
+~~~~~~~~~~
+
+以下实例展示 is\_swappable 接口的使用方式：
+
+1. 构建一个量子程序prog, 这里列举了一个稍微复杂的带嵌套节点的量子程序；
+
+2. 获取嵌套节点cir的两个指定位置的迭代器：iter\_first和iter\_second；
+
+3. 调用 is\_swappable 接口判断指定位置的两个逻辑门能否交换位置,
+   并在控制台输出能否交换的判断结果。
+
+::
+
+    import pyqpanda.pyQPanda as pq
+    import math
+
+    class InitQMachine:
+        def __init__(self, quBitCnt, cBitCnt, machineType = pq.QMachineType.CPU):
+            self.m_machine = pq.init_quantum_machine(machineType)
+            self.m_qlist = self.m_machine.qAlloc_many(quBitCnt)
+            self.m_clist = self.m_machine.cAlloc_many(cBitCnt)
+            self.m_prog = pq.QProg()
+
+        def __del__(self):
+            pq.destroy_quantum_machine(self.m_machine)
+
+    #测试接口： 判断指定的两个逻辑门是否可以交换位置
+    def test_is_swappable(q, c):
+        prog = pq.QProg()
+        cir = pq.QCircuit()
+        cir2 = pq.QCircuit()
+        cir2 << pq.H(q[3]) << pq.RX(q[1], math.pi/2) << pq.T(q[2]) << pq.RY(q[3], math.pi/2) << pq.RZ(q[2], math.pi/2)
+        cir2.set_dagger(True)
+        cir << pq.H(q[1]) << cir2 << pq.CR(q[1], q[2], math.pi/2)
+        prog << pq.H(q[0]) << pq.S(q[2]) \
+        << cir\
+        << pq.CNOT(q[0], q[1]) << pq.CZ(q[1], q[2]) << pq.measure_all(q,c)
+
+        iter_first = cir.begin()
+
+        iter_second = cir2.begin()
+        #iter_second = iter_second.get_next()
+        #iter_second = iter_second.get_next()
+        #iter_second = iter_second.get_next()
+
+        type =iter_first.get_node_type()
+        if pq.NodeType.GATE_NODE == type:
+            gate = pq.QGate(iter_first)
+            print(gate.gate_type())
+
+        type =iter_second.get_node_type()
+        if pq.NodeType.GATE_NODE == type:
+            gate = pq.QGate(iter_second)
+            print(gate.gate_type())
+
+        if (pq.is_swappable(prog, iter_first, iter_second)) == True:
+            print('Could be swapped !\n')
+        else:
+            print('Could NOT be swapped.')
+
+    if __name__=="__main__":
+        init_machine = InitQMachine(16, 16)
+        qlist = init_machine.m_qlist
+        clist = init_machine.m_clist
+        machine = init_machine.m_machine
+
+        test_is_swappable(qlist, clist)
+        print("Test over.")
+
+3.8 **判逻辑门是否属于量子芯片支持的量子逻辑门集合**
+----------------------------------------------------
+
+量子芯片支持的量子逻辑门集合可在元数据配置文件QPandaConfig.xml中配置。如果我们没有设置配置文件，QPanda会默认设置一个默认量子逻辑门集合。
+
+默认集合如下所示：
+
+::
+
+    single_gates.push_back("RX");
+    single_gates.push_back("RY");
+    single_gates.push_back("RZ");
+    single_gates.push_back("X1");
+    single_gates.push_back("H");
+    single_gates.push_back("S");
+
+    double_gates.push_back("CNOT");
+    double_gates.push_back("CZ");
+    double_gates.push_back("ISWAP");
+
+配置文件可仿照下面设置:
+
+::
+
+    "QGate": {
+        "SingleGate":{
+            "U3":{"time":1}
+        },
+        "DoubleGate":{
+            "CNOT":{"time":2},
+            "CZ":{"time":2}
+        }
+    }
+
+从上面的示例中我们可以得到，量子芯片支持RX，RY，RZ，S，H，X1，CNOT，CZ，ISWAP门。在配置文件配置完成后，我们可以调用接口
+is\_supported\_qgate\_type
+，判断逻辑门是否属于量子芯片支持的量子逻辑门集合。is\_supported\_qgate\_type
+接口只有一个参数：目标量子逻辑门。
+
+::
+
+    import pyqpanda.pyQPanda as pq
+    import math
+
+    class InitQMachine:
+        def __init__(self, quBitCnt, cBitCnt, machineType = pq.QMachineType.CPU):
+            self.m_machine = pq.init_quantum_machine(machineType)
+            self.m_qlist = self.m_machine.qAlloc_many(quBitCnt)
+            self.m_clist = self.m_machine.cAlloc_many(cBitCnt)
+            self.m_prog = pq.QProg()
+
+        def __del__(self):
+            pq.destroy_quantum_machine(self.m_machine)
+
+    def test_support_qgate_type():
+        machine = pq.init_quantum_machine(pq.QMachineType.CPU)
+        q = machine.qAlloc_many(8)
+        c = machine.cAlloc_many(8)
+
+        prog = pq.QProg()
+        prog << pq.H(q[1])
+        result = pq.is_supported_qgate_type(prog.begin())
+        if result == True:
+            print('Support !\n')
+        else:
+            print('Unsupport !')
+
+    if __name__=="__main__":
+        init_machine = InitQMachine(16, 16)
+        qlist = init_machine.m_qlist
+        clist = init_machine.m_clist
+        machine = init_machine.m_machine
+
+        test_support_qgate_type()
+        print("Test over.")
+
+*注解*\ ：
+
+用户可通过如下链接地址获取默认配置文件QPandaConfig.json,
+将该默认配置文件放在执行程序同级目录下，可执行程序会自动解析该文件。
+
+3.9 **量子线路字符画**
+----------------------
+
+目前PyQPanda提供了3种量子线路可视化方式，具体使用方式参考如下示例。
+
+3.9.1 实例
+~~~~~~~~~~
+
+::
+
+    import pyqpanda.pyQPanda as pq
+    from pyqpanda.Visualization.circuit_draw import *
+    import math
+    class InitQMachine:
+        def __init__(self, quBitCnt, cBitCnt, machineType = pq.QMachineType.CPU):
+            self.m_machine = pq.init_quantum_machine(machineType)
+            self.m_qlist = self.m_machine.qAlloc_many(quBitCnt)
+            self.m_clist = self.m_machine.cAlloc_many(cBitCnt)
+
+        def __del__(self):
+            pq.destroy_quantum_machine(self.m_machine)
+
+    def test_print_qcircuit(q, c):
+        # 构建量子程序
+        prog = pq.QCircuit()
+        prog << pq.CU(1, 2, 3, 4, q[0], q[5]) << pq.H(q[0]) << pq.S(q[2])\
+             << pq.CNOT(q[0], q[1]) << pq.CZ(q[1], q[2]) << pq.CR(q[2], q[1], math.pi/2)
+        prog.set_dagger(True)
+
+        print('draw_qprog:')
+
+        # 通过print直接输出量子线路字符画，该方法会在控制台输出量子线路，输出格式为utf8编码，所以在非utf8编码的控制台下，输出字符画会出现乱码情况。
+
+        # 同时，该方法会将当前量子线路字符画信息保存到文件，文件名为 “QCircuitTextPic.txt”，文件用utf8编码，并保存在当面路径下面，
+        # 所以用户也可以通过该文件查看量子线路信息，注意该文件要以uft8格式打开，否则会出现乱码。
+        print(prog)
+        # 通过draw_qprog接口输出量子线路字符画，该方法功能和print方法一样，区别在于该接口可以指定控制台编码类型，以保证在控制台输出的量子线路字符画能正常显示。
+        # 参数“console_encode_type” 用于指定控制台类型，目前支持两种编码方式:utf8和gbk，默认为utf8
+        draw_qprog(prog, 'text', console_encode_type='gbk')
+        # draw_qprog接口还可以将量子线路保存成图片，调用方式如下。参数“filename”用于指定保存的文件名。
+        draw_qprog(prog, 'pic', filename='D:/test_cir_draw.png')
+
+    if __name__=="__main__":
+        init_machine = InitQMachine(16, 16)
+        qlist = init_machine.m_qlist
+        clist = init_machine.m_clist
+        machine = init_machine.m_machine
+
+        test_print_qcircuit(qlist, clist)
+
+以上示例分别演示了draw\_qprog接口的使用方法，上述代码的输出结果如下：
+
+.. figure:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/draw_prog_py.png
+   :alt: img
+
+   img
+输出的量子线路图片效果如下：
+
+.. figure:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/test_cir_draw.jpg
+   :alt: img
+
+   img
+接口draw\_qprog()的详细参数说明如下：
+
+::
+
+    """Draw a quantum circuit to different formats (set by output parameter):
+
+    **text**: ASCII art TextDrawing that can be printed in the console.
+
+    **pic**: images with color rendered purely in Python.
+
+    Args:
+        prog : the quantum circuit to draw
+        scale (float): scale of image to draw (shrink if < 1). Only used by the ``pic`` outputs.
+        filename (str): file path to save image to
+        NodeIter_first: circuit printing start position.
+        NodeIter_second: circuit printing end position.
+        console_encode_type(str): Target console encoding type.
+            Mismatching of encoding types may result in character confusion, 'utf8' and 'gbk' are supported.
+            Only used by the ``pic`` outputs.
+        line_length (int): Sets the length of the lines generated by `text` output type.
+
+    Returns: no return
+
+    """
+    def draw_qprog(prog, output=None, scale=0.7, filename=None, line_length=None, NodeIter_first=None, \
+    NodeIter_second=None, console_encode_type = 'utf8'):
+
+这里作为演示，我们将上述示例代码中的test\_print\_qcircuit()接口实现改成如下代码：
+
+::
+
+    prog = pq.QCircuit()
+    prog << pq.CU(1, 2, 3, 4, q[0], q[5]) << pq.H(q[0]) << pq.S(q[2]) << pq.CNOT(q[0], q[1]) << pq.CZ(q[1], q[2]) << pq.CR(q[2], q[1], math.pi/2)
+    iter_start = prog.begin()
+    iter_end = iter_start.get_next()
+    iter_end = iter_end.get_next()
+    iter_end = iter_end.get_next()
+    prog.set_dagger(True)
+    draw_qprog(prog, 'text', NodeIter_first=iter_start, NodeIter_second=iter_end, console_encode_type='gbk')
+    draw_qprog(prog, 'pic', NodeIter_first=iter_start, NodeIter_second=iter_end, filename='D:/test_cir_draw.jpg')
+
+上面这段示例代码只会输出prog的前4个逻辑门节点，用户可自行替换上述代码段到前面的示例程序中，运行查看结果，这里不再赘述。
+
+**3.10 量子体积**
+-----------------
+
+3.10.1 简介
+~~~~~~~~~~~
+
+量子体积（Quantum
+Volume），是一个用于评估量子计算系统性能的协议。它表示可以在系统上执行的最大等宽度深度的随机线路。量子计算系统的操作保真度越高，关联性越高，有越大的校准过的门操作集合便会有越高的量子体积。量子体积与系统的整体性能相关联，即与系统的整体错误率，潜在的物理比特关联和门操作并行度相联系。总的来说，量子体积是一个用于近期整体评估量子计算系统的一个实用方法，数值越高，系统整体错误率就越低，性能就越好。
+
+测量量子体积的标准做法就是对系统使用规定的量子线路模型执行随机的线路操作，尽可能地将比特纠缠在一起，然后再将实验得到的结果与模拟的结果进行比较。按要求分析统计结果。
+
+量子体积被定义为指数形式：
+
+.. math::
+
+
+   V_{Q}=2^{n}
+
+其中n表示在给定比特数目m（m大于n）和完成计算任务的条件下，系统操作的最大逻辑深度，如果芯片能执行的最大逻辑深度n大于比特数m，那么系统的量子体积就是
+
+.. math::
+
+
+   2^{m}
+
+3.10.2 接口说明
+~~~~~~~~~~~~~~~
+
+calculate\_quantum\_volume
+输入参数分别噪声虚拟机或者量子云机器，待测量的量子比特，随机迭代次数，测量次数
+。输出为 size\_t 数据，为量子体积大小。
+
+3.10.3 实例
+~~~~~~~~~~~
+
+::
+
+    from pyqpanda import *
+
+    if __name__=="__main__":
+        #构建噪声虚拟机，设置噪声参数
+        qvm = NoiseQVM()
+        qvm.init_qvm()
+        qvm.set_noise_model(NoiseModel.DEPOLARIZING_KRAUS_OPERATOR, GateType.CZ_GATE, 0.005)
+
+        #同样可以申请云计算机器（采用真实芯片），采用真实芯片要考虑芯片构造
+        #qvm = QCloud()
+        #qvm.init_qvm("898D47CF515A48CEAA9F2326394B85C6")
+
+        #构建待测量的量子比特组合， 这里比特组合为2组，其中 量子比特3、4为一组；量子比特2，3，5为一组
+        qubit_lists = [[3,4], [2,3,5]]
+
+        #设置随机迭代次数
+        ntrials = 100
+
+        #设置测量次数,即真实芯片或者噪声虚拟机shots数值
+        shots = 2000
+        qv_result = calculate_quantum_volume(qvm, qubit_lists, ntrials, shots)
+        print("Quantum Volume : ", qv_result)
+        qvm.finalize()
+
+运行结果：
+
+::
+
+    Quantum Volume ： 8
+
+**3.11 随机基准**
+-----------------
+
+3.11.1 简介
+~~~~~~~~~~~
+
+随机基准测试（RB）是使用随机化方法对量子门进行基准测试。由于完整的过程层析成像对于大型系统是不可行的，因此越来越关注可扩展方法，
+以部分表征影响量子系统的噪声。在\ `[1] <https://arxiv.org/pdf/1009.3639>`__\ 中提出了一种可扩展的、鲁棒的算法（n个量子位组成的系统），
+使用随机技术通过单个参数对整个Clifford门进行基准测试的鲁棒算法。
+
+3.11.2 接口说明
+~~~~~~~~~~~~~~~
+
+single\_qubit\_rb
+的输入参数分别噪声虚拟机或者量子云机器，待测量的量子比特，随机线路clifford门集的不同数量组合、随机线路的数量、测量次数、验证基本逻辑门（默认无），输出为std::map
+数据，关键值为clifford门集数量，数值对应符合期望概率的大小。
+
+double\_qubit\_rb
+的输入参数分别噪声虚拟机或者量子云机器，待测量的量子比特0，待测量的量子比特1，随机线路clifford门集的不同数量组合、随机线路的数量、测量次数、验证基本逻辑门（默认无）输出为std::map
+数据，关键值为clifford门集数量，数值对应符合期望概率的大小。
+
+3.11.3 实例
+~~~~~~~~~~~
+
+::
+
+    from pyqpanda import *
+
+    if __name__=="__main__":
+        # 构建噪声虚拟机，调整噪声模拟真实芯片
+        qvm = NoiseQVM()
+        qvm.init_qvm()
+        qvm.set_noise_model(NoiseModel.DEPOLARIZING_KRAUS_OPERATOR, GateType.CZ_GATE, 0.005)
+        qvm.set_noise_model(NoiseModel.DEPOLARIZING_KRAUS_OPERATOR, GateType.PAULI_Y_GATE, 0.005)
+        qv = qvm.qAlloc_many(4)
+
+        # 同样可以申请云计算机器（采用真实芯片）
+        # qvm =  QCloud()
+        # qvm.init_qvm("898D47CF515A48CEAA9F2326394B85C6")
+
+        # 设置随机线路中clifford门集数量
+        range = [ 5,10,15 ]
+
+        # 测量单比特随机基准
+        res = single_qubit_rb(qvm, qv[0], range, 10, 1000)
+
+        # 同样可以测量两比特随机基准
+        #res = double_qubit_rb(qvm, qv[0], qv[1], range, 10, 1000)
+
+        # 对应的数值随噪声影响，噪声数值越大，所得结果越小，且随clifford门集数量增多，结果数值越小。
+        print(res)
+
+        qvm.finalize()
+
+运行结果：
+
+::
+
+    {5: 0.9996, 10: 0.9999, 15: 0.9993000000000001}
+
+**3.12 交叉熵基准**
+-------------------
+
+3.12.1 简介
+~~~~~~~~~~~
+
+交叉熵基准测试（xeb）是一种通过应用随机电路并测量观察到的位串测量值与从模拟获得的这些位串的预期概率之间的交叉熵来评估门性能的方法。
+
+3.12.2 接口说明
+~~~~~~~~~~~~~~~
+
+double\_gate\_xeb
+输入参数分别噪声虚拟机或者量子云机器、待测量的量子比特0、待测量的量子比特1、线路不同层数、随机线路的数量、测量次数、验证双门类型（默认CZ门）。
+输出为 std::map 数据，关键值为线路层数，数值对应符合期望概率的大小。
+
+3.12.3 实例
+~~~~~~~~~~~
+
+::
+
+    from pyqpanda import *
+
+    if __name__=="__main__":
+
+        # 构建噪声虚拟机，调整噪声模拟真实芯片
+        qvm = NoiseQVM()
+        qvm.init_qvm()
+        qv = qvm.qAlloc_many(4)
+
+        # 设置噪声参数
+        qvm.set_noise_model(NoiseModel.DEPOLARIZING_KRAUS_OPERATOR, GateType.CZ_GATE, 0.1)
+
+        # 同样可以申请云计算机器（采用真实芯片）
+        # qvm =  QCloud()
+        # qvm.init_qvm("898D47CF515A48CEAA9F2326394B85C6")
+
+        # 设置不同层数组合
+        range = [2,4,6,8,10]
+        # 现在可测试双门类型主要为CZ CNOT SWAP ISWAP SQISWAP
+        res = double_gate_xeb(qvm, qv[0], qv[1], range, 10, 1000, GateType.CZ_GATE)
+        # 对应的数值随噪声影响，噪声数值越大，所得结果越小，且层数增多，结果数值越小。
+
+        print(res)
+
+        qvm.finalize()
+
+运行结果：
+
+::
+
+    {2: 0.9922736287117004, 4: 0.9303175806999207, 6: 0.7203856110572815, 8: 0.7342230677604675, 10: 0.7967881560325623}

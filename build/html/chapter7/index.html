@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>7 VQC &mdash; pyQPanda 1.0.0 文档</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/translations.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="8 Basis of quantum algorithm" href="../chapter8/index.html" />
+    <link rel="prev" title="6 Component" href="../chapter6/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> pyQPanda
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="在文档中搜索" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../chapter1/index.html">1 Basic Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter2/index.html">2 Deep learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter3/index.html">3 Quantum program information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter4/index.html">4 Compiling of quantum program</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter5/index.html">5 Utility tool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter6/index.html">6 Component</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">7 VQC</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#variable">7.1 Variable</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#interface-introduction">7.1.1 Interface introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example">7.1.2 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#operator">7.2 Operator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#variational-quantum-logic-gate">7.3 Variational quantum logic gate</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">7.3.1 Interface introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">7.3.2 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#variational-quantum-logic-gate-vqg">7.4 Variational quantum logic gate (VQG)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id3">7.4.1 Interface introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dynamic-modification-of-parameters">7.4.2 Dynamic modification of parameters</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id6">7.4.2.1 Example:</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#optimization-algorithm-gradient-descent">7.5 Optimization algorithm (gradient descent)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id7">7.5.1 Interface introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id8">7.5.2 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#comprehensive-example">7.6 Comprehensive example</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#qaoa">7.6.1 QAOA</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter8/index.html">8 Basis of quantum algorithm</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pyQPanda</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>7 VQC</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/chapter7/index.rst.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="vqc">
+<h1>7 VQC<a class="headerlink" href="#vqc" title="永久链接至标题"></a></h1>
+<section id="variable">
+<h2>7.1 Variable<a class="headerlink" href="#variable" title="永久链接至标题"></a></h2>
+<p>The class of variables is the user class to implement symbolic computing
+and used to store the variables of the specific hybrid quantum classical
+network. Generally, its task is to optimize variables to minimize the
+cost function. A variable can be a scalar, vector or matrix.</p>
+<p>A variable is provided with a tree structure, including child or parent
+nodes. The variable which has no child nodes is called a leaf node. On
+one hand, we can set a variable to a specific value. On the other hand,
+we can get the value of a variable if the values of all of its leaf
+nodes have been set.</p>
+<section id="interface-introduction">
+<h3>7.1.1 Interface introduction<a class="headerlink" href="#interface-introduction" title="永久链接至标题"></a></h3>
+<p>We can construct a scalar variable by inputting floating-point data or
+construct a vector or matrix variable by inputting a multi-dimensional
+array generated by the numpy library.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">v1</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.</span><span class="p">],[</span><span class="mf">2.</span><span class="p">],[</span><span class="mf">3.</span><span class="p">],[</span><span class="mf">4.</span><span class="p">]])</span>
+<span class="n">v2</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.</span><span class="p">,</span><span class="mf">2.</span><span class="p">],[</span><span class="mf">3.</span><span class="p">,</span><span class="mf">4.</span><span class="p">]])</span>
+<span class="n">v3</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition-note admonition">
+<p class="admonition-title">Note</p>
+<p>When defining a variable, we can define whether the type of the variable is differentiable, and by default the type is non-differentiable. A non-differentiable variable is the same as a <code class="docutils literal notranslate"><span class="pre">placeholder</span></code>. When defining a differentiable variable, we should the second argument to the constructor as True such as v1 = var(1, True).</p>
+</div>
+<p>We can define and compute the corresponding expression which is composed
+of such operations as addition, subtraction, multiplication and division
+between the variables. Also, the expression is a variable.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">v1</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">v2</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="n">add</span> <span class="o">=</span> <span class="n">v1</span> <span class="o">+</span> <span class="n">v2</span>
+<span class="n">minus</span> <span class="o">=</span> <span class="n">v1</span> <span class="o">-</span> <span class="n">v2</span>
+<span class="n">multiply</span> <span class="o">=</span> <span class="n">v1</span> <span class="o">*</span> <span class="n">v2</span>
+<span class="n">divide</span> <span class="o">=</span> <span class="n">v1</span> <span class="o">/</span> <span class="n">v2</span>
+</pre></div>
+</div>
+<p>We can change the value of a certain variable through the <code class="docutils literal notranslate"><span class="pre">set_value</span></code>
+interface to get different results, without changing the structure of
+the expression. We can call the <code class="docutils literal notranslate"><span class="pre">eval</span></code> interface to compute the current
+value of the variable.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">v1</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">v2</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">add</span> <span class="o">=</span> <span class="n">v1</span> <span class="o">+</span> <span class="n">v2</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">eval</span><span class="p">(</span><span class="n">add</span><span class="p">))</span> <span class="c1"># The output is [[3.]]</span>
+
+<span class="n">v1</span><span class="o">.</span><span class="n">set_value</span><span class="p">([[</span><span class="mf">3.</span><span class="p">]])</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">eval</span><span class="p">(</span><span class="n">add</span><span class="p">))</span> <span class="c1"># The output is [[5.]]</span>
+</pre></div>
+</div>
+<div class="admonition-note admonition">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">get_value</span></code> interface of any variable returns the current value of the variable and does not compute the current value based on its leaf nodes. If the variable is an expression of which the value should be computed based on its leaf nodes, the <code class="docutils literal notranslate"><span class="pre">eval</span></code> interface should be called for forward computing.</p>
+</div>
+</section>
+<section id="example">
+<h3>7.1.2 Example<a class="headerlink" href="#example" title="永久链接至标题"></a></h3>
+<p>We will show the applications of the interfaces related to the class of
+variables through more examples.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyqpanda</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span><span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">m1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">],[</span><span class="mf">3.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">]])</span>
+    <span class="n">v1</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="n">m1</span><span class="p">)</span>
+
+    <span class="n">m2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">5.</span><span class="p">,</span> <span class="mf">6.</span><span class="p">],[</span><span class="mf">7.</span><span class="p">,</span> <span class="mf">8.</span><span class="p">]])</span>
+    <span class="n">v2</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="n">m2</span><span class="p">)</span>
+
+    <span class="nb">sum</span> <span class="o">=</span> <span class="n">v1</span> <span class="o">+</span> <span class="n">v2</span>
+    <span class="n">minus</span> <span class="o">=</span> <span class="n">v1</span> <span class="o">-</span> <span class="n">v2</span>
+    <span class="n">multiply</span> <span class="o">=</span> <span class="n">v1</span> <span class="o">*</span> <span class="n">v2</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;v1: &quot;</span><span class="p">,</span> <span class="n">v1</span><span class="o">.</span><span class="n">get_value</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;v2: &quot;</span><span class="p">,</span> <span class="n">v2</span><span class="o">.</span><span class="n">get_value</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;sum: &quot;</span> <span class="p">,</span> <span class="nb">eval</span><span class="p">(</span><span class="nb">sum</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;minus: &quot;</span> <span class="p">,</span> <span class="nb">eval</span><span class="p">(</span><span class="n">minus</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;multiply: &quot;</span> <span class="p">,</span> <span class="nb">eval</span><span class="p">(</span><span class="n">multiply</span><span class="p">))</span>
+
+    <span class="n">m3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">4.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">],[</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">]])</span>
+    <span class="n">v1</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">m3</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;sum: &quot;</span> <span class="p">,</span> <span class="nb">eval</span><span class="p">(</span><span class="nb">sum</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;minus: &quot;</span> <span class="p">,</span> <span class="nb">eval</span><span class="p">(</span><span class="n">minus</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;multiply: &quot;</span> <span class="p">,</span> <span class="nb">eval</span><span class="p">(</span><span class="n">multiply</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">v1</span><span class="p">:</span>  <span class="p">[[</span><span class="mf">1.</span> <span class="mf">2.</span><span class="p">]</span>
+ <span class="p">[</span><span class="mf">3.</span> <span class="mf">4.</span><span class="p">]]</span>
+<span class="n">v2</span><span class="p">:</span>  <span class="p">[[</span><span class="mf">5.</span> <span class="mf">6.</span><span class="p">]</span>
+ <span class="p">[</span><span class="mf">7.</span> <span class="mf">8.</span><span class="p">]]</span>
+<span class="nb">sum</span><span class="p">:</span>  <span class="p">[[</span> <span class="mf">6.</span>  <span class="mf">8.</span><span class="p">]</span>
+ <span class="p">[</span><span class="mf">10.</span> <span class="mf">12.</span><span class="p">]]</span>
+<span class="n">minus</span><span class="p">:</span>  <span class="p">[[</span><span class="o">-</span><span class="mf">4.</span> <span class="o">-</span><span class="mf">4.</span><span class="p">]</span>
+ <span class="p">[</span><span class="o">-</span><span class="mf">4.</span> <span class="o">-</span><span class="mf">4.</span><span class="p">]]</span>
+<span class="n">multiply</span><span class="p">:</span>  <span class="p">[[</span> <span class="mf">5.</span> <span class="mf">12.</span><span class="p">]</span>
+ <span class="p">[</span><span class="mf">21.</span> <span class="mf">32.</span><span class="p">]]</span>
+<span class="nb">sum</span><span class="p">:</span>  <span class="p">[[</span><span class="mf">9.</span> <span class="mf">9.</span><span class="p">]</span>
+ <span class="p">[</span><span class="mf">9.</span> <span class="mf">9.</span><span class="p">]]</span>
+<span class="n">minus</span><span class="p">:</span>  <span class="p">[[</span><span class="o">-</span><span class="mf">1.</span> <span class="o">-</span><span class="mf">3.</span><span class="p">]</span>
+ <span class="p">[</span><span class="o">-</span><span class="mf">5.</span> <span class="o">-</span><span class="mf">7.</span><span class="p">]]</span>
+<span class="n">multiply</span><span class="p">:</span>  <span class="p">[[</span><span class="mf">20.</span> <span class="mf">18.</span><span class="p">]</span>
+ <span class="p">[</span><span class="mf">14.</span>  <span class="mf">8.</span><span class="p">]]</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="operator">
+<h2>7.2 Operator<a class="headerlink" href="#operator" title="永久链接至标题"></a></h2>
+<p>VQNet contains many types of operators which can manipulate variables or
+placeholders. Some of the operators are classical ones, such as
+addition, subtraction, multiplication, division, exponent, logarithm and
+point multiplication. In addition, VQNet contains all the common
+operators from classic machine learning.</p>
+<p>And VQNet contains quantum operators which are qop and qop pmeasure.
+What is more, qop and qop pmeasure are related to quantum computer
+chips, and they can only be used in a quantum environment. For this, we
+need to provide additional parameters when using the two operators.
+Generally, we need to add the qubits referenced to and applied for by
+quantum machines to create the quantum environment.</p>
+<p>VQNet defines the operators as shown below, all of which return
+variables of <code class="docutils literal notranslate"><span class="pre">var</span></code> type.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 4%" />
+<col style="width: 96%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p><strong>The operator</strong></p></th>
+<th class="head"><p><strong>Describe</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>plus</strong></p></td>
+<td><p>Plus. Example: a + b, where a and b are variables of type <strong>var</strong>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>minus</strong></p></td>
+<td><p>Minus. Example: a – b.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>multiply</strong></p></td>
+<td><p>Multiply. Example: a * b.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>divide</strong></p></td>
+<td><p>Divide. Example: a / b.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>exponent</strong></p></td>
+<td><p>Index. Example: exp(a).</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>log</strong></p></td>
+<td><p>Logarithmic. Example: log(a).</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>polynomial</strong></p></td>
+<td><p>Power. Example: poly(a, 2).</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>dot</strong></p></td>
+<td><p>Matrix dot. Example: dot(a.b).</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>inverse</strong></p></td>
+<td><p>Matrix inversion. Example: inverse(a).</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>transpose</strong></p></td>
+<td><p>Matrix transpose. Example: transpose(a).</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>sum</strong></p></td>
+<td><p>Matrix sum. Example: sum(a).</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>stack</strong></p></td>
+<td><p>The matrix is concatenated in either column (axis = 0) or row (axis = 1) direction. Example: stack(axis, a, b, c).</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>subscript</strong></p></td>
+<td><p>The subscript operation. Example: a[0].</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>qop</strong></p></td>
+<td><p>Quantum operation, which takes <strong>VQC</strong> and several Hamiltonians as inputs and outputs the input Hamiltonian expectations. Example: If w represents the variable of <strong>VQC</strong>, qop(VQC(w), Hamiltonians, [quantum environment]).</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>qop_pmeasure</strong></p></td>
+<td><p>Quantum operation, which is similar to qop. The input of qop_pmeasure consists of the VQC, the qubit to be measured and the component. It calculates the probability of all projected states in a subspace made up of qubits to be measured, and returns some of them. Components store labels for the projected state of the target. Obviously, the probability of any projected state can be seen as the expectation of the Hamiltonian, so qop_pmeasure is a special case of qop. Example: qop_pmeasure(VQC(w), components, [quantum environment]).</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>sigmoid</strong></p></td>
+<td><p>The activation function. Example: sigmoid(a).</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>softmax</strong></p></td>
+<td><p>The activation function. Example: softmax(a).</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>cross_entropy</strong></p></td>
+<td><p>The cross entropy. Example: crossEntropy(a, b).</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>dropout</strong></p></td>
+<td><p>Dropout function. Example: dropout(a, b).</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="variational-quantum-logic-gate">
+<h2>7.3 Variational quantum logic gate<a class="headerlink" href="#variational-quantum-logic-gate" title="永久链接至标题"></a></h2>
+<p>To use quantum operations qop or <code class="docutils literal notranslate"><span class="pre">qop_pmeasure</span></code> in VQNet, a variational
+quantum circuit (<code class="docutils literal notranslate"><span class="pre">VQC</span></code>) shall be included. And variational quantum logic
+gates are the basic unit that constitute the variational quantum
+circuit. The variational quantum logic gate (<code class="docutils literal notranslate"><span class="pre">VQG</span></code>) maintains a set of
+variable parameters and a set of constant parameters internally. Only
+one set of parameters can be assigned during the creation of <code class="docutils literal notranslate"><span class="pre">VQG</span></code>. Where
+the <code class="docutils literal notranslate"><span class="pre">VQG</span></code> contains a set of constant parameters, general quantum logic
+gates containing determined parameters can be generated through the VQG.
+Where the <code class="docutils literal notranslate"><span class="pre">VQG</span></code> contains variational parameters, the parameter values can
+be modified dynamically and general quantum logic gates corresponding to
+the parameters can be generated.</p>
+<p>Currently, the following variational quantum logic gates are defined in
+pyQPanda, which are all inherited from the <code class="docutils literal notranslate"><span class="pre">VariationalQuantumGate</span></code>.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 71%" />
+<col style="width: 29%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>VQG</p></th>
+<th class="head"><p>Alias</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>VariationalQuantumGate_H</p></td>
+<td><p>VQG_H</p></td>
+</tr>
+<tr class="row-odd"><td><p>VariationalQuantumGate_RX</p></td>
+<td><p>VQG_RX</p></td>
+</tr>
+<tr class="row-even"><td><p>VariationalQuantumGate_RY</p></td>
+<td><p>VQG_RY</p></td>
+</tr>
+<tr class="row-odd"><td><p>VariationalQuantumGate_RZ</p></td>
+<td><p>VQG_RZ</p></td>
+</tr>
+<tr class="row-even"><td><p>VariationalQuantumGate_CZ</p></td>
+<td><p>VQG_CZ</p></td>
+</tr>
+<tr class="row-odd"><td><p>VariationalQuantumGate_CNOT</p></td>
+<td><p>VQG_CNOT</p></td>
+</tr>
+</tbody>
+</table>
+<section id="id1">
+<h3>7.3.1 Interface introduction<a class="headerlink" href="#id1" title="永久链接至标题"></a></h3>
+<p>We can use the variational quantum logic gates by inserting them into
+variational quantum circuits. Also, we can input variable parameters to
+the variational quantum logic gates requiring input of parameters. For
+example, we input variable parameters x and y to variational quantum
+logic gates RX and RY. Alternatively, we can input constant parameters
+to variational quantum logic gates. For instance, we input a constant
+parameter 0.12 to RZ. Furthermore, we can change the parameters in the
+variational quantum logic gates by modifying the parameters of the
+variables.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">vqc</span> <span class="o">=</span> <span class="n">VariationalQuantumCircuit</span><span class="p">()</span>
+<span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">VariationalQuantumGate_H</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+<span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">VariationalQuantumGate_RX</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">))</span>
+<span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">VariationalQuantumGate_RY</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">y</span><span class="p">))</span>
+<span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">VariationalQuantumGate_RZ</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mf">0.12</span><span class="p">))</span>
+<span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">VariationalQuantumGate_CZ</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+<span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">VariationalQuantumGate_CNOT</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+
+<span class="n">circuit1</span> <span class="o">=</span> <span class="n">vqc</span><span class="o">.</span><span class="n">feed</span><span class="p">()</span>
+
+<span class="n">x</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">y</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+
+<span class="n">circuit2</span> <span class="o">=</span> <span class="n">vqc</span><span class="o">.</span><span class="n">feed</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="id2">
+<h3>7.3.2 Example<a class="headerlink" href="#id2" title="永久链接至标题"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyqpanda</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span><span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">machine</span> <span class="o">=</span> <span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">)</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+
+    <span class="n">vqc</span> <span class="o">=</span> <span class="n">VariationalQuantumCircuit</span><span class="p">()</span>
+    <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">VariationalQuantumGate_H</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">VariationalQuantumGate_RX</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">))</span>
+    <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">VariationalQuantumGate_RY</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">y</span><span class="p">))</span>
+    <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">VariationalQuantumGate_RZ</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mf">0.12</span><span class="p">))</span>
+    <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">VariationalQuantumGate_CZ</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">VariationalQuantumGate_CNOT</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+
+    <span class="n">circuit1</span> <span class="o">=</span> <span class="n">vqc</span><span class="o">.</span><span class="n">feed</span><span class="p">()</span>
+
+    <span class="n">prog</span> <span class="o">=</span> <span class="n">QProg</span><span class="p">()</span>
+    <span class="n">prog</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">circuit1</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">convert_qprog_to_originir</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">machine</span><span class="p">))</span>
+
+    <span class="n">x</span><span class="o">.</span><span class="n">set_value</span><span class="p">([[</span><span class="mf">3.</span><span class="p">]])</span>
+    <span class="n">y</span><span class="o">.</span><span class="n">set_value</span><span class="p">([[</span><span class="mf">4.</span><span class="p">]])</span>
+
+    <span class="n">circuit2</span> <span class="o">=</span> <span class="n">vqc</span><span class="o">.</span><span class="n">feed</span><span class="p">()</span>
+    <span class="n">prog2</span> <span class="o">=</span> <span class="n">QProg</span><span class="p">()</span>
+    <span class="n">prog2</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">circuit2</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">convert_qprog_to_originir</span><span class="p">(</span><span class="n">prog2</span><span class="p">,</span> <span class="n">machine</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">QINIT</span> <span class="mi">2</span>
+<span class="n">CREG</span> <span class="mi">0</span>
+<span class="n">H</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">RX</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">RY</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">RZ</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],(</span><span class="mf">0.12</span><span class="p">)</span>
+<span class="n">CZ</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">CNOT</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">QINIT</span> <span class="mi">2</span>
+<span class="n">CREG</span> <span class="mi">0</span>
+<span class="n">H</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">RX</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">RY</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],(</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">RZ</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],(</span><span class="mf">0.12</span><span class="p">)</span>
+<span class="n">CZ</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">CNOT</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="variational-quantum-logic-gate-vqg">
+<h2>7.4 Variational quantum logic gate (VQG)<a class="headerlink" href="#variational-quantum-logic-gate-vqg" title="永久链接至标题"></a></h2>
+<p>To use quantum operations qop or <code class="docutils literal notranslate"><span class="pre">qop_pmeasure</span></code> in VQNet, a variational
+quantum circuit (<code class="docutils literal notranslate"><span class="pre">VQC</span></code>) shall be included. And variational quantum logic
+gates are the basic unit that constitute the VQC. The variational
+quantum logic gate (<code class="docutils literal notranslate"><span class="pre">VQG</span></code>) maintains a set of variable parameters and a
+set of constant parameters internally. Only one set of parameters can be
+assigned during the creation of VQG. Where the <code class="docutils literal notranslate"><span class="pre">VQG</span></code> contains a set of
+constant parameters, general quantum logic gates containing determined
+parameters can be generated through the <code class="docutils literal notranslate"><span class="pre">VQG</span></code>. Where the <code class="docutils literal notranslate"><span class="pre">VQG</span></code> contains
+variational parameters, the parameter values can be modified dynamically
+and general quantum logic gates corresponding to the parameters can be
+generated.</p>
+<p>Currently, the following variational quantum logic gates are defined in
+QPanda::Variational, which are all derived from the <code class="docutils literal notranslate"><span class="pre">VQG</span></code>.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 69%" />
+<col style="width: 31%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p><strong>VQG</strong></p></th>
+<th class="head"><p><strong>Alias</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>VariationalQuantumGate_I</p></td>
+<td><p>VQG_I</p></td>
+</tr>
+<tr class="row-odd"><td><p>VariationalQuantumGate_H</p></td>
+<td><p>VQG_H</p></td>
+</tr>
+<tr class="row-even"><td><p>VariationalQuantumGate_T</p></td>
+<td><p>VQG_T</p></td>
+</tr>
+<tr class="row-odd"><td><p>VariationalQuantumGate_S</p></td>
+<td><p>VQG_S</p></td>
+</tr>
+<tr class="row-even"><td><p>VariationalQuantumGate_X</p></td>
+<td><p>VQG_X</p></td>
+</tr>
+<tr class="row-odd"><td><p>VariationalQuantumGate_Y</p></td>
+<td><p>VQG_Y</p></td>
+</tr>
+<tr class="row-even"><td><p>VariationalQuantumGate_Z</p></td>
+<td><p>VQG_Z</p></td>
+</tr>
+<tr class="row-odd"><td><p>VariationalQuantumGate_X1</p></td>
+<td><p>VQG_X1</p></td>
+</tr>
+<tr class="row-even"><td><p>VariationalQuantumGate_Y1</p></td>
+<td><p>VQG_Y1</p></td>
+</tr>
+<tr class="row-odd"><td><p>VariationalQuantumGate_Z1</p></td>
+<td><p>VQG_Z1</p></td>
+</tr>
+<tr class="row-even"><td><p>VariationalQuantumGate_U1</p></td>
+<td><p>VQG_U1</p></td>
+</tr>
+<tr class="row-odd"><td><p>VariationalQuantumGate_U2</p></td>
+<td><p>VQG_U2</p></td>
+</tr>
+<tr class="row-even"><td><p>VariationalQuantumGate_U3</p></td>
+<td><p>VQG_U3</p></td>
+</tr>
+<tr class="row-odd"><td><p>VariationalQuantumGate_U4</p></td>
+<td><p>VQG_U4</p></td>
+</tr>
+<tr class="row-even"><td><p>VariationalQuantumGate_RX</p></td>
+<td><p>VQG_RX</p></td>
+</tr>
+<tr class="row-odd"><td><p>VariationalQuantumGate_RY</p></td>
+<td><p>VQG_RY</p></td>
+</tr>
+<tr class="row-even"><td><p>VariationalQuantumGate_RZ</p></td>
+<td><p>VQG_RZ</p></td>
+</tr>
+<tr class="row-odd"><td><p>VariationalQuantumGate_CRX</p></td>
+<td><p>VQG_CRX</p></td>
+</tr>
+<tr class="row-even"><td><p>VariationalQuantumGate_CRY</p></td>
+<td><p>VQG_CRY</p></td>
+</tr>
+<tr class="row-odd"><td><p>VariationalQuantumGate_CRZ</p></td>
+<td><p>VQG_CRZ</p></td>
+</tr>
+<tr class="row-even"><td><p>VariationalQuantumGate_CNOT</p></td>
+<td><p>VQG_CNOT</p></td>
+</tr>
+<tr class="row-odd"><td><p>VariationalQuantumGate_CZ</p></td>
+<td><p>VQG_CZ</p></td>
+</tr>
+<tr class="row-even"><td><p>VariationalQuantumGate_SWAP</p></td>
+<td><p>VQG_SWAP</p></td>
+</tr>
+<tr class="row-odd"><td><p>VariationalQuantumGate_iSWAP</p></td>
+<td><p>VQG_iSWAP</p></td>
+</tr>
+<tr class="row-even"><td><p>VariationalQuantumGate_SqiSWAP</p></td>
+<td><p>VQG_SqiSWAP</p></td>
+</tr>
+</tbody>
+</table>
+<section id="id3">
+<h3>7.4.1 Interface introduction<a class="headerlink" href="#id3" title="永久链接至标题"></a></h3>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv422VariationalQuantumGate">
+<span id="_CPPv322VariationalQuantumGate"></span><span id="_CPPv222VariationalQuantumGate"></span><span id="VariationalQuantumGate"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VariationalQuantumGate</span></span></span><a class="headerlink" href="#_CPPv422VariationalQuantumGate" title="永久链接至目标"></a><br /></dt>
+<dd><dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N22VariationalQuantumGate22VariationalQuantumGateEv">
+<span id="_CPPv3N22VariationalQuantumGate22VariationalQuantumGateEv"></span><span id="_CPPv2N22VariationalQuantumGate22VariationalQuantumGateEv"></span><span id="VariationalQuantumGate::VariationalQuantumGate"></span><span class="sig-name descname"><span class="n"><span class="pre">VariationalQuantumGate</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N22VariationalQuantumGate22VariationalQuantumGateEv" title="永久链接至目标"></a><br /></dt>
+<dd><dl class="simple">
+<dt><strong>Function</strong></dt><dd><p>Constructing a function</p>
+</dd>
+<dt><strong>Parameter</strong></dt><dd><p>N/A</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N22VariationalQuantumGate5n_varEv">
+<span id="_CPPv3N22VariationalQuantumGate5n_varEv"></span><span id="_CPPv2N22VariationalQuantumGate5n_varEv"></span><span id="VariationalQuantumGate::n_var"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">n_var</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N22VariationalQuantumGate5n_varEv" title="永久链接至目标"></a><br /></dt>
+<dd><dl class="simple">
+<dt><strong>Function</strong></dt><dd><p>Number of internal variables of the variational quantum logic gate.</p>
+</dd>
+<dt><strong>Parameter</strong></dt><dd><p>N/A</p>
+</dd>
+<dt><strong>Return value</strong></dt><dd><p>Number of variables</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N22VariationalQuantumGate8get_varsEv">
+<span id="_CPPv3N22VariationalQuantumGate8get_varsEv"></span><span id="_CPPv2N22VariationalQuantumGate8get_varsEv"></span><span id="VariationalQuantumGate::get_vars"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">var</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">get_vars</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N22VariationalQuantumGate8get_varsEv" title="永久链接至目标"></a><br /></dt>
+<dd><dl class="simple">
+<dt><strong>Function</strong></dt><dd><p>Obtaining the internal variables of the variational quantum logic gate.</p>
+</dd>
+<dt><strong>Parameter</strong></dt><dd><p>N/A</p>
+</dd>
+<dt><strong>Return value</strong></dt><dd><p>Internal variables of the variational quantum logic gate.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N22VariationalQuantumGate13get_constantsEv">
+<span id="_CPPv3N22VariationalQuantumGate13get_constantsEv"></span><span id="_CPPv2N22VariationalQuantumGate13get_constantsEv"></span><span id="VariationalQuantumGate::get_constants"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">get_constants</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N22VariationalQuantumGate13get_constantsEv" title="永久链接至目标"></a><br /></dt>
+<dd><dl class="simple">
+<dt><strong>Function</strong></dt><dd><p>Obtaining the internal constants of the variational quantum logic gate.</p>
+</dd>
+<dt><strong>Parameter</strong></dt><dd><p>N/A</p>
+</dd>
+<dt><strong>Return value</strong></dt><dd><p>Internal constants of the variational quantum logic gate.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N22VariationalQuantumGate7var_posE7var_var">
+<span id="_CPPv3N22VariationalQuantumGate7var_posE7var_var"></span><span id="_CPPv2N22VariationalQuantumGate7var_posE7var_var"></span><span id="VariationalQuantumGate::var_pos__var_var"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">var_pos</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">var_var</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N22VariationalQuantumGate7var_posE7var_var" title="永久链接至目标"></a><br /></dt>
+<dd><dl class="simple">
+<dt><strong>Function</strong></dt><dd><p>Obtaining the internal constants of the variational quantum logic gate.</p>
+</dd>
+<dt><strong>Parameter</strong></dt><dd><p>●  _var: variable</p>
+</dd>
+<dt><strong>Return value</strong></dt><dd><p>If no internal index is available, the return result will be -1.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK22VariationalQuantumGate4feedEv">
+<span id="_CPPv3NK22VariationalQuantumGate4feedEv"></span><span id="_CPPv2NK22VariationalQuantumGate4feedEv"></span><span id="VariationalQuantumGate::feedC"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">QGate</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">feed</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4NK22VariationalQuantumGate4feedEv" title="永久链接至目标"></a><br /></dt>
+<dd><dl class="simple">
+<dt><strong>Function</strong></dt><dd><p>Instantiating <a href="#id4"><span class="problematic" id="id5">``</span></a>QGate ``</p>
+</dd>
+<dt><strong>Parameter</strong></dt><dd><p>N/A</p>
+</dd>
+<dt><strong>Return value</strong></dt><dd><p>General quantum logic gate</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK22VariationalQuantumGate4feedENSt3mapI6size_tdEE">
+<span id="_CPPv3NK22VariationalQuantumGate4feedENSt3mapI6size_tdEE"></span><span id="_CPPv2NK22VariationalQuantumGate4feedENSt3mapI6size_tdEE"></span><span id="VariationalQuantumGate::feed__std::map:s.double:C"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">QGate</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">feed</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">map</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">offset</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK22VariationalQuantumGate4feedENSt3mapI6size_tdEE" title="永久链接至目标"></a><br /></dt>
+<dd><dl class="simple">
+<dt><strong>Function</strong></dt><dd><p>Instantiating <code class="docutils literal notranslate"><span class="pre">QGate</span></code> by specifying offsets.</p>
+</dd>
+<dt><strong>Parameter</strong></dt><dd><p>●  offset: the offset mapping corresponding to the variable</p>
+</dd>
+<dt><strong>Return value</strong></dt><dd><p>General quantum logic gate</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<p>A brief introduction will be given to the construction of variational
+quantum logic gates below:</p>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv424VariationalQuantumGate_H">
+<span id="_CPPv324VariationalQuantumGate_H"></span><span id="_CPPv224VariationalQuantumGate_H"></span><span id="VariationalQuantumGate_H"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VariationalQuantumGate_H</span></span></span><a class="headerlink" href="#_CPPv424VariationalQuantumGate_H" title="永久链接至目标"></a><br /></dt>
+<dd><dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N24VariationalQuantumGate_H24VariationalQuantumGate_HEP5Qubit">
+<span id="_CPPv3N24VariationalQuantumGate_H24VariationalQuantumGate_HEP5Qubit"></span><span id="_CPPv2N24VariationalQuantumGate_H24VariationalQuantumGate_HEP5Qubit"></span><span id="VariationalQuantumGate_H::VariationalQuantumGate_H__QubitP"></span><span class="sig-name descname"><span class="n"><span class="pre">VariationalQuantumGate_H</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Qubit</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">q</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N24VariationalQuantumGate_H24VariationalQuantumGate_HEP5Qubit" title="永久链接至目标"></a><br /></dt>
+<dd><dl class="simple">
+<dt><strong>Function</strong></dt><dd><p>Constructing a function through H gate.</p>
+</dd>
+<dt><strong>Parameter</strong></dt><dd><p>●  q: target qubit</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv425VariationalQuantumGate_RX">
+<span id="_CPPv325VariationalQuantumGate_RX"></span><span id="_CPPv225VariationalQuantumGate_RX"></span><span id="VariationalQuantumGate_RX"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VariationalQuantumGate_RX</span></span></span><a class="headerlink" href="#_CPPv425VariationalQuantumGate_RX" title="永久链接至目标"></a><br /></dt>
+<dd><dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N25VariationalQuantumGate_RX25VariationalQuantumGate_RXEP5Qubit7var_var">
+<span id="_CPPv3N25VariationalQuantumGate_RX25VariationalQuantumGate_RXEP5Qubit7var_var"></span><span id="_CPPv2N25VariationalQuantumGate_RX25VariationalQuantumGate_RXEP5Qubit7var_var"></span><span id="VariationalQuantumGate_RX::VariationalQuantumGate_RX__QubitP.var_var"></span><span class="sig-name descname"><span class="n"><span class="pre">VariationalQuantumGate_RX</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Qubit</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">q</span></span>, <span class="n"><span class="pre">var_var</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N25VariationalQuantumGate_RX25VariationalQuantumGate_RXEP5Qubit7var_var" title="永久链接至目标"></a><br /></dt>
+<dd><dl class="simple">
+<dt><strong>Function</strong></dt><dd><p>Constructing a function through RX gate.</p>
+</dd>
+<dt><strong>Parameter</strong></dt><dd><p>●  q: target qubit
+● _var: variable</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N25VariationalQuantumGate_RX25VariationalQuantumGate_RXEP5Qubitd">
+<span id="_CPPv3N25VariationalQuantumGate_RX25VariationalQuantumGate_RXEP5Qubitd"></span><span id="_CPPv2N25VariationalQuantumGate_RX25VariationalQuantumGate_RXEP5Qubitd"></span><span id="VariationalQuantumGate_RX::VariationalQuantumGate_RX__QubitP.double"></span><span class="sig-name descname"><span class="n"><span class="pre">VariationalQuantumGate_RX</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Qubit</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">q</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">angle</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N25VariationalQuantumGate_RX25VariationalQuantumGate_RXEP5Qubitd" title="永久链接至目标"></a><br /></dt>
+<dd><dl class="simple">
+<dt><strong>Function</strong></dt><dd><p>Constructing a function through RX gate.</p>
+</dd>
+<dt><strong>Parameter</strong></dt><dd><p>●  q: target qubit
+●  angle: parameter</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv425VariationalQuantumGate_RY">
+<span id="_CPPv325VariationalQuantumGate_RY"></span><span id="_CPPv225VariationalQuantumGate_RY"></span><span id="VariationalQuantumGate_RY"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VariationalQuantumGate_RY</span></span></span><a class="headerlink" href="#_CPPv425VariationalQuantumGate_RY" title="永久链接至目标"></a><br /></dt>
+<dd><dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N25VariationalQuantumGate_RY25VariationalQuantumGate_RYEP5Qubit7var_var">
+<span id="_CPPv3N25VariationalQuantumGate_RY25VariationalQuantumGate_RYEP5Qubit7var_var"></span><span id="_CPPv2N25VariationalQuantumGate_RY25VariationalQuantumGate_RYEP5Qubit7var_var"></span><span id="VariationalQuantumGate_RY::VariationalQuantumGate_RY__QubitP.var_var"></span><span class="sig-name descname"><span class="n"><span class="pre">VariationalQuantumGate_RY</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Qubit</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">q</span></span>, <span class="n"><span class="pre">var_var</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N25VariationalQuantumGate_RY25VariationalQuantumGate_RYEP5Qubit7var_var" title="永久链接至目标"></a><br /></dt>
+<dd><dl class="simple">
+<dt><strong>Function</strong></dt><dd><p>Constructing a function through RY gate.</p>
+</dd>
+<dt><strong>Parameter</strong></dt><dd><p>●  q: target qubit
+● _var: variable</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N25VariationalQuantumGate_RY25VariationalQuantumGate_RXEP5Qubitd">
+<span id="_CPPv3N25VariationalQuantumGate_RY25VariationalQuantumGate_RXEP5Qubitd"></span><span id="_CPPv2N25VariationalQuantumGate_RY25VariationalQuantumGate_RXEP5Qubitd"></span><span id="VariationalQuantumGate_RY::VariationalQuantumGate_RX__QubitP.double"></span><span class="sig-name descname"><span class="n"><span class="pre">VariationalQuantumGate_RX</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Qubit</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">q</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">angle</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N25VariationalQuantumGate_RY25VariationalQuantumGate_RXEP5Qubitd" title="永久链接至目标"></a><br /></dt>
+<dd><dl class="simple">
+<dt><strong>Function</strong></dt><dd><p>Constructing a function through RY gate.</p>
+</dd>
+<dt><strong>Parameter</strong></dt><dd><p>●  q: target qubit
+●  angle: parameter</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv425VariationalQuantumGate_RZ">
+<span id="_CPPv325VariationalQuantumGate_RZ"></span><span id="_CPPv225VariationalQuantumGate_RZ"></span><span id="VariationalQuantumGate_RZ"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VariationalQuantumGate_RZ</span></span></span><a class="headerlink" href="#_CPPv425VariationalQuantumGate_RZ" title="永久链接至目标"></a><br /></dt>
+<dd><dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N25VariationalQuantumGate_RZ25VariationalQuantumGate_RZEP5Qubit7var_var">
+<span id="_CPPv3N25VariationalQuantumGate_RZ25VariationalQuantumGate_RZEP5Qubit7var_var"></span><span id="_CPPv2N25VariationalQuantumGate_RZ25VariationalQuantumGate_RZEP5Qubit7var_var"></span><span id="VariationalQuantumGate_RZ::VariationalQuantumGate_RZ__QubitP.var_var"></span><span class="sig-name descname"><span class="n"><span class="pre">VariationalQuantumGate_RZ</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Qubit</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">q</span></span>, <span class="n"><span class="pre">var_var</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N25VariationalQuantumGate_RZ25VariationalQuantumGate_RZEP5Qubit7var_var" title="永久链接至目标"></a><br /></dt>
+<dd><dl class="simple">
+<dt><strong>Function</strong></dt><dd><p>Constructing a function through RZ gate.</p>
+</dd>
+<dt><strong>Parameter</strong></dt><dd><p>●  q: target qubit
+● _var: variable</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N25VariationalQuantumGate_RZ25VariationalQuantumGate_RZEP5Qubitd">
+<span id="_CPPv3N25VariationalQuantumGate_RZ25VariationalQuantumGate_RZEP5Qubitd"></span><span id="_CPPv2N25VariationalQuantumGate_RZ25VariationalQuantumGate_RZEP5Qubitd"></span><span id="VariationalQuantumGate_RZ::VariationalQuantumGate_RZ__QubitP.double"></span><span class="sig-name descname"><span class="n"><span class="pre">VariationalQuantumGate_RZ</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Qubit</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">q</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">angle</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N25VariationalQuantumGate_RZ25VariationalQuantumGate_RZEP5Qubitd" title="永久链接至目标"></a><br /></dt>
+<dd><dl class="simple">
+<dt><strong>Function</strong></dt><dd><p>Constructing a function through RZ gate.</p>
+</dd>
+<dt><strong>Parameter</strong></dt><dd><p>●  q: target qubit
+●  angle: parameter</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv425VariationalQuantumGate_CZ">
+<span id="_CPPv325VariationalQuantumGate_CZ"></span><span id="_CPPv225VariationalQuantumGate_CZ"></span><span id="VariationalQuantumGate_CZ"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VariationalQuantumGate_CZ</span></span></span><a class="headerlink" href="#_CPPv425VariationalQuantumGate_CZ" title="永久链接至目标"></a><br /></dt>
+<dd><dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N25VariationalQuantumGate_CZ25VariationalQuantumGate_CZEP5QubitP5Qubit">
+<span id="_CPPv3N25VariationalQuantumGate_CZ25VariationalQuantumGate_CZEP5QubitP5Qubit"></span><span id="_CPPv2N25VariationalQuantumGate_CZ25VariationalQuantumGate_CZEP5QubitP5Qubit"></span><span id="VariationalQuantumGate_CZ::VariationalQuantumGate_CZ__QubitP.QubitP"></span><span class="sig-name descname"><span class="n"><span class="pre">VariationalQuantumGate_CZ</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Qubit</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">q1</span></span>, <span class="n"><span class="pre">Qubit</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">q2</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N25VariationalQuantumGate_CZ25VariationalQuantumGate_CZEP5QubitP5Qubit" title="永久链接至目标"></a><br /></dt>
+<dd><dl class="simple">
+<dt><strong>Function</strong></dt><dd><p>Constructing a function through CZ gate.</p>
+</dd>
+<dt><strong>Parameter</strong></dt><dd><p>●  q1: control qubit
+●  q2: target qubit</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv427VariationalQuantumGate_CNOT">
+<span id="_CPPv327VariationalQuantumGate_CNOT"></span><span id="_CPPv227VariationalQuantumGate_CNOT"></span><span id="VariationalQuantumGate_CNOT"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VariationalQuantumGate_CNOT</span></span></span><a class="headerlink" href="#_CPPv427VariationalQuantumGate_CNOT" title="永久链接至目标"></a><br /></dt>
+<dd><dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N27VariationalQuantumGate_CNOT27VariationalQuantumGate_CNOTEP5QubitP5Qubit">
+<span id="_CPPv3N27VariationalQuantumGate_CNOT27VariationalQuantumGate_CNOTEP5QubitP5Qubit"></span><span id="_CPPv2N27VariationalQuantumGate_CNOT27VariationalQuantumGate_CNOTEP5QubitP5Qubit"></span><span id="VariationalQuantumGate_CNOT::VariationalQuantumGate_CNOT__QubitP.QubitP"></span><span class="sig-name descname"><span class="n"><span class="pre">VariationalQuantumGate_CNOT</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Qubit</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">q1</span></span>, <span class="n"><span class="pre">Qubit</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">q2</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N27VariationalQuantumGate_CNOT27VariationalQuantumGate_CNOTEP5QubitP5Qubit" title="永久链接至目标"></a><br /></dt>
+<dd><dl class="simple">
+<dt><strong>Function</strong></dt><dd><p>Constructing a function through CNOT gate.</p>
+</dd>
+<dt><strong>Parameter</strong></dt><dd><p>●  q1: control qubit
+●  q2: target qubit</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<p>The variational quantum logic gates are used in a way similar to quantum
+logic gates, which will not be repeated here. In case of any question,
+see the relevant contents of quantum logic gates.</p>
+</section>
+<section id="dynamic-modification-of-parameters">
+<h3>7.4.2 Dynamic modification of parameters<a class="headerlink" href="#dynamic-modification-of-parameters" title="永久链接至标题"></a></h3>
+<p>If the constructed VQC contains variable parameters, the parameter
+values can be modified dynamically in the following way with the general
+quantum logic gates corresponding to the parameters generated.</p>
+<p>(1): setValue(), used in the way below:</p>
+<p>object.setValue(newValue);</p>
+<p>(2): “=” operator re-assigned, used in the way below:</p>
+<p>object = newValue;</p>
+<section id="id6">
+<h4>7.4.2.1 Example:<a class="headerlink" href="#id6" title="永久链接至标题"></a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pyqpanda</span> <span class="k">as</span> <span class="nn">pq</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span><span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">machine</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">CPU</span><span class="p">)</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">([</span><span class="mi">5</span><span class="p">])</span>
+    <span class="n">ss</span><span class="o">=</span><span class="n">pq</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
+
+
+    <span class="n">vqc</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">VariationalQuantumCircuit</span><span class="p">()</span>
+    <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">VariationalQuantumGate_H</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">VariationalQuantumGate_RX</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ss</span><span class="p">))</span>
+    <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">VariationalQuantumGate_RY</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">y</span><span class="p">))</span>
+    <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">VariationalQuantumGate_RZ</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mf">0.12</span><span class="p">))</span>
+    <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">VariationalQuantumGate_CZ</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">VariationalQuantumGate_CNOT</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">VariationalQuantumGate_U1</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">))</span>
+    <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">VariationalQuantumGate_U2</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span>
+    <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">VariationalQuantumGate_U3</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span>  <span class="n">y</span><span class="p">))</span>
+    <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">VariationalQuantumGate_U4</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span>  <span class="n">y</span><span class="p">,</span><span class="n">ss</span><span class="p">))</span>
+
+
+
+    <span class="n">circuit1</span> <span class="o">=</span> <span class="n">vqc</span><span class="o">.</span><span class="n">feed</span><span class="p">()</span>
+
+    <span class="n">prog</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QProg</span><span class="p">()</span>
+    <span class="n">prog</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">circuit1</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">convert_qprog_to_originir</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">machine</span><span class="p">))</span>
+
+    <span class="n">x</span><span class="o">.</span><span class="n">set_value</span><span class="p">([[</span><span class="mf">3.</span><span class="p">]])</span>
+    <span class="n">y</span><span class="o">.</span><span class="n">set_value</span><span class="p">([[</span><span class="mf">4.</span><span class="p">]])</span>
+
+    <span class="n">circuit2</span> <span class="o">=</span> <span class="n">vqc</span><span class="o">.</span><span class="n">feed</span><span class="p">()</span>
+    <span class="n">prog2</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QProg</span><span class="p">()</span>
+    <span class="n">prog2</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">circuit2</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">convert_qprog_to_originir</span><span class="p">(</span><span class="n">prog2</span><span class="p">,</span> <span class="n">machine</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The above example will get the result below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">QINIT</span> <span class="mi">2</span>
+<span class="n">CREG</span> <span class="mi">0</span>
+<span class="n">H</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">RX</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],(</span><span class="mi">56</span><span class="p">)</span>
+<span class="n">RY</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">RZ</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],(</span><span class="mf">0.12</span><span class="p">)</span>
+<span class="n">CZ</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">CNOT</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">U1</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">U2</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],(</span><span class="mf">3.1415927</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">U3</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],(</span><span class="mf">3.1415927</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">U4</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],(</span><span class="mf">3.1415927</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="n">QINIT</span> <span class="mi">2</span>
+<span class="n">CREG</span> <span class="mi">0</span>
+<span class="n">H</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">RX</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],(</span><span class="mi">56</span><span class="p">)</span>
+<span class="n">RY</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],(</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">RZ</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],(</span><span class="mf">0.12</span><span class="p">)</span>
+<span class="n">CZ</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">CNOT</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">U1</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">U2</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],(</span><span class="mf">3.1415927</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">U3</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],(</span><span class="mf">3.1415927</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">U4</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],(</span><span class="mf">3.1415927</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="optimization-algorithm-gradient-descent">
+<h2>7.5 Optimization algorithm (gradient descent)<a class="headerlink" href="#optimization-algorithm-gradient-descent" title="永久链接至标题"></a></h2>
+<p>This chapter will describe the use of optimization algorithms in VQNet,
+including the classical gradient descent algorithm and the improved
+gradient descent algorithm which are two of the most commonly used
+methods to solve the model parameters of machine learning algorithms,
+i.e., unconstrained optimization problems. We have implemented such
+algorithms as <code class="docutils literal notranslate"><span class="pre">VanillaGradientDescentOptimizer</span></code>, <code class="docutils literal notranslate"><span class="pre">MomentumOptimizer</span></code>,
+<code class="docutils literal notranslate"><span class="pre">AdaGradOptimizer</span></code>, <code class="docutils literal notranslate"><span class="pre">RMSPropOptimizer</span></code> and <code class="docutils literal notranslate"><span class="pre">AdamOptimizer</span></code> in pyQPanda. All
+these algorithms are inherited from <code class="docutils literal notranslate"><span class="pre">Optimizer</span></code>.</p>
+<section id="id7">
+<h3>7.5.1 Interface introduction<a class="headerlink" href="#id7" title="永久链接至标题"></a></h3>
+<p>We generate an optimizer by calling the <code class="docutils literal notranslate"><span class="pre">minimize</span></code> interface of the
+gradient descent optimizer. The gradient descent optimizer is generally
+constructed as below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">VanillaGradientDescentOptimizer</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span>
+    <span class="n">loss</span><span class="p">,</span>  <span class="c1"># Loss function</span>
+    <span class="mf">0.01</span><span class="p">,</span>  <span class="c1"># learning rate</span>
+    <span class="mf">1.e-6</span><span class="p">)</span> <span class="c1"># The end condition</span>
+
+<span class="n">MomentumOptimizer</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span>
+    <span class="n">loss</span><span class="p">,</span>  <span class="c1"># Loss function</span>
+    <span class="mf">0.01</span><span class="p">,</span>  <span class="c1"># learning rate</span>
+    <span class="mf">0.9</span><span class="p">)</span>   <span class="c1"># The momentum coefficient</span>
+
+<span class="n">AdaGradOptimizer</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span>
+    <span class="n">loss</span><span class="p">,</span>  <span class="c1"># Loss function</span>
+    <span class="mf">0.01</span><span class="p">,</span>  <span class="c1"># learning rate</span>
+    <span class="mf">0.0</span><span class="p">,</span>   <span class="c1"># Initial value of accumulation</span>
+    <span class="mf">1.e-10</span><span class="p">)</span><span class="c1"># Small numbers to avoid a zero denominator</span>
+
+<span class="n">RMSOptimizer</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span>
+    <span class="n">loss</span><span class="p">,</span>  <span class="c1"># Loss function</span>
+    <span class="mf">0.01</span><span class="p">,</span>  <span class="c1"># learning rate</span>
+    <span class="mf">0.9</span><span class="p">,</span>   <span class="c1"># Historical or upcoming gradient discount factor</span>
+    <span class="mf">1.e-10</span><span class="p">)</span><span class="c1"># Small numbers to avoid a zero denominator</span>
+
+<span class="n">AdamOptimizer</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span>
+    <span class="n">loss</span><span class="p">,</span>  <span class="c1"># Loss function</span>
+    <span class="mf">0.01</span><span class="p">,</span>  <span class="c1"># learning rate</span>
+    <span class="mf">0.9</span><span class="p">,</span>   <span class="c1"># First order momentum decay coefficient</span>
+    <span class="mf">0.999</span><span class="p">,</span> <span class="c1"># Second order momentum decay coefficient</span>
+    <span class="mf">1.e-10</span><span class="p">)</span><span class="c1"># Small numbers to avoid a zero denominator</span>
+</pre></div>
+</div>
+</section>
+<section id="id8">
+<h3>7.5.2 Example<a class="headerlink" href="#id8" title="永久链接至标题"></a></h3>
+<p>The example codes mainly demonstrate the fitting of discrete points with
+straight lines. We define the training data X and Y which are variables
+and indicate the coordinates of the discrete points. Also, we define two
+differentiable variables w and b, which w represents the slope and b
+represents the y-intercept. Then, we define the underscore of variable Y
+which represents the slope w multiplied by the variable x plus the
+intercept.</p>
+<p>Next, we define the loss function. and compute the mean square value
+between variable Y and its underscore.</p>
+<p>We call the <code class="docutils literal notranslate"><span class="pre">minimize</span></code> interface of the gradient descent optimizer and
+construct a classical gradient descent optimizer by taking the loss
+function, learning rate and ending condition as parameters.</p>
+<p>We can obtain all differentiable nodes through the <code class="docutils literal notranslate"><span class="pre">get_variables</span></code>
+interface of the optimizer.</p>
+<p>We defined the number of iterations as 1000. Then, we conduct an
+optimization operation by calling the <code class="docutils literal notranslate"><span class="pre">run</span></code> interface of the optimizer.
+The second parameter indicates the current number of optimizations. Now,
+this parameter is only used by <code class="docutils literal notranslate"><span class="pre">AdamOptimizer</span></code>, and the other optimizers
+can be directly assigned with a value of 0.</p>
+<p>We can obtain the loss value after the optimization through the
+<code class="docutils literal notranslate"><span class="pre">get_loss</span></code> interface of the optimizer. Through the eval interface, we can
+get the current value of a differentiable variable.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyqpanda</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">3.3</span><span class="p">,</span> <span class="mf">4.4</span><span class="p">,</span> <span class="mf">5.5</span><span class="p">,</span> <span class="mf">6.71</span><span class="p">,</span> <span class="mf">6.93</span><span class="p">,</span> <span class="mf">4.168</span><span class="p">,</span> <span class="mf">9.779</span><span class="p">,</span> <span class="mf">6.182</span><span class="p">,</span> <span class="mf">7.59</span><span class="p">,</span>\
+             <span class="mf">2.167</span><span class="p">,</span> <span class="mf">7.042</span><span class="p">,</span> <span class="mf">10.791</span><span class="p">,</span> <span class="mf">5.313</span><span class="p">,</span> <span class="mf">7.997</span><span class="p">,</span> <span class="mf">5.654</span><span class="p">,</span> <span class="mf">9.27</span><span class="p">,</span><span class="mf">3.1</span><span class="p">])</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.7</span><span class="p">,</span> <span class="mf">2.76</span><span class="p">,</span> <span class="mf">2.09</span><span class="p">,</span> <span class="mf">3.19</span><span class="p">,</span> <span class="mf">1.694</span><span class="p">,</span> <span class="mf">1.573</span><span class="p">,</span> <span class="mf">3.366</span><span class="p">,</span> <span class="mf">2.596</span><span class="p">,</span> <span class="mf">2.53</span><span class="p">,</span>\
+             <span class="mf">1.221</span><span class="p">,</span> <span class="mf">2.827</span><span class="p">,</span> <span class="mf">3.465</span><span class="p">,</span> <span class="mf">1.65</span><span class="p">,</span> <span class="mf">2.904</span><span class="p">,</span> <span class="mf">2.42</span><span class="p">,</span> <span class="mf">2.94</span><span class="p">,</span><span class="mf">1.3</span><span class="p">])</span>
+
+
+<span class="n">X</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">Y</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="mi">1</span><span class="p">))</span>
+
+<span class="n">W</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+<span class="n">Y_</span> <span class="o">=</span> <span class="n">W</span><span class="o">*</span><span class="n">X</span> <span class="o">+</span> <span class="n">B</span>
+
+<span class="n">loss</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">poly</span><span class="p">(</span><span class="n">Y_</span> <span class="o">-</span> <span class="n">Y</span><span class="p">,</span> <span class="n">var</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">VanillaGradientDescentOptimizer</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">1.e-6</span><span class="p">)</span>
+<span class="n">leaves</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">get_variables</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">):</span>
+    <span class="n">optimizer</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">leaves</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">loss_value</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">get_loss</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;i: &quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="s2">&quot; loss: &quot;</span><span class="p">,</span> <span class="n">loss_value</span><span class="p">,</span> <span class="s2">&quot; W: &quot;</span><span class="p">,</span> <span class="nb">eval</span><span class="p">(</span><span class="n">W</span><span class="p">,</span><span class="kc">True</span><span class="p">),</span> <span class="s2">&quot; b: &quot;</span><span class="p">,</span>\ <span class="nb">eval</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="kc">True</span><span class="p">))</span>
+</pre></div>
+</div>
+<figure class="align-default">
+<img alt="" src="../_images/7.4.png" />
+</figure>
+<p>We plot a graph with the hash points and the fitted lines.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="n">w2</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">get_value</span><span class="p">()[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">b2</span> <span class="o">=</span> <span class="n">B</span><span class="o">.</span><span class="n">get_value</span><span class="p">()[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;Training data&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">w2</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="n">b2</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;Fitted line&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<figure class="align-default">
+<img alt="" src="../_images/7.1.png" />
+</figure>
+</section>
+</section>
+<section id="comprehensive-example">
+<h2>7.6 Comprehensive example<a class="headerlink" href="#comprehensive-example" title="永久链接至标题"></a></h2>
+<section id="qaoa">
+<h3>7.6.1 QAOA<a class="headerlink" href="#qaoa" title="永久链接至标题"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">QAOA</span></code> is a well-known hybrid quantum-classical algorithm. The max-cut
+problem of n objects requires n qubits to encode the result, where the
+measured result (binary string) indicates the cut configuration of the
+problem.</p>
+<p>We can effectively implement <code class="docutils literal notranslate"><span class="pre">QAOA</span></code> algorithm of the <code class="docutils literal notranslate"><span class="pre">MAX-CUT</span></code> problem
+through <code class="docutils literal notranslate"><span class="pre">VQNet</span></code>. The flow chart of QAOA in VQNet is as below.</p>
+<figure class="align-default">
+<img alt="" src="../_images/7.2.png" />
+</figure>
+<p>We determines a MAX-CUT problem as below:</p>
+<figure class="align-default">
+<img alt="" src="../_images/7.3.png" />
+</figure>
+<p>Firstly, we input the graphic information of the <code class="docutils literal notranslate"><span class="pre">MAX-CUT</span></code> problem to
+construct the Hamiltonian of the problem.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">problem</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Z0 Z4&#39;</span><span class="p">:</span><span class="mf">0.73</span><span class="p">,</span><span class="s1">&#39;Z0 Z5&#39;</span><span class="p">:</span><span class="mf">0.33</span><span class="p">,</span><span class="s1">&#39;Z0 Z6&#39;</span><span class="p">:</span><span class="mf">0.5</span><span class="p">,</span><span class="s1">&#39;Z1 Z4&#39;</span><span class="p">:</span><span class="mf">0.69</span><span class="p">,</span><span class="s1">&#39;Z1 Z5&#39;</span><span class="p">:</span><span class="mf">0.36</span><span class="p">,</span>
+       <span class="s1">&#39;Z2 Z5&#39;</span><span class="p">:</span><span class="mf">0.88</span><span class="p">,</span><span class="s1">&#39;Z2 Z6&#39;</span><span class="p">:</span><span class="mf">0.58</span><span class="p">,</span><span class="s1">&#39;Z3 Z5&#39;</span><span class="p">:</span><span class="mf">0.67</span><span class="p">,</span><span class="s1">&#39;Z3 Z6&#39;</span><span class="p">:</span><span class="mf">0.43</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Then, we construct the vqc of <code class="docutils literal notranslate"><span class="pre">QAOA</span></code> with the Hamiltonian and beta and
+gamma, the two variable parameters to be optimized. The input parameters
+of <code class="docutils literal notranslate"><span class="pre">QOP</span></code> include the Hamiltonian of interest, <code class="docutils literal notranslate"><span class="pre">VQC</span></code>, a set of qubits, and
+the quantum operating environment. The output of QOP is the expectation
+of the Hamiltonian of interest. In this problem, the loss function is
+the expectation of the Hamiltonian of interest. Therefore, the output of
+<code class="docutils literal notranslate"><span class="pre">QOP</span></code> shall be minimized. We optimize the variables beta and gamma in the
+vqc with <code class="docutils literal notranslate"><span class="pre">MomentumOptimizer</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyqpanda</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="k">def</span> <span class="nf">oneCircuit</span><span class="p">(</span><span class="n">qlist</span><span class="p">,</span> <span class="n">Hamiltonian</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">gamma</span><span class="p">):</span>
+    <span class="n">vqc</span><span class="o">=</span><span class="n">VariationalQuantumCircuit</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Hamiltonian</span><span class="p">)):</span>
+        <span class="n">tmp_vec</span><span class="o">=</span><span class="p">[]</span>
+        <span class="n">item</span><span class="o">=</span><span class="n">Hamiltonian</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">dict_p</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="nb">iter</span> <span class="ow">in</span> <span class="n">dict_p</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;Z&#39;</span><span class="o">!=</span> <span class="n">dict_p</span><span class="p">[</span><span class="nb">iter</span><span class="p">]:</span>
+                <span class="k">pass</span>
+            <span class="n">tmp_vec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">qlist</span><span class="p">[</span><span class="nb">iter</span><span class="p">])</span>
+
+        <span class="n">coef</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="mi">2</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tmp_vec</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">VariationalQuantumGate_CNOT</span><span class="p">(</span><span class="n">tmp_vec</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tmp_vec</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">VariationalQuantumGate_RZ</span><span class="p">(</span><span class="n">tmp_vec</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">2</span><span class="o">*</span><span class="n">gamma</span><span class="o">*</span><span class="n">coef</span><span class="p">))</span>
+        <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">VariationalQuantumGate_CNOT</span><span class="p">(</span><span class="n">tmp_vec</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tmp_vec</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">qlist</span><span class="p">:</span>
+        <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">VariationalQuantumGate_RX</span><span class="p">(</span><span class="n">j</span><span class="p">,</span><span class="mf">2.0</span><span class="o">*</span><span class="n">beta</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">vqc</span>
+<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span><span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">problem</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Z0 Z4&#39;</span><span class="p">:</span><span class="mf">0.73</span><span class="p">,</span><span class="s1">&#39;Z0 Z5&#39;</span><span class="p">:</span><span class="mf">0.33</span><span class="p">,</span><span class="s1">&#39;Z0 Z6&#39;</span><span class="p">:</span><span class="mf">0.5</span><span class="p">,</span><span class="s1">&#39;Z1 Z4&#39;</span><span class="p">:</span><span class="mf">0.69</span><span class="p">,</span><span class="s1">&#39;Z1 Z5&#39;</span><span class="p">:</span><span class="mf">0.36</span><span class="p">,</span>
+           <span class="s1">&#39;Z2 Z5&#39;</span><span class="p">:</span><span class="mf">0.88</span><span class="p">,</span><span class="s1">&#39;Z2 Z6&#39;</span><span class="p">:</span><span class="mf">0.58</span><span class="p">,</span><span class="s1">&#39;Z3 Z5&#39;</span><span class="p">:</span><span class="mf">0.67</span><span class="p">,</span><span class="s1">&#39;Z3 Z6&#39;</span><span class="p">:</span><span class="mf">0.43</span><span class="p">}</span>
+    <span class="n">Hp</span> <span class="o">=</span> <span class="n">PauliOperator</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span>
+    <span class="n">qubit_num</span> <span class="o">=</span> <span class="n">Hp</span><span class="o">.</span><span class="n">getMaxIndex</span><span class="p">()</span>
+
+    <span class="n">machine</span><span class="o">=</span><span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">)</span>
+    <span class="n">qlist</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="n">qubit_num</span><span class="p">)</span>
+
+    <span class="n">step</span> <span class="o">=</span> <span class="mi">4</span>
+
+    <span class="n">beta</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">step</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span><span class="n">dtype</span> <span class="o">=</span> <span class="s1">&#39;float64&#39;</span><span class="p">),</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">gamma</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">step</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span><span class="n">dtype</span> <span class="o">=</span> <span class="s1">&#39;float64&#39;</span><span class="p">),</span> <span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">vqc</span><span class="o">=</span><span class="n">VariationalQuantumCircuit</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">qlist</span><span class="p">:</span>
+        <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">VariationalQuantumGate_H</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">step</span><span class="p">):</span>
+        <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">oneCircuit</span><span class="p">(</span><span class="n">qlist</span><span class="p">,</span><span class="n">Hp</span><span class="o">.</span><span class="n">toHamiltonian</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span><span class="n">beta</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">gamma</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">qop</span><span class="p">(</span><span class="n">vqc</span><span class="p">,</span> <span class="n">Hp</span><span class="p">,</span> <span class="n">machine</span><span class="p">,</span> <span class="n">qlist</span><span class="p">)</span>
+    <span class="n">optimizer</span> <span class="o">=</span> <span class="n">MomentumOptimizer</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">)</span>
+    <span class="n">leaves</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">get_variables</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+        <span class="n">optimizer</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">leaves</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">loss_value</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">get_loss</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;i: &quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="s2">&quot; loss:&quot;</span><span class="p">,</span><span class="n">loss_value</span> <span class="p">)</span>
+    <span class="c1"># The verification results</span>
+    <span class="n">prog</span> <span class="o">=</span> <span class="n">QProg</span><span class="p">()</span>
+    <span class="n">qcir</span> <span class="o">=</span> <span class="n">vqc</span><span class="o">.</span><span class="n">feed</span><span class="p">()</span>
+    <span class="n">prog</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">qcir</span><span class="p">)</span>
+    <span class="n">directly_run</span><span class="p">(</span><span class="n">prog</span><span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">quick_measure</span><span class="p">(</span><span class="n">qlist</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</pre></div>
+</div>
+<figure class="align-default">
+<img alt="" src="../_images/7.5.png" />
+</figure>
+<p>We draw a histogram with the measured results, from which we can see
+that the two qubit strings ‘0001111’ and ‘1110000’ generate the largest
+probability which is also the solution of this problem.</p>
+<figure class="align-default">
+<img alt="" src="../_images/7.6.png" />
+</figure>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../chapter6/index.html" class="btn btn-neutral float-left" title="6 Component" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> 上一页</a>
+        <a href="../chapter8/index.html" class="btn btn-neutral float-right" title="8 Basis of quantum algorithm" accesskey="n" rel="next">下一页 <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2021, BYLZ.</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用了 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a>开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

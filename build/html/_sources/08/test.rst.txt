@@ -1,0 +1,1878 @@
+**8 量子算法基础**
+==================
+
+**8.1 基础概念回顾**
+--------------------
+
+8.1.1 基础定义
+~~~~~~~~~~~~~~
+
+在物理学中，量子是物理量的最小的不可分的基本单位。比特是计算机术语，指信息量最小单位。不同于经典比特，量子比特不再只能取值0或1，还可以处于0和1的任意比例叠加的中间态。
+
+对量子比特进行的基本运算操作叫做量子门。
+
+量子门分为单比特门和多比特门。单比特门有Hadamard门、Pauli-X/Y/Z门和旋转X/Y/Z门等。二比特门既有受控的单比特门（例如CNOT门等）也有交换门。
+通过受控等扩展方式，可以将单比特门和二比特门进一步扩展为多比特门。
+注意，测量是一种特殊的量子门，它是不可逆的，会改变量子比特的状态。
+
+任何量子算法，都是由这些基本的量子门组合得到的。
+
+普适量子门的定义参见 常见量子逻辑门矩阵形式。
+
+8.1.2 pyQPanda接口函数
+~~~~~~~~~~~~~~~~~~~~~~
+
+在pyQPanda中，量子门的定义函数形式如下：
+
+::
+
+    gate = H(qubit)
+
+*注解：*
+
+输入参数为量子比特Qubit及其他参数，返回值为可以插入量子线路的量子门QGate。
+
+在pyQPanda中定义的量子门种类非常丰富。特别地，pyQPanda中支持完全自定义的量子门U4门，它的接口函数同时有以下几种重载：
+
+::
+
+    U4(alpha, beta, gamma, delta, qubit)
+    U4(qubit, alpha, beta, gamma, delta)
+    U4(matrix, qubit)
+    U4(qubit, matrix)
+
+如前文所述，量子门的接口函数有两种拓展操作：转置共轭和受控。两种操作都各有两种实现方式。
+
+转置共轭操作的两种接口函数定义如下：
+
+::
+
+    gate = H(qubit)
+    gate1 = gate.dagger()
+    gate.setDagger(true) 
+
+*注解：*
+
+dagger函数返回的是一个基于目标量子门的新量子门，setDagger返回的则是进行转置共轭后的目标量子门。
+
+受控操作的两种接口函数定义如下：
+
+::
+
+    gate = H(qubit)
+    gate1 = gate.control(QVec)
+    gate.setControl(QVec) 
+
+*注解：*
+
+区别与转置共轭操作类似，但受控函数入参是Qvec（qubit的list）而非单个qubit。
+
+8.1.3 实例
+~~~~~~~~~~
+
+下面以一个程序实例，来展示基本的量子比特和量子门操作的代码实现。
+
+::
+
+    #!/usr/bin/env python
+
+    import pyqpanda as pq
+
+    if __name__ == "__main__":
+
+        machine = pq.init_quantum_machine(pq.QMachineType.CPU)
+        qubits = machine.qAlloc_many(3)
+        control_qubits = [qubits[0], qubits[1]]
+        prog = pq.create_empty_qprog()
+
+        # 构建量子程序
+        prog.insert(pq.H(qubits[0])) \
+            .insert(pq.H(qubits[1])) \
+            .insert(pq.H(qubits[0]).dagger()) \
+            .insert(pq.X(qubits[2]).control(control_qubits))
+
+        # 对量子程序进行概率测量
+        result = pq.prob_run_dict(prog, qubits, -1)
+        pq.destroy_quantum_machine(machine)
+
+        # 打印测量结果
+        for key in result:
+            print(key+":"+str(result[key]))
+
+输出结果应如下所示，分别以0.5的概率得到 \|0⟩和 \|2⟩：
+
+::
+
+    000:0.5
+    010:0.5
+
+以上就是量子比特和量子门的基本定义和在pyQPanda中的调用介绍。
+
+**8.2 试验态制备与量子纠缠**
+----------------------------
+
+8.2.1 试验态制备
+~~~~~~~~~~~~~~~~
+
+试验态制备，指的是量子计算中任意算法的初始量子态的构造，是量子计算的初始步骤。
+
+以单比特的两态空间为例，在实际量子运算中，我们可以直接得到的默认量子态是基态
+\|0⟩，通过非门可以间接得到基态 \|1⟩。
+
+对于任给的目标叠加量子态，我们则需要构造相应的量子门组合来得到。从基态
+\|0⟩ 出发制备任给目标叠加态的过程称为初态制备。
+
+8.2.1.1 最大叠加态
+^^^^^^^^^^^^^^^^^^
+
+以二比特态空间为例，从\ :math:`|0\rangle^{\otimes 2}`\ 出发，对每个量子比特进行Hadamard门操作可以得到二比特空间中所有基态的均匀叠加。
+
+类似地，在任意维态空间中，均可以借助Hadamard门从多维的 \|0⟩
+基态出发，得到所有基态均匀线性组合的量子态。
+
+这种量子态称为最大叠加态，很多量子计算中量子比特的初始状态要求为最大叠加态，量子计算的并行性也有赖于此。
+
+通过试验态制备，我们就可以得到任意的基础量子态，从而完成量子计算中运算对象的构造。但是在执行运算操作之前，我们需要对量子计算所使用的量子比特给出明确的约束——纠缠关联。
+
+在介绍量子纠缠之前，我们需要介绍一下纯态和混态。
+
+非基态的量子态都为叠加态。叠加态又可以分为相干叠加和非相干叠加，分别称为纯态和混态。
+
+纯态与混态的区分方式有多种，典型的有布洛赫球（Bloch
+Sphere），将态空间与Bloch球关联，球面上量子态为纯态，球体内的量子态为混态。
+
+另一种重要的区分方式为密度矩阵，混态的密度矩阵非对角元均为0。
+
+8.2.2 量子纠缠
+~~~~~~~~~~~~~~
+
+如果一个量子系统的量子态
+:math:`|\psi\rangle`\ 可以表示成形如\ :math:`|\psi\rangle=\left|\psi_{0}\right\rangle \otimes\left|\psi_{1}\right\rangle`\ 的两个量子系统的直积形式，我们就将此量子态称为直积态。
+
+*注解：*
+
+不能进行这种直积分解的量子态就是纠缠态。
+
+例如对二比特的Bell态\ :math:`\frac{1}{\sqrt{2}}|00\rangle+\frac{1}{\sqrt{2}}|11\rangle`\ ，它不能写成两个单比特量子态的直积形式。
+
+量子纠缠态有超越经典关联的量子关联。为了发挥量子计算的并行性和高效性，量子计算使用的量子比特之间应当有着纠缠关联。
+
+8.2.3 最大叠加态制备
+~~~~~~~~~~~~~~~~~~~~
+
+下面是基于pyQPanda的最大叠加态制备的代码实现，调用的量子比特之间有着纠缠关联。
+
+::
+
+    #!/usr/bin/env python
+
+    import pyqpanda as pq
+
+    if __name__ == "__main__":
+
+        machine = pq.init_quantum_machine(pq.QMachineType.CPU)
+        qubits = machine.qAlloc_many(3)
+        prog = pq.create_empty_qprog()
+
+        # 构建量子程序
+        prog.insert(pq.H(qubits[0])) \
+            .insert(pq.H(qubits[1])) \
+            .insert(pq.H(qubits[2]))
+
+        # 对量子程序进行概率测量
+        result = pq.prob_run_dict(prog, qubits, -1)
+        pq.destroy_quantum_machine(machine)
+
+        # 打印测量结果
+        for key in result:
+            print(key+":"+str(result[key]))
+
+运行结果应当是以均匀概率1/8得到3比特空间中所有量子态：
+
+::
+
+    000, 0.125
+    001, 0.125
+    010, 0.125
+    011, 0.125
+    100, 0.125
+    101, 0.125
+    110, 0.125
+    111, 0.125
+
+**8.3 Hadamard Test与SWAP Test**
+--------------------------------
+
+量子线路是一系列量子门操作的组合。众多量子线路中有一部分量子线路是在构造量子算法时会被反复使用，这些被高频调用的量子线路组件我们称之为量子算法基本线路，下面将介绍几种常用基本线路。
+
+8.3.1 Hadamard Test
+~~~~~~~~~~~~~~~~~~~
+
+Hadamard Test量子线路的主要作用是对任给的幺正算符 :math:`U` 和量子态
+:math:`\psi` ，可以给出该幺正算符在量子态上的投影期望
+:math:`\langle\psi|U| \psi\rangle` 。
+
+Hadamard Test的量子线路图结构简单，如下所示。
+
+.. figure:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/Hadamard.png
+   :alt: \_images/Hadamard.png
+
+   \_images/Hadamard.png
+整个量子线路可以视为对两个寄存器中量子比特组成的一个n+1维量子态\ :math:`| 0\rangle`\ :math:`| \psi\rangle`\ 进行量子门操作组合\ :math:`Q=\left(H \otimes I^{\otimes n}\right)(C-U)\left(H \otimes I^{\otimes n}\right)`\ ，其中
+:math:`C−U` 表示基于幺正算符 :math:`U` 的受控门。
+
+8.3.1.1 输出结果及推广
+^^^^^^^^^^^^^^^^^^^^^^
+
+对Hadamard Test量子线路的输出结果进行推导，有如下结论：
+
+.. math::
+
+
+   \begin{aligned} Q|0\rangle &|\psi\rangle=\frac{|0\rangle+|1\rangle}{2}|\psi\rangle+\frac{|0\rangle-|1\rangle}{2} U|\psi\rangle \\ &=|0\rangle \frac{|\psi\rangle+U|\psi\rangle}{2}+|1\rangle \frac{|\psi\rangle-U|\psi\rangle}{2}  \end{aligned}
+
+对输出的结果量子态进行测量得到\ :math:`| 0\rangle` ,
+:math:`| 1\rangle`\ 的概率为：
+
+.. math::
+
+
+   P_{0}=\frac{1}{4} \|(I+U)(Q|0\rangle|\psi\rangle) \mid \|^{2}=\frac{1+\operatorname{Re}(\langle\psi|U| \psi\rangle)}{2}, P_{1}=1-P_{0}
+
+由公式推导可知，Hadamard Test的结果相应的测量概率均与
+:math:`Re(⟨ψ|U|ψ⟩) `\ 即幺正算符$ U :math:`在量子态 `\ ψ$
+上投影期望的实部相关。
+
+将图中测量之前的
+:math:`H `\ 门换成\ :math:`R X\left(\frac{\pi}{2}\right)`\ 门，则可以得到概率与投影期望虚部相关的结果量子态。
+
+8.3.1.2 代码实例
+^^^^^^^^^^^^^^^^
+
+取\ :math:`|\psi\rangle=\frac{|0\rangle+|1\rangle}{\sqrt{2}}`,
+:math:`U=H`, Hadamard Test的一个代码实例如下：
+
+::
+
+    #!/usr/bin/env python
+
+    import pyqpanda as pq
+
+    if __name__ == "__main__":
+
+            machine = pq.init_quantum_machine(pq.QMachineType.CPU)
+            cqv = machine.qAlloc_many(1)
+            tqv = machine.qAlloc_many(1)
+            prog = pq.create_empty_qprog()
+
+            # 构建量子程序
+            prog.insert(pq.H(cqv[0])) \
+                    .insert(pq.H(tqv[0])) \
+                    .insert(pq.H(tqv[0]).control([cqv[0]]))\
+                    .insert(pq.H(cqv[0]))
+
+            # 对量子程序进行概率测量
+            result = pq.prob_run_dict(prog, cqv, -1)
+            pq.destroy_quantum_machine(machine)
+
+            # 打印测量结果
+            for key in result:
+                    print(key+":"+str(result[key]))
+
+输出结果应如下所示，分别以\ :math:`\frac{1+\sqrt{2} / 2}{2}`\ 和\ :math:`1-\frac{1+\sqrt{2} / 2}{2}`\ 的概率得到
+:math:`|0⟩`\ 和 :math:`|1⟩`\ ：
+
+::
+
+    0:0.853553
+    1:0.146447
+
+Hadamard Test有着多种形式和广泛用途，其中一种特殊形式是基本量子线路SWAP
+Test。
+
+8.3.2 SWAP Test
+~~~~~~~~~~~~~~~
+
+任给两个维数相同的量子态，通过SWAP
+Test线路，可以得到两个量子态的保真度，反应了它们的重叠情况。
+
+两个量子态$ \|ϕ⟩\ :math:`,`\ \|ψ⟩
+:math:`的保真度是指量子态内积范数的平方`\ \|\|^{2}$。
+
+SWAP Test的量子线路图如下所示。
+
+.. figure:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/SWAP.png
+   :alt: \_images/SWAP.png
+
+   \_images/SWAP.png
+对SWAP Test的公式推导验证过程完全类似于Hadamard
+Test，结果量子态的第一个寄存器测量得到\ :math:`|0⟩`,\ :math:`|1⟩`
+的概率均与给定的两个量子态的保真度相关。
+
+.. math::
+
+
+   P_{0}=\frac{1+|\langle\psi \mid \phi\rangle|^{2}}{2}, P_{1}=1-P_{0}
+
+SWAP
+Test作为Hadamard的一种特殊形式，它对两个给定量子态给出了其保真度相关的测量结果，具有重要应用意义。在量子态的内积相关研究中有着重要作用。
+
+如果将受控SWAP门替换为一般的受控门F那么可以还原得到一般形式的Hadamard
+Test的结果量子态
+
+.. math::
+
+
+   \frac{|0\rangle}{2}(I+F)|\phi\rangle|\psi\rangle+\frac{|1\rangle}{2}(I-F)|\phi\rangle|\psi\rangle
+
+8.3.2.1 代码实例
+^^^^^^^^^^^^^^^^
+
+SWAP Test的代码实例与Hadamard Test有细微区别。
+
+取\ :math:`|\phi\rangle=\frac{|0\rangle+|1\rangle}{\sqrt{2}},|\psi\rangle=|1\rangle`,
+SWAP Test的一个代码实例如下：
+
+::
+
+    #!/usr/bin/env python
+
+    import pyqpanda as pq
+
+    if __name__ == "__main__":
+
+        machine = pq.init_quantum_machine(pq.QMachineType.CPU)
+        cqv = machine.qAlloc_many(1)
+        tqv = machine.qAlloc_many(1)
+        qvec = machine.qAlloc_many(1)
+        prog = pq.create_empty_qprog()
+
+        # 构建量子程序
+        prog.insert(pq.H(cqv[0])) \
+            .insert(pq.H(tqv[0])) \
+            .insert(pq.X(qvec[0])) \
+            .insert(pq.SWAP(tqv[0],qvec[0]).control([cqv[0]]))\
+            .insert(pq.H(cqv[0]))
+
+        # 对量子程序进行概率测量
+        result = pq.prob_run_dict(prog, cqv, -1)
+        pq.destroy_quantum_machine(machine)
+
+        # 打印测量结果
+        for key in result:
+            print(key+":"+str(result[key]))
+
+输出结果应如下所示，分别以 0.75 和 0.25 的概率得到$ \|0⟩\ :math:`和`
+\|1⟩$ ：
+
+::
+
+    0:0.75
+    1:0.25
+
+**8.4 振幅放大**
+----------------
+
+振幅放大（Amplitude
+Amplification）线路的主要作用为对于给定纯态的振幅进行放大，从而调整其测量结果概率分布。
+
+8.4.1 算法背景
+~~~~~~~~~~~~~~
+
+对于某个已知大小的可二元分类且标准\ :math:`f`\ 确定的有限集合$
+Ω\ :math:`，基于` f :math:`可以将集合中的任一元素`\ \|ψ⟩
+:math:`表示为两个正交基态`\ \|\ *{0}\ :math:`,`\ \|*\ {1}$的线性组合。
+
+.. math::
+
+
+   |\psi\rangle=\sin \theta\left|\varphi_{1}\right\rangle+\cos \theta\left|\varphi_{0}\right\rangle,\left|\varphi_{0}\right\rangle=\left|\varphi_{1}^{\perp}\right\rangle
+
+振幅放大量子线路可以将叠加态\ :math:`|ψ⟩ `\ 的表达式中\ :math:`\left|\psi_{1}\right\rangle`\ 的振幅放大，从而得到一个结果量子态，能够以大概率测量得到目标量子态\ :math:`\left|\psi_{1}\right\rangle`\ 。
+
+假设我们可以构造出某种量子门操作的组合，记该组合为振幅放大算子 Q ，将 Q
+作用 k 次于量子态\ :math:`|ψ⟩ `\ 上得到形如下式的量子态
+
+.. math::
+
+
+   \left|\psi_{k}\right\rangle=\sin k \theta\left|\varphi_{1}\right\rangle+\cos k \theta\left|\varphi_{0}\right\rangle, k \theta \approx \frac{\pi}{2}
+
+那么就完成了所需的振幅放大量子线路构建。
+
+相应的量子线路图如下：
+
+.. figure:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/AmplitudeAmplification.png
+   :alt: \_images/AmplitudeAmplification.png
+
+   \_images/AmplitudeAmplification.png
+假设基于集合$ Ω :math:`和分类标准` f :math:`的量子态`
+\|ψ⟩\ :math:`已经完成制备，关键在于构造振幅放大算子 `\ Q $。
+
+定义振幅放大算子如下
+
+.. math::
+
+
+   P_{1}=I-2\left|\psi_{1}\right\rangle\left\langle\psi_{1}|, P=I-2| \psi\right\rangle\langle\psi|, Q=-P P_{1}
+
+*注解：*
+
+如何通过集合$ Ω :math:`和分类标准` f
+:math:`来制备量子态？`\ P\_{1}\ :math:`,`\ P
+$又是怎样通过量子线路实现的？
+
+简单验证可知在\ :math:`\left\{\left|\varphi_{1}\right\rangle,\left|\varphi_{0}\right\rangle\right\}`\ 张成的空间中算子$
+Q $可以表示为
+
+.. math::
+
+
+   Q=\left[\begin{array}{cc}\cos (2 \theta) & -\sin (2 \theta) \\ \sin (2 \theta) & \cos (2 \theta)\end{array}\right]
+
+实质上可以视为一个角度为 2θ 的旋转量子门操作。因此有
+
+.. math::
+
+
+   Q^{n}|\psi\rangle=\sin (2 n+1) \theta\left|\varphi_{1}\right\rangle+\cos (2 n+1) \theta\left|\varphi_{0}\right\rangle
+
+选取合适的旋转次数 n 使得 |img| 最接近 1 即可完成振幅放大量子线路。
+
+相比经典的遍历分类方法，振幅放大量子线路可以充分体现量子计算的优势。
+
+8.4.2 代码实例
+~~~~~~~~~~~~~~
+
+取\ :math:`\Omega=\{0,1\},|\psi\rangle=\frac{|0\rangle+|1\rangle}{2}, P_{1}=I-2|1\rangle\langle 1|=Z`
+,振幅放大量子线路的相应代码实例如下
+
+::
+
+    #!/usr/bin/env python
+
+    import pyqpanda as pq
+    from numpy import pi
+
+    if __name__ == "__main__":
+
+        machine = pq.init_quantum_machine(pq.QMachineType.CPU)
+        qvec = machine.qAlloc_many(1)
+        prog = pq.create_empty_qprog()
+
+        # 构建量子程序
+        prog.insert(pq.H(qvec[0]))
+        for i in range(7):
+             prog.insert(pq.RY(qvec[0],pi/2))
+
+        # 对量子程序进行概率测量
+        result = pq.prob_run_dict(prog, qvec, -1)
+        pq.destroy_quantum_machine(machine)
+
+        # 打印测量结果
+        for key in result:
+             print(key+":"+str(result[key]))
+
+输出结果应如下所示，分别以 1 和 0 的概率得到$ \|0⟩\ :math:`和 `\ \|1⟩$
+：
+
+::
+
+    0:1
+    1:0
+
+**8.5 量子傅里叶变换**
+----------------------
+
+量子傅里叶变换（QFT）实质上是经典的逆离散傅里叶变换（IDFT）的量子版本。
+
+量子傅里叶变换可以将存在于基向量中的数据与振幅中的数据在一定条件下相互转换。
+
+8.5.1 基本定义
+~~~~~~~~~~~~~~
+
+QFT可以简单地通过对IDFT进行替换得到，QFT和DFT本质上都是同一个向量在两个等价空间中的不同表示形式，即基向量的更换。
+
+.. math::
+
+
+   \begin{aligned} y_{k} & \rightarrow \frac{1}{\sqrt{N}} \Sigma_{j=0}^{N-1} x_{j} e^{\frac{2 \pi i}{N} j k} \\|x\rangle & \rightarrow \frac{1}{2^{\frac{n}{2}}} \Sigma_{k=0}^{2^{n}-1} e^{\frac{2 \pi i}{2^{n}} x k}|k\rangle \end{aligned}
+
+由定义可知，空间
+:math:`span{|x⟩} `\ 中的某个向量\ :math:`\Sigma_{x} \alpha_{x}|x\rangle`\ 通过傅里叶变换可以表示为另一个等价空间
+:math:`span{|k⟩} `\ 中基向量的线性组合\ :math:`\Sigma_{k} \alpha_{k}|k\rangle`,
+且线性组合的系数\ :math:`\beta_{k}`\ 由\ :math:`|x⟩`
+和\ :math:`\alpha_{k}` 决定。
+
+*注解*\ ：
+
+量子傅里叶变换/逆变换，实质上可以视为一种振幅和基向量的相互转化。
+
+8.5.2 量子线路构造
+~~~~~~~~~~~~~~~~~~
+
+对QFT的量子线路实现需要对其表达式进行变形，得到可以用现有普适量子门组合实现的变换过程。
+
+8.5.2.1 QFT的求和形式与张量积形式
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+对任给整数$ x :math:`，由二进制展开`\ k=\ *{i=1}^{n} k*\ {i}
+2^{n-i}\ :math:`，对`\ \|x⟩$进行量子傅里叶变换的结果可表示为
+
+:math:`Q F T(|x\rangle)=\frac{1}{2^{\frac{n}{2}}} \Sigma_{k=0}^{2^{n}-1} e^{\frac{2 \pi i x k}{2^{n}}}|k\rangle=\frac{1}{2^{\frac{n}{2}}} \Sigma_{k_{1}=0}^{1} \cdots \Sigma_{k_{n}=0}^{1} e^{2 \pi i x k\left(\Sigma_{l=1}^{n} k l 2^{-l}\right)}\left|k_{1} \cdots k_{n}\right\rangle`
+:math:`=\frac{1}{2^{\frac{n}{2}}} \Sigma_{k_{1}=0}^{1} \cdots \Sigma_{k_{n}=0}^{1} \otimes_{l=1}^{n} e^{2 \pi i x k l 2^{-l}}\left|k_{l}\right\rangle=\frac{1}{2^{\frac{n}{2}}} \otimes_{l=1}^{n}\left(|0\rangle+e^{2 \pi i x 2^{-l}}|1\rangle\right)`
+
+由上式可知，QFT可以将特定量子态$ \|x⟩$
+表示为另一组基的线性组合，而这个线性组合还能表示为多个单比特量子态\ :math:`\frac{1}{\sqrt{2}}\left(|0\rangle+e^{2 \pi i x 2^{-l}}|1\rangle\right)`\ 的张量积。
+
+因此对任给整数$
+x\ :math:`，如果可以由二进制展开位`\ \|x\_{n+1-l}\ :math:`快速构造量子态`\ (\|0+e^{2
+i x
+2^{-l}}\|1)$，那么就可以通过张量积形式的QFT表达式完成相应QFT量子线路的构造。
+
+8.5.2.2 二进制展开与量子态制备
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+任给整数 :math:`x` 进行二进制展开近似：
+
+.. math::
+
+
+   x / 2^{m} \approx\left[x_{1} \cdots x_{m}\right] / 2^{m}=\left[0 . x_{1} \cdots x_{m}\right]=\Sigma_{k=1}^{m} x_{k} 2^{-k}
+
+而
+
+.. math::
+
+
+   2 \pi i x 2^{-l}=2 \pi i\left[x_{1} \cdots x_{n}\right] 2^{-l}=2 \pi i\left[0 . x_{n-l} \cdots x_{n}\right]
+
+于是制备\ :math:`\frac{1}{\sqrt{2}}\left(|0\rangle+e^{2 \pi i x 2^{-l}}|1\rangle\right)`\ 转化为制备\ :math:`\frac{1}{\sqrt{2}}\left(|0\rangle+e^{2 \pi i\left[0 . x_{n-l} \cdot x_{n}\right]}|1\rangle\right)`\ 。
+
+注意到\ :math:`H|0\rangle=\frac{1}{\sqrt{2}}(|0\rangle+|1\rangle)=\frac{1}{\sqrt{2}}\left(|0\rangle+e^{2 \pi i\left[0 . x_{n}\right]}|1\rangle\right)`\ ，而
+
+:math:`\frac{1}{\sqrt{2}}\left(|0\rangle+e^{2 \pi i\left[0 . x_{n-1} -{x}_{n}\right]}|1\rangle\right)=\frac{1}{\sqrt{2}}\left(|0\rangle+e^{2 \pi i\left[0 . x_{n-1}\right.} e^{2 \pi i\left[0.0 x_{n}\right]}|1\rangle\right)`
+:math:`R_{m}|0\rangle=|0\rangle, R_{m}|1\rangle=e^{2 \pi i \frac{1}{2^{m}}}|1\rangle`
+
+定义受控旋转量子门\ :math:`(C-R)_{j-k+1}`\ 满足
+
+:math:`(C-R)_{j-k+1} \frac{1}{\sqrt{2}}\left(|0\rangle+e^{2 \pi i\left[0 . x_{n-j}\right.}|1\rangle\right)\left|x_{n-k}\right\rangle=\frac{1}{\sqrt{2}}\left(|0\rangle+e^{2 \pi i\left[0 . x_{n-j} \theta \cdots 0 x_{n-k}\right.]}|1\rangle .\right.`
+
+于是利用量子门$ H :math:`和就可以完成对量子态`\ (\|0+e^{2 i x
+2^{-l}}\|1)$的制备，进而完成QFT的量子线路。
+
+QFT的量子线路图如下所示
+
+.. figure:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/QFT.png
+   :alt: \_images/QFT.png
+
+   \_images/QFT.png
+特别地，注意到上图中初始量子态为的量子比特对应的结果量子态\ :math:`\frac{1}{\sqrt{2}}\left(|0\rangle+e^{2 \pi i x 2^{n+1-l}}|1\rangle\right)`\ 为而非\ :math:`\frac{1}{\sqrt{2}}\left(|0\rangle+e^{2 \pi i x 2^{-l}}|1\rangle\right)`\ ，因此实际使用时还需要追加相应的多组
+SWAP 门。
+
+8.5.3 代码实现
+~~~~~~~~~~~~~~
+
+QFT在一维情况就是Hadamard量子门。 基于pyQPanda的QFT接口函数如下：
+
+::
+
+    QFT(qlist)
+
+选取$ \|x⟩=\|000⟩ $验证QFT的代码实例如下
+
+::
+
+    #!/usr/bin/env python
+
+    import pyqpanda as pq
+    from numpy import pi
+
+    if __name__ == "__main__":
+
+        machine = pq.init_quantum_machine(pq.QMachineType.CPU)
+        qvec = machine.qAlloc_many(3)
+        prog = pq.create_empty_qprog()
+
+        # 构建量子程序
+        prog.insert(pq.QFT(qvec))
+
+        # 对量子程序进行概率测量
+        result = pq.prob_run_dict(prog, qvec, -1)
+        pq.destroy_quantum_machine(machine)
+
+        # 打印测量结果
+        for key in result:
+             print(key+":"+str(result[key]))
+
+由前文中QFT的定义及$ \|x⟩=\|000⟩
+$可知输出结果应当以均匀概率1/8得到所有量子态，即
+
+::
+
+    000, 0.125
+    001, 0.125
+    010, 0.125
+    011, 0.125
+    100, 0.125
+    101, 0.125
+    110, 0.125
+    111, 0.125
+
+**8.6 量子相位估计**
+--------------------
+
+量子相位估计（QPE）可以计算给定幺正算符\ :math:`U`\ 的特征值的相位，即求解
+
+:math:`U|\psi\rangle=e^{2 \pi i \varphi}|\psi\rangle`\ 中的$
+φ\ :math:`，此处为`\ U$的特征向量。
+
+经典形式的QPE是在QFT的基础上构造的。
+
+8.6.1 量子线路结构概览
+~~~~~~~~~~~~~~~~~~~~~~
+
+假设已经构造好特征向量\ :math:`|\psi\rangle`
+，量子相位估计包含如下步骤：
+
+1.通过一系列特殊旋转量子门操作将U的特征值相位分解转移到辅助量子比特的振幅上；
+
+2.对辅助量子比特执行IQFT，将振幅上的特征值相位转移到基向量上；
+
+3.对辅助量子比特的基向量分别进行测量后综合可得到特征值的相位信息。
+
+4.对于幺正算符 U 的一个特征量子态
+:math:`|\psi\rangle`\ ，可以通过特定的量子门组合将该量子态对应的特征值相位提取到振幅，但量子态的振幅难以有效准确地测量。
+
+必须借助其他量子门组合将特征值相位数据进行整合，最终通过IQFT可以由振幅到基向量进行数据转化的功能将特征值转移到基向量中。
+
+*注解：*
+
+量子相位估计本质上是为了提取幺正算符的特征值相位，并以便于测量的形式输出。
+
+8.6.2 量子线路构建
+~~~~~~~~~~~~~~~~~~
+
+8.6.2.1 特征量子态与特征值相位提取
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+由特征量子态的定义有\ :math:`U|\psi\rangle=e^{2 \pi i \varphi}|\psi\rangle`
+
+于是由幺正算符\ :math:`U`\ 可以定义受控量子门\ :math:`(C-U)`\ 使得
+
+:math:`\left(C-U^{2^{t}}\right)(a|0\rangle+b|1\rangle) \otimes|\psi\rangle=\left(a|0\rangle+e^{2 \pi i \varphi 2^{t}} b|1\rangle\right) \otimes|\psi\rangle`
+
+特征值相位\ :math:`φ` 通过这种受控变换可以提取到振幅中。
+
+8.6.2.2 特征值相位由振幅转移到基向量
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+选取一组初始化为最大叠加态的辅助比特，通过受控量子门可以将特征值相位提取到振幅中：
+
+.. math::
+
+
+   \left(C-U^{2^{0}}\right) \cdots\left(C-U^{2^{n}}\right) \frac{1}{2^{\frac{n}{2}}} \otimes_{t=1}^{n}(|0\rangle+|1\rangle)=\left(|0\rangle+e^{2 \pi i \varphi 2^{1-1}}|1\rangle\right) \cdots\left(|0\rangle+e^{2 \pi i \varphi 2^{n-1}}|1\rangle\right)
+
+此时辅助比特中的量子态形式与QFT的结果量子态相近，借助IQFT有如下结果：
+
+.. math::
+
+
+   Q F T^{-1} \frac{1}{2^{\frac{n}{2}}} \otimes_{t=1}^{n}\left(|0\rangle+e^{2 \pi i \varphi 2^{t-1}}|1\rangle\right)
+
+.. math::
+
+
+   =Q F T^{-1} \frac{1}{2^{\frac{n}{2}}} \Sigma_{k=0}^{2^{n}-1} e^{2 \pi i \varphi k}|k\rangle
+
+.. math::
+
+
+   =\frac{1}{2^{n}} \Sigma_{k=0}^{2^{n}-1} \Sigma_{x=0}^{2^{n}-1} e^{-\frac{2 \pi i k}{2^{n}}\left(x-2^{n} \varphi\right)}|x\rangle
+
+8.6.2.3 含特征值相位的基向量测量
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+对得到的结果量子态进行测量，结果可以分为两类：
+
+1.如果存在正整数 :math:`2^{n} \varphi \in \mathbb{Z}`\ ，则可以以概率 1
+测量得到\ :math:`|x\rangle=\left|2^{n} \varphi\right\rangle`
+
+2.否则以至少概率\ :math:`\frac{4}{\pi^{2}}`\ 得到最接近
+:math:`2^{n} \varphi`\ 的整数，进而得到近似解
+
+*注解：*
+
+如何从最接近\ :math:`2^{n} \varphi`\ 的整数反推得到 :math:`\varphi`
+？（提示：连续分数展开)
+
+测量结果得到的是相位\ :math:`\varphi`\ 的近似解，近似解的精度与辅助比特的数目\ :math:`n`\ 相关。
+
+:math:`2^{n} \varphi \in \mathbb{Z}`\ 的情况代表辅助比特的数目已经大于
+:math:`\varphi` 的二进制展开小数位数，因此才能得到精确解。
+
+8.6.3量子线路图与代码实现
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+QPE的量子线路图如下所示
+
+.. figure:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/QPE.png
+   :alt: \_images/QPE.png
+
+   \_images/QPE.png
+由上文中的定义，我们可以基于pyQPanda直接给出QPE的函数实现。
+
+量子线路总共可以分为三个部分，特征量子态制备与辅助比特量子态初始化、特征值相位提取、逆量子傅里叶变换。程序实现的核心内容如下：
+
+::
+
+    #!/usr/bin/env python
+
+    import pyqpanda as pq
+    from numpy import pi
+
+    def QPE(controlqlist, targetqlist, matrix):
+       circ = pq.QCircuit()
+       for i in range(len(controlqlist)):
+              circ.insert(pq.H(controlqlist[i]))
+
+       for i in range(len(controlqlist)):
+              circ.insert(controlUnitaryPower(targetqlist, controlqlist[controlqlist.size() \
+               - 1 - i], i, matrix))
+
+       circ.insert(pq.QFT(controlqlist).dagger())
+       return circ
+
+图中的参数matrix是指需要估计特征值的幺正算符 :math:`U` 对应的矩阵。
+
+选取\ :math:`U=R Y\left(\frac{\pi}{4}\right),|\psi\rangle=|0\rangle+i|1\rangle`\ ，对应的特征值为\ :math:`e^{-i \frac{\pi}{8}}`\ ，验证QPE的代码实例如下
+
+::
+
+    #!/usr/bin/env python
+
+    import pyqpanda as pq
+    from numpy import pi
+
+    if __name__ == "__main__":
+
+       machine = pq.init_quantum_machine(pq.QMachineType.CPU)
+       qvec = machine.qAlloc_many(1)
+       cqv = machine.qAlloc_many(2)
+       prog = pq.create_empty_qprog()
+
+       # 构建量子程序
+       prog.insert(pq.H(cqv[0]))\
+             .insert(pq.H(cqv[1]))\
+             .insert(pq.S(qvec[0]))\
+             .insert(pq.RY(qvec[0], pi/4).control(cqv[1]))\
+             .insert(pq.RY(qvec[0], pi/4).control(cqv[0]))\
+             .insert(pq.RY(qvec[0], pi/4).control(cqv[0]))\
+             .insert(pq.QFT(cqv).dagger())
+
+       # 对量子程序进行概率测量
+       result = pq.prob_run_dict(prog, cqv, -1)
+       pq.destroy_quantum_machine(machine)
+
+       # 打印测量结果
+       for key in result:
+             print(key+":"+str(result[key]))
+
+由前文可知输出结果应当以较大概率得到量子态$ \|0⟩$
+
+::
+
+    000, 0.821067
+    001, 0.0732233
+    010, 0.0324864
+    011, 0.0732233
+
+**8.7 量子四则运算**
+--------------------
+
+在特定情况下，量子计算机中需要实现基本的四则运算。量子加法器及衍生出来的量子四则运算可以满足这些计算需求。
+
+8.7.1 加法器算法背景
+~~~~~~~~~~~~~~~~~~~~
+
+除了测量之外的所有量子门操作都是酉变换，因而不含测量的量子线路整体是可逆的。
+
+量子加法器的量子线路也应当可逆，因而输入输出是数量相等的量子比特，量子线路图如下所示。
+
+.. figure:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/QADD.png
+   :alt: \_images/QADD.png
+
+   \_images/QADD.png
+图中包含了两种子量子线路模块MAJ和UMA，作用分别是获得当前二进制位的进位数值和当前二进制位的结果数值。
+
+8.7.1.1 MAJ量子线路组件
+^^^^^^^^^^^^^^^^^^^^^^^
+
+MAJ的量子线路如下所示。
+
+.. figure:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/MAJ.png
+   :alt: \_images/MAJ.png
+
+   \_images/MAJ.png
+.. figure:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/MAJ_detail.png
+   :alt: *images/MAJ*\ detail.png
+
+   *images/MAJ*\ detail.png
+下面对MAJ量子线路的具体功能进行解读。
+
+MAJ量子线路的输入分别为前一位的进位值\ :math:`c_{i}`\ 、当前位的两个待加值\ :math:`a_{i}`,\ :math:`b_{i}`,输出为\ :math:`a_{i}+c_{i} \bmod 2, \quad a_{i}+b_{i} \bmod 2`\ 和当前位进位值\ :math:`c_{i+1}`
+。
+
+MAJ模块是为了实现获得进位，我们想要得到进位\ :math:`c_{i+1}`
+,也就是要从\ :math:`a_{i}+b_{i}+c_{i}`\ 出发，判断\ :math:`(a_{i}+b_{i}+c_{i})/2`
+。
+
+在待加值中任选一个数\ :math:`a_{i}`\ 对进位情况进行如下枚举，
+
+1.\ :math:`a_{i}=0, \quad c_{i}=\left[\left(a_{i}+b_{i}\right) \% 2\right] *\left[\left(a_{i}+c_{i}\right) \% 2\right] ;`
+
+2.\ :math:`a_{i}=1, \quad c_{i}=\left(\left\lfloor\left(a_{i}+b_{i}\right) \% 2\right] *\left[\left(a_{i}+c_{i}\right) \% 2\right]+1\right) \% 2`
+
+因此，只需要考察
+:math:`a_{i},\left[\left(a_{i}+b_{i}\right) \% 2\right] *\left[\left(a_{i}+c_{i}\right) \% 2\right]`\ 就可以判断进位情况。
+
+从现有的量子逻辑门出发，制备量子态
+:math:`a_{i},\left(a_{i}+b_{i}\right) \% 2,\left(a_{i}+c_{i}\right) \% 2`\ ，即可以准确判断出进位的情况。此处选取的考察对象并不唯一，其他方案会衍生出相应的量子线路。
+
+制备三个量子态的方案如上图中所示，使用CNOT门来完成模2加法得到\ :math:`\left(a_{i}+b_{i}\right) \% 2,\left(a_{i}+c_{i}\right) \% 2`
+使用Toffoli门完成\ :math:`a`\ 与
+的\ :math:`\left[\left[\left(a_{i}+b_{i}\right) \% 2\right] *\left[\left(a_{i}+c_{i}\right) \% 2\right]\right.`\ 异或运算。
+
+8.7.1.2 UMA量子线路组件
+^^^^^^^^^^^^^^^^^^^^^^^
+
+UMA的量子线路如下所示。
+
+.. figure:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/UMA.png
+   :alt: \_images/UMA.png
+
+   \_images/UMA.png
+.. figure:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/UMA_detail.png
+   :alt: *images/UMA*\ detail.png
+
+   *images/UMA*\ detail.png
+下面对UMA量子线路的具体功能进行解读。
+
+UMA量子线路的输入分别为\ :math:`a_{i}+c_{i} \bmod 2, a_{i}+b_{i} \bmod 2`\ 和当前位进位值
+:math:`c_{i+1}`\ ，输出为\ :math:`c_{i}`\ ，\ :math:`a_{i}+b_{i}+c_{i} \bmod 2:=s_{i}`\ 和\ :math:`a_{i}`\ 。
+
+UMA模块是为了实现获得当前位结果，我们想要得到当前位\ :math:`s_{i}`
+,也就是要得到 :math:`\left(a_{i}+b_{i}+c_{i}\right) \% 2`\ 。
+
+参考MAJ模块，首先通过与MAJ所用的完全相反的TOffoli门由\ :math:`c_{i+1}`\ 得到\ :math:`a_{i}`\ ，然后利用与MAJ所用的相反的CNOT变换得到
+:math:`c_{i}`
+，综合已有的\ :math:`a_{i}+b_{i} \bmod 2`\ ，于是可以通过简单的CNOT门得到
+:math:`\left(a_{i}+b_{i}+c_{i}\right) \% 2`\ 。
+
+整个过程的前两步都可以视为MAJ相应量子门的逆变换。
+
+*注解：*
+
+MAJ的实现量子线路是不唯一的，那么UMA也是不唯一的吗？
+
+8.7.2 量子四则运算
+~~~~~~~~~~~~~~~~~~
+
+8.7.2.1 量子加法器
+^^^^^^^^^^^^^^^^^^
+
+量子加法器的原理如前文所示。
+
+8.7.2.2 量子减法器
+^^^^^^^^^^^^^^^^^^
+
+基础的加法器只支持非负整数的加法。对于小数要求输入的被加数a和b必须小数点位置相同，小数点对齐后整体长度相同。
+
+对于带符号变换的量子加法，则需要追加辅助比特用于记录符号位。任给两个目标量子态
+:math:`A,B`\ ，对第二个量子态$ B
+:math:`进行特定的补码操作，然后转换为`\ A−B=A+(−B)\ :math:`，此处的 `\ −B
+$并不以符号位取反的方式实现。
+
+该特定的补码操作为：符号位为正则不变，符号位为负需要按位取反后再加1。因此需要一个额外的辅助比特来控制是否进行求补码的操作。
+
+量子减法器实质上就是量子加法器的带符号版本。
+
+8.7.2.3 量子乘法器
+^^^^^^^^^^^^^^^^^^
+
+量子乘法器是基于加法器完成的。选择乘数$ A :math:`作为受控比特，选择乘数`
+B$
+以二进制展开逐位作为控制比特，将受控加法器的运算结果累加到辅助比特中。每完成一次
+:math:`B `\ 控制的受控加法就将乘数$ A$ 左移一位并在末位补零。
+
+于是把通过受控加法输出的数值在辅助比特中累加起来，得到乘法结果。
+
+8.7.2.4 量子除法器
+^^^^^^^^^^^^^^^^^^
+
+量子除法器是基于量子减法器完成的，通过执行减法后被除数的符号位是否改变来完成大小比较，并决定除法是否终止。
+
+除数减去被除数时，商结果加1。每完成一次减法后，重新进行被除数与除数的大小比较，直至除尽或者达到预设精度。
+
+因此还需要额外追加一个存储精度参数的辅助比特。
+
+8.7.3 代码实现及使用说明
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+8.7.3.1 量子加法器
+^^^^^^^^^^^^^^^^^^
+
+在pyQPanda中加法器的接口函数如下：
+
+::
+
+    QAdder(adder1,adder2,c,is_carry)
+
+    QAdderIgnoreCarry(adder1,adder2,c)
+
+    QAdd(adder1,adder2,k)
+
+前两种接口函数的区别是是否保留进位is\_carry，但都只支持正数加法。参数中adder1与adder2为执行加法的比特且格式完全一致，\ :math:`c`\ 为辅助比特。
+
+第三种加法器接口函数是带符号的加法器，是基于量子减法器实现的。待加数添加了符号位，相应的辅助比特也从1-2个单比特变为一个\ :math:`adder1.size()+2`\ 比特。
+
+加法的输出比特都是adder1，其他非进位比特不变。
+
+8.7.3.2 量子减法器
+^^^^^^^^^^^^^^^^^^
+
+量子减法器基于基本加法器完成，同时也是带符号的加法器的基础。
+
+在pyQPanda中减法器（带符号的加法器）的接口函数如下：
+
+::
+
+    QSub(a,b,k)
+
+与带符号的加法器相同，两个待减数的量子比特最高位为符号位，辅助比特k.size
+():math:`=a` a.size ():math:`+2`\ 。
+
+减法的输出比特是\ :math:`a`\ ，其他比特不变。
+
+8.7.3.3 量子乘法器
+^^^^^^^^^^^^^^^^^^
+
+在pyQPanda中乘法器的接口函数如下：
+
+::
+
+    QMultiplier(a,b,k,d)
+
+    QMul(a,b,k,d)
+
+两个接口函数的输入待乘量子比特都包含符号位，但只有QMul支持带符号的乘法运算。
+
+相应的，QMultiplier中，辅助比特\ :math:`k \cdot \operatorname{size}()=`
+a.size ():math:`+1`\ ，结果比特d.size ():math:`=2^{*}` a.size ()。
+
+QMul中，辅助比特\ :math:`k.size()=a.size()`\ ，结果比特\ :math:`d.size()=2*a.size()-1`\ 。
+
+乘法的输出比特都是\ :math:`d`\ ，其他比特不变。
+
+如果等长的输入比特\ :math:`a`\ 和\ :math:`b`\ 存在小数点，那么在输出比特\ :math:`d`\ 中的小数点位置坐标为输入比特中的2倍。
+
+8.7.3.4量子除法器
+^^^^^^^^^^^^^^^^^
+
+在pyQPanda中除法法器的接口函数如下：
+
+::
+
+    QDivider(a,b,c,k,t)
+
+    QDivider(a,b,c,k,f,s)
+
+    QDiv(a,b,c,k,t)
+
+    QDiv(a,b,c,k,f,s)
+
+与乘法器类似，除法器也是分为两类，尽管输入的待运算比特都带有符号位，但接口分为带符号运算和仅限正数两类。
+
+:math:`k`\ 为辅助比特，\ :math:`t`\ 或\ :math:`s`\ 为限制QWhile循环次数的经典比特。
+
+此外，除法器有除不尽的问题，因此可以接口函数有如上四种，对应的输入和输出参数分别有如下性质：
+
+1. QDivider返还余数和商（分别存储在\ :math:`a和c`\ 中）时，\ :math:`c.size()=a.size()`\ ，但\ :math:`k.size()=a*size()*2+2`;
+2. QDivider返还精度和商（分别存储在\ :math:`f和c`\ 中）时，\ :math:`c.size()=a.size()`\ ，但\ :math:`k.size()=3*size()*2+5`\ ；
+3. QDiv返还余数和商（分别存储在\ :math:`a和c`\ 中）时，\ :math:`c.size()=a.size()`\ ，但\ :math:`k.size()=a*size()*2+4`;
+4. QDivider返还精度和商（分别存储在\ :math:`f和c`\ 中）时，\ :math:`c.size()=a.size()`\ ，但\ :math:`k.size()=a*size()*3+7`\ ；
+
+如果参数不能满足量子四则运算所需的比特数目，那么计算依然会进行但结果会溢出。
+
+除法的输出比特是\ :math:`c`\ ，带精度的除法中\ :math:`a,b,k`\ 都不会变，否则\ :math:`b,k`\ 不变，但\ :math:`a`\ 中存储余数。
+
+8.7.4 示例
+~~~~~~~~~~
+
+下面是一个简单的基于pyQPanda调用量子四则运算的代码示例
+
+::
+
+    #!/usr/bin/env python
+
+    import pyqpanda as pq
+    # from numpy import pi
+
+    if __name__ == "__main__":
+        # 为了节约比特数，辅助比特将会互相借用
+        qvm = pq.init_quantum_machine(pq.QMachineType.CPU)
+
+        qdivvec = qvm.qAlloc_many(10)
+        qmulvec = qdivvec[:7]
+        qsubvec = qmulvec[:-1]
+        qvec1 = qvm.qAlloc_many(4)
+        qvec2 = qvm.qAlloc_many(4)
+        qvec3 = qvm.qAlloc_many(4)
+        cbit = qvm.cAlloc()
+        prog = pq.create_empty_qprog()
+
+        # (4/1+1-3)*5=10
+        prog.insert(pq.bind_data(4,qvec3)) \
+           .insert(pq.bind_data(1,qvec2)) \
+           .insert(pq.QDivider(qvec3, qvec2, qvec1, qdivvec, cbit)) \
+           .insert(pq.bind_data(1,qvec2)) \
+           .insert(pq.bind_data(1,qvec2)) \
+           .insert(pq.QAdd(qvec1, qvec2, qsubvec)) \
+           .insert(pq.bind_data(1,qvec2)) \
+           .insert(pq.bind_data(3,qvec2)) \
+           .insert(pq.QSub(qvec1, qvec2, qsubvec)) \
+           .insert(pq.bind_data(3,qvec2)) \
+           .insert(pq.bind_data(5,qvec2)) \
+           .insert(pq.QMul(qvec1, qvec2, qvec3, qmulvec)) \
+           .insert(pq.bind_data(5,qvec2))
+
+        # 对量子程序进行概率测量
+        result = pq.prob_run_dict(prog, qmulvec,1)
+        pq.destroy_quantum_machine(qvm)
+
+        # 打印测量结果
+        for key in result:
+           print(key+":"+str(result[key]))
+
+执行的计算为$ (4/1+1−3)∗5=10:math:`，因此结果应当以概率 1 得到`
+\|10⟩\ :math:`即 `\ \|1010⟩$。
+
+::
+
+    1010:1
+
+**8.8 HHL算法**
+---------------
+
+HHL算法是一种求解线性方程组的量子算法，线性方程组在许多领域中都有着广泛的实际应用。
+
+8.8.1 问题背景概述
+~~~~~~~~~~~~~~~~~~
+
+线性方程组问题可定义为： 给定矩阵 :math:`A \in C^{N \times N}`
+和向量\ :math:`\vec{b} \in C^{N}` ，找到
+:math:`\vec{x} \in C^{N}`\ 满足\ :math:`A \vec{x}=\vec{b}`\ 。
+
+如果矩阵A每行或每列最多具有\ :math:`s`\ 个非零元，则将线性方程组称为s-稀疏线性方程组。用经典算法（共轭梯度法）来解决N维的s-稀疏线性方程组，需要的时间复杂度为\ :math:`O\left(N s k \log \left(\frac{1}{\varepsilon}\right)\right)`
+，这里\ :math:`k`\ 表示系统的条件数，$ ε
+:math:`表示近似的精度。HHL是一种量子算法，当A是自共轭矩阵时，用HHL算法解线性方程组的时间复杂度为`\ O((N)
+s^{2} )$
+
+HHL算法相对于经典算法有着指数级的加速，但经典算法可以返回精确解，而HHL算法只能返回近似解。
+
+*注解：*
+
+HHL算法是一种纯量子算法，它和它的改进版的出现对于证明量子算法的实用性有着重大意义。
+
+8.8.2 算法原理
+~~~~~~~~~~~~~~
+
+在对线性方程组进行一定格式转换后可以以HHL算法进行求解，HHL算法主要包含了以下三大步骤，并需要使用右端项比特、存储比特和辅助比特总共三个寄存器。
+
+构造右端项量子态，对存储比特及右端项比特进行参数含左端项矩阵的相位估计，将左端项矩阵的整数形式特征值全部转移到存储比特的基向量中。
+
+进行一系列参数含特征值的受控旋转，过滤出所有的特征值相关量子态，将特征值从存储比特的基向量转移到振幅；
+
+对特征存储比特及右端项比特进行逆相位估计，将存储比特振幅上的特征值合并到右端项比特上，当辅助比特测量得到特定状态时，在右端项比特上可得到解的量子态。
+
+在进行算法具体步骤之前，需要对经典形式的线性方程组求解问题\ :math:`A \vec{x}=\vec{b}`\ 进行特定转换：
+
+不失一般性地假设矩阵$ A $为自共轭矩阵，否则取
+
+.. math::
+
+
+   C_{A}=\left[\begin{array}{cc}0 & A \\ A^{H} & 0\end{array}\right], C_{b}=\left[\begin{array}{l}b \\ 0\end{array}\right], C_{x}=\left[\begin{array}{l}0 \\ x\end{array}\right]
+
+使得
+:math:`C_{A} \overrightarrow{C_{x}}=\overrightarrow{C_{b}}`\ 成立且满足
+:math:`C_{A}`\ 自共轭。
+
+以下内容中将默认\ :math:`A`\ 为自共轭矩阵。
+
+将向量\ :math:`\vec{b}, \vec{x}`\ 分别归一化后采用编码到振幅上的方式映射到量子态\ :math:`|b\rangle,|x\rangle`\ ，原问题转换为\ :math:`A|x\rangle=|b\rangle`.
+
+对矩阵 A 进行谱分解有
+
+.. math::
+
+
+   A=\sum_{j=0}^{N-1} \lambda_{j}\left|u_{j}\right\rangle\left\langle u_{j}\right|, \lambda_{j} \in R
+
+其中\ :math:`\lambda_{j}, u_{j}`\ 为矩阵\ :math:`A`\ 的特征对（特征值及相应的特征向量)。
+
+将 :math:`|b\rangle` 以特征向量基展开，得到
+
+.. math::
+
+
+   |b\rangle=\sum_{j=0}^{N-1} b_{j}\left|u_{j}\right\rangle, b_{j} \in C
+
+于是原方程组的解可表示为
+
+.. math::
+
+
+   |x\rangle=A^{-1}|b\rangle=\sum_{j=0}^{N-1} \lambda_{j}^{-1} b_{j}\left|u_{j}\right\rangle
+
+显而易见算法的基本思路应当是从右端项量子态\ :math:`|b\rangle`
+出发构造解量子态\ :math:`|x\rangle`
+
+8.8.2.1 通过QPE提取特征值
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+为了将矩阵 A 的特征值提取到解量子态的振幅，首先需要完成特征值的提取。
+由前文可知，QPE量子线路可以用于特征值提取。
+
+对\ :math:`|0\rangle^{\otimes n}|b\rangle`\ 进行一次QPE操作，得到
+
+.. math::
+
+
+   Q P E\left(|0\rangle^{\otimes n}|b\rangle\right)=\sum_{j=0}^{N-1} b_{j}\left|\widetilde{\lambda_{j}}\right\rangle\left|u_{j}\right\rangle
+
+其中
+:math:`\widetilde{\lambda_{j}}`\ 是对应特征值\ :math:`\lambda_{j}`\ 的近似整数，细节参见QPE部分介绍。
+于是矩阵A的特征值信息存入到了基向量
+:math:`\widetilde{\lambda_{j}}`\ 中。
+
+8.8.2.2 通过受控旋转转移特征值
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+构造如下受控旋转\ :math:`C R(k)`
+
+.. math::
+
+
+   C R(k)(|a\rangle|j\rangle)=\left\{\begin{array}{c}R Y\left(\arccos \frac{C}{k}\right)|a\rangle|k\rangle, j=k \\ |a\rangle|j\rangle, j \neq k\end{array}\right.
+
+式中 C
+为\ :math:`\widetilde{\lambda_{j}}`\ 的归一化系数，有\ :math:`C \leq \min _{j}\left|\widetilde{\lambda_{j}}\right|`\ 从而任意\ :math:`\frac{C^{2}}{\widetilde{\lambda_{j}}^{2}} \leq 1`\ 。对\ :math:`\sum_{j=0}^{N-1} b_{j}|0\rangle\left|\widetilde{\lambda_{j}}\right\rangle\left|u_{j}\right\rangle`\ 经过遍历式旋转量子门操作后可以得到
+
+:math:`\left(\prod(C R(k) \otimes I)\right) \sum_{N-1}^{j=0} b_{j}|0\rangle\left|\widetilde{\lambda_{j}}\right\rangle\left|u_{j}\right\rangle=\sum_{j=0}^{N-1}\left(\sqrt{1-\frac{C^{2}}{\widetilde{\lambda_{j}}^{2}}}|0\rangle+\frac{C}{\widetilde{\lambda}_{j}}|1\rangle\right) b_{j}\left|\widetilde{\lambda_{j}}\right\rangle\left|u_{j}\right\rangle`
+
+8.8.2.3 通过逆QPE输出结果量子态
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+理论上，受控旋转后的量子态已经可以通过测量得到解量子态
+:math:`|x\rangle`\ 。
+
+但为了避免出现\ :math:`|u_{j}\rangle`\ 相同但\ :math:`\left|\widetilde{\lambda_{j}}\right\rangle`\ 不同的需要合并的量子态\ :math:`\frac{C}{\tilde{\lambda}_{j}} b_{j}|1\rangle\left|\widetilde{\lambda_{j}}\right\rangle\left|u_{j}\right\rangle`\ ，应当选择逆QPE操作来得到形如\ :math:`\frac{C}{\widetilde{\lambda}_{j}} b_{j}|1\rangle|0\rangle\left|u_{j}\right\rangle`\ 的结果量子态。
+
+对旋转结果进行逆QPE，有
+
+.. math::
+
+
+   \left(I \otimes Q P E^{\dagger}\right) \sum_{j=0}^{N-1}\left(\sqrt{1-\frac{C^{2}}{\widetilde{\lambda_{j}}^{2}}}|0\rangle+\frac{C}{\widetilde{\lambda_{j}}}|1\rangle\right) b_{j}\left|\widetilde{\lambda_{j}}\right\rangle\left|u_{j}\right\rangle
+
+.. math::
+
+
+   =\sum_{j=0}^{N-1}\left(b_{j} \sqrt{1-\frac{C^{2}}{\widetilde{\lambda_{j}}^{2}}}|0\rangle|0\rangle\left|u_{j}\right\rangle+b_{j} \frac{C}{\widetilde{\lambda_{j}}}|1\rangle|0\rangle\left|u_{j}\right\rangle\right)
+
+事实上即使是这种形式的结果量子态，由于误差的存在，依然无法在第一个和第二个量子寄存器分别为$
+\|1⟩,\|0⟩$
+的情况下以概率1得到解量子态\ :math:`|x\rangle=\sum_{j=0}^{N-1} \lambda_{j}^{-1} b_{j}\left|u_{j}\right\rangle`
+
+*注解：*
+
+HHL算法充分利用了量子相位估计提取特征值信息的功能，巧妙构造了受控旋转门从存储比特的基向量中抓取特征值存入振幅，最后利用逆相位估计还原存储量子比特，从而得到了振幅含特征值的方程解。
+
+8.8.3 量子线路图与参考代码
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+HHL算法的量子线路图如下所示
+
+.. figure:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/HHL_Alg.png
+   :alt: *images/HHL*\ Alg.png
+
+   *images/HHL*\ Alg.png
+基于pyQPanda的HHL算法实现代码较为冗长，此处不作详述，具体参见pyQPanda下HHL算法程序源码
+，此处仅介绍pyQPanda中提供的几个HHL算法调用接口。
+
+::
+
+    HHL(matrix, data, QuantumMachine)
+
+    HHL_solve_linear_equations(matrix, data)
+
+第一个函数接口用于得到HHL算法对应的量子线路，第二个函数接口则可以输入QStat格式的矩阵和右端项，返还解向量。
+
+选择一个最简单的二维左端项单位矩阵例子来验证HHL接口函数的可用性，代码实例如下：
+
+::
+
+    #!/usr/bin/env python
+
+    import pyqpanda as pq
+    import numpy as np
+
+    if __name__ == "__main__":
+
+        machine = pq.init_quantum_machine(pq.QMachineType.CPU)
+        prog = pq.create_empty_qprog()
+
+        # 构建量子程序
+        prog.insert(pq.build_HHL_circuit([1,0,0,1],[0.6,0.8],machine))
+
+        pq.directly_run(prog)
+
+        result = np.array(machine.get_qstate())[:2]
+        pq.destroy_quantum_machine(machine)
+
+        #打印测量结果
+        for key in result:
+             print(key)
+
+输出结果应该和右端项向量一样是 [0.6,0.8]，因为误差会出现较小的扰动：
+
+::
+
+    (0.5988269448280334-3.930189507173054e-14i)
+    (0.7984358668327332-8.08242361927114e-14i)
+
+**8.9 Grover算法和量子计数算法**
+--------------------------------
+
+量子计数算法（Quantum
+Counting）与Grover算法都是基于集合元素二类划分问题衍生的算法。量子计数算法可以求得集合中两种类型元素的个数，Grover算法则可以求得指定类型的一个元素。
+
+8.9.1 问题背景概述
+~~~~~~~~~~~~~~~~~~
+
+前文中介绍了振幅放大量子线路的问题背景集合元素二类划分问题，即对于给定的有限集合和划分标准$
+Ω,f，$我们可以用如下量子态表示集合元素
+
+:math:`|\psi\rangle=\sin \theta\left|\varphi_{1}\right\rangle+\cos \theta\left|\varphi_{0}\right\rangle,\left|\varphi_{0}\right\rangle=\left|\varphi_{1}^{\perp}\right\rangle`
+
+现在对此问题进行两种扩展。
+
+8.9.1.1 量子计数问题
+^^^^^^^^^^^^^^^^^^^^
+
+记\ :math:`|\Omega|=N=2^{n}, \Omega \supseteq B,|B|=M \leq N`
+，且判别函数满足
+
+.. math::
+
+
+   \left\{\begin{array}{c}f: \Omega \rightarrow\{0,1\} \\ f(x)=\left\{\begin{array}{l}1, x \in B \\ 0, x \notin B\end{array}\right.\end{array}\right.
+
+求 M。
+
+传统算法是简单地通过 :math:`O(N)`
+次的运算进行遍历计数，从而求得解的集合基数
+:math:`M`\ 。量子计数算法的时间复杂度与QPE过程完全一致，均为\ :math:`O\left(\left(\log _{2} N\right)^{2}\right)`
+。
+
+*注解：*
+
+将振幅放大算子应用到QPE线路中，可以起到类似于由特征量子态提取特征值的过滤提取作用。
+
+8.9.1.2 解元素的搜索问题
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+集合\ :math:`\Omega`\ 中存在某个元素\ :math:`\omega \in \Omega`\ 为特定问题的解，判别函数的定义如下：
+
+.. math::
+
+
+   \left\{\begin{array}{c}f: \Omega \rightarrow\{0,1\} \\ f(x)=\left\{\begin{array}{l}1, x=\omega \\ 0, x \neq \omega\end{array}\right.\end{array}\right.
+
+求\ :math:`\omega \in \Omega`\ 。
+
+Grover算法的过程与振幅放大量子线路的过程完全一致。Grover算法的时间复杂度为\ :math:`O(\sqrt{N})`\ ，相对于经典算法的\ :math:`O(N)`\ 有着极大加速。
+
+*注解*\ ：
+
+事实上，振幅放大得到振幅和基向量的近似求解的思想不局限于集合元素二类划分问题。
+
+8.9.2 算法原理
+~~~~~~~~~~~~~~
+
+两种算法需要预制备的集合元素量子态有着相似的如下形式
+
+.. math::
+
+
+   |\psi\rangle=\sin \theta\left|\varphi_{1}\right\rangle+\cos \theta\left|\varphi_{0}\right\rangle,\left|\varphi_{0}\right\rangle=\left|\varphi_{1}^{\perp}\right\rangle
+
+但具体定义和需要求解的目标不同，因此基于振幅放大量子线路衍生出的算法原理也有所不同
+
+8.9.2.1 基于振幅放大算子的QPE过程
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+量子计数算法中的两个基量子态是基于集合和判别函数定义的，即
+
+.. math::
+
+
+   \left|\varphi_{0}\right\rangle=\frac{1}{\sqrt{N-M}} \sum_{x \notin B}|x\rangle,\left|\varphi_{1}\right\rangle=\frac{1}{\sqrt{M}} \sum_{x \in B}|x\rangle
+
+将问题转化到空间\ :math:`\left\{\left|\varphi_{0}\right\rangle,\left|\varphi_{1}\right\rangle\right\}`\ 上，则需要求解$
+θ $。
+
+直接在空间\ :math:`\left\{\left|\varphi_{0}\right\rangle,\left|\varphi_{1}\right\rangle\right\}`\ :math:`\left\{\left|\varphi_{0}\right\rangle,\left|\varphi_{1}\right\rangle\right\}`\ 上定义振幅放大算子\ :math:`G=\left[\begin{array}{cc}\cos 2 \theta & -\sin 2 \theta \\ \sin 2 \theta & \cos 2 \theta\end{array}\right]`\ ，满足
+
+.. math::
+
+
+   G\left(\cos \theta\left|\varphi_{0}\right\rangle+\sin \theta\left|\varphi_{1}\right\rangle\right)=\cos 3 \theta\left|\varphi_{0}\right\rangle+\sin 3 \theta\left|\varphi_{1}\right\rangle
+
+振幅放大算子 G
+的特征向量可以构成空间\ :math:`\left\{\left|\varphi_{0}\right\rangle,\left|\varphi_{1}\right\rangle\right\}`\ 的一组基向量，因此\ :math:`ψ`\ 可以拆解为
+G 的特征向量的线性组合。
+
+:math:`G `\ 的特征值为\ :math:`e^{\pm 2 i \theta}`\ ，借助在制备\ :math:`ψ`\ 的过程中使用的索引比特，可以准确区分出以$
+G :math:`构造的QPE过程结果对应的特征子相位是` 2θ$ 或$ 2π−2θ$。
+
+于是就可以通过基于$ G :math:`的QPE过程完成对` θ :math:`的求解，而 `\ N
+:math:`已知，于是完成了对` M $的求解。
+
+*注解：*
+
+为什么可以判定振幅放大算子 G
+的特征向量可以构成空间\ :math:`\left\{\left|\varphi_{0}\right\rangle,\left|\varphi_{1}\right\rangle\right\}`\ 的一组基向量？
+
+8.9.2.2 基于镜像变换的振幅放大量子线路
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+对于给定的量子态\ :math:`|\psi\rangle=\sin \theta\left|\varphi_{1}\right\rangle+\cos \theta\left|\varphi_{0}\right\rangle`\ ，
+可以直接参考振幅放大量子线路，给出Grover算子，从而得到
+
+.. math::
+
+
+   \left|\psi_{k}\right\rangle=\sin (2 k+1) \theta\left|\varphi_{1}\right\rangle+\cos (2 k+1) \theta\left|\varphi_{0}\right\rangle,(2 k+1) \theta \approx \frac{\pi}{2}
+
+但直接通过镜像变换构造的Grover算子\ :math:`G=-(I-2|\omega\rangle\langle\omega|)(I-2|\psi\rangle\langle\psi|)`\ 在实际的编程实现和运算过程中计算量过大，因此需要考虑如何将其利用基础的普适量子门简单实现累乘。
+
+将原问题转换到空间\ :math:`\{|\omega\rangle,|\psi\rangle\}` left \|
+Omegaright \|
+:math:`=\mathrm{N}`\ ，由\ :math:`\langle\varphi \mid \omega\rangle=\frac{1}{\sqrt{N}},\langle\varphi \mid \varphi\rangle=1`\ 可知
+
+.. math::
+
+
+   U_{\omega}=(I-2|\omega\rangle\langle\omega|)=\left[\begin{array}{cc}-1 & -\frac{2}{\sqrt{N}} \\ 0 & 1\end{array}\right], U_{s}=2|\varphi\rangle\langle\varphi|-I=\left[\begin{array}{cc}-1 & 0 \\ \frac{2}{\sqrt{N}} & 1\end{array}\right]
+
+记\ :math:`\sin \theta=\frac{1}{\sqrt{N}}, a=e^{i \theta}, \quad \frac{1}{\sqrt{N}}=\frac{a-a^{-1}}{2 i}`\ ，于是有
+
+.. math::
+
+
+   U_{\omega} U_{s}=\frac{1}{a^{2}+1}\left[\begin{array}{cc}-i & i \\ a & a^{-1}\end{array}\right]\left[\begin{array}{cc}a^{2} & 0 \\ 0 & a^{-2}\end{array}\right]\left[\begin{array}{cc}i & a \\ -a^{2} i & a\end{array}\right]
+
+记\ :math:`Q=U_{s} U_{\omega}`
+，有\ :math:`Q|\varphi\rangle=\frac{N-4}{N}|\varphi\rangle+\frac{2}{\sqrt{N}}|\omega\rangle`
+，且
+
+.. math::
+
+
+   Q^{k}=\frac{1}{a^{2}+1}\left[\begin{array}{cc}-i & i \\ a & a^{-1}\end{array}\right]\left[\begin{array}{cc}a^{2 k} & 0 \\ 0 & a^{-2 k}\end{array}\right]\left[\begin{array}{cc}i & a \\ -a^{2} i & a\end{array}\right]
+
+对执行量子门后，测量第一个寄存器得到解量子态 的概率为
+
+解\ :math:`(2 k+1) \theta=\frac{\pi}{2}`\ 可知经过\ :math:`k=\left[\frac{\pi}{4} \arcsin ^{-1} \frac{1}{\sqrt{N}}-\frac{1}{2}\right] \approx O(N)`\ 次\ :math:`Q`\ 量子门操作后可以通过测量以逼近1的概率得到解\ :math:`|ω⟩`\ 。
+
+8.9.3 量子线路图与参考代码
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+量子计数算法和Grover算法的核心内容都是振幅放大算子，算法结构分别与QPE和振幅放大量子线路基本一致。
+
+Quantum Counting算法的量子线路图如下所示
+
+.. figure:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/QuantumCounting.png
+   :alt: \_images/QuantumCounting.png
+
+   \_images/QuantumCounting.png
+Grover算法的量子线路图如下所示
+
+.. figure:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/Grover.png
+   :alt: \_images/Grover.png
+
+   \_images/Grover.png
+基于pyQPanda的实现量子计数算法的过程与QPE过程几乎没有区别，因此源码与Grover算法合并在一起，两种算法的程序实现可以参考
+pyQPanda下Quantum Counting和Grover算法程序源码 。
+
+下面对Grover算法介绍基于pyQPanda的一个接口函数和一个样例代码实现。Quantum
+Counting算法的程序实例不再赘述，与QPE的代码实现没有本质区别。
+
+*注解：*
+
+基于集合 Ω 和判别函数 f
+的试验态制备是两种算法共同的重要前置工作，与振幅放大算子一起构成了算法的核心组件。
+
+::
+
+    Grover(data, Classical_condition, QuantumMachine, qlist, data)
+
+输入参数分别为算法搜索空间、搜索条件、量子模拟机、输出结果存储比特以及迭代次数，返还一个可执行的Grover量子线路。
+Grover算法还有其他的接口函数，此处不作赘述。
+
+下面是一个一维Grover示例程序代码
+
+::
+
+    #!/usr/bin/env python
+
+    import pyqpanda as pq
+    import numpy as np
+
+    if __name__ == "__main__":
+
+       machine = pq.init_quantum_machine(pq.QMachineType.CPU)
+       x = machine.cAlloc()
+       prog = pq.create_empty_qprog()
+
+       data=[3, 6, 6, 9, 10, 15, 11, 6]
+       grover_result = pq.Grover_search(data, x==6, machine, 1)
+
+       print(grover_result[1])
+
+输出结果是查找列表中数值6所在的坐标，应当如下
+
+::
+
+    [1,2,7]
+
+**8.10 Shor算法**
+-----------------
+
+Shor算法，又叫质因数分解算法，在破解RSA加密方面有着重要意义。
+
+8.10.1 问题背景
+~~~~~~~~~~~~~~~
+
+已知一个大整数$ N=pq\ :math:`，其中 `\ p,q
+:math:`均为未知的质数，求解 `\ p,q$。
+Shor算法分为经典算法实现的公约数求解、将质因数分解转化为函数周期求解等部分，以及借助量子傅里叶变换等量子算法实现的函数周期求解共三个部分。
+
+相对经典算法，Shor算法在计算资源耗费和计算时间复杂度两方面均有极大的降低，使经典算法无法求解的超大型质因子分解问题出现了量子算法求解的可能。
+
+*注解：*
+
+Shor算法试图解决的极大比特数RSA问题使用经典算法在理论上所需的计算时间和空间资源是近乎无法满足的，它不再只体现了量子计算的相对优势，而是揭示了特定问题上量子计算的不可取代性和绝对优势。
+
+8.10.2 算法原理
+~~~~~~~~~~~~~~~
+
+Shor分解算法的具体步骤如下：
+
+1. :math:`\forall 1<x<N, x \in \mathbb{Z}`;
+2. :math:`g c d(x, N) \neq 1`, 结束;
+3. 求 :math:`r` 使得 :math:`x^{r} \bmod N \equiv 1`;
+4. :math:`r \bmod 2 \equiv 1`, 回到1取 :math:`\dot{x} \neq x`;
+5. :math:`x^{\frac{r}{2}} \bmod N \equiv-1`, 回到1取
+   :math:`\dot{x} \neq x`;
+6. :math:`g c d\left(x^{\frac{r}{2}}-1, N\right) g c d\left(x^{\frac{r}{2}}+1, N\right)=N`
+   。
+
+式中 :math:`gcd `\ 表示最大公约数（Greatest Common Divisor）。
+
+以上步骤中，难点集中在第三步指定余数1的模指逆元求解。
+将第三步转化为如下问题，并采用量子算法求解：
+
+记\ :math:`f(x)=x^{a} \bmod \mathrm{N}, f(a+r)=f(a)`\ ，求最小的 r 。
+
+下面介绍模指逆元求解的量子算法的核心内容，主要有三个部分。
+
+1. 公式变形所需的前置引理。
+
+2. 构造出可用的模乘量子门操作以迭代完成模指逆元量子态构建。
+
+3. 参考QPE对构造出的模乘求和形式的结果以逆量子傅里叶变换得到模指逆元。
+
+限于篇幅，第一部分中的前置引理将只作介绍而不加以证明。
+
+8.10.2.1 前置引理
+^^^^^^^^^^^^^^^^^
+
+定义：
+
+.. math::
+
+
+   \left|u_{s}\right\rangle \equiv \frac{1}{\sqrt{r}} \Sigma_{k=0}^{r-1} e^{-\frac{2 \pi i k s}{r}}\left|x^{k} \bmod N\right\rangle, x^{r} \bmod N \equiv 1
+
+引理1：
+
+.. math::
+
+
+   \frac{1}{\sqrt{r}} \Sigma_{s=0}^{r-1} e^{\frac{2 \pi i k s}{r}}\left|u_{s}\right\rangle=\left|x^{k} \bmod N\right\rangle
+
+引理2：
+
+.. math::
+
+
+   \exists U, U|y\rangle=|x y \bmod N\rangle, s . t . U\left|u_{s}\right\rangle=e^{\frac{2 \pi i s}{r}}\left|u_{s}\right\rangle
+
+引理3：
+
+.. math::
+
+
+   \frac{1}{\sqrt{r}} \Sigma_{s=0}^{r-1}\left|u_{s}\right\rangle=|1\rangle
+
+有了引理1、2和3，我们就可以将模指量子态、定义的特殊量子态
+:math:`|u_{s}\rangle`\ 、基态\ :math:`|1\rangle`\ 以及模指逆元 r
+通过量子傅里叶变换/逆变换、\ :math:`|u_{s}\rangle`
+的定义变换/逆变换全部关联起来。
+
+8.10.2.2 构造模乘量子门
+^^^^^^^^^^^^^^^^^^^^^^^
+
+定义量子门操作\ :math:`U^{j}|y\rangle=\left|y x^{j} \bmod N\right\rangle`\ 。
+
+对任给整数 :math:`Z`\ ，对其进行$ t$ 位数二进制展开可知
+
+.. math::
+
+
+   U^{2^{t-1} / t-1} U^{2^{t-2}_{t-2}} \cdots U^{2^{0} z_{0}}|1\rangle \approx\left|1 * x^{z} \bmod N\right\rangle
+
+由上式可以利用模乘量子门来实现模指操作。
+
+8.10.2.3 求解模指逆元
+^^^^^^^^^^^^^^^^^^^^^
+
+考察两个寄存器组成的量子态\ :math:`|0\rangle^{\otimes t}\left(|0\rangle^{\otimes L-1}|1\rangle\right)=|0\rangle^{\otimes t}|1\rangle_{L}`\ 将第一个寄存器初始化为最大叠加态，有
+
+.. math::
+
+
+   \left(H^{\otimes t} \otimes I^{\otimes L}\right)\left(|0\rangle^{\otimes t}|1\rangle_{L}\right)=|+\rangle^{\otimes t} \otimes|1\rangle_{L}
+
+基于量子门操作 :math:`U^{j}` 可以定义受控模乘量子门 :math:`C-U^{j}` 。取
+:math:`|+\rangle^{\otimes t}` 的第项作为控制比 特对
+:math:`|+\rangle^{\otimes t} \otimes|1\rangle_{L}` 执行 :math:`t` 次
+:math:`C-U^{2^{j-1}}` 完成受控模指量子门操作，有
+
+.. math::
+
+
+   \begin{aligned}
+   &\prod_{j=1}^{t}\left(C-U^{2^{j-1}}\right)\left(|+\rangle^{\otimes t} \otimes|1\rangle_{L}\right) \\
+   &=\frac{1}{\sqrt{2}^{t}} \sum_{j=0}^{2^{t-1}}|j\rangle\left|x^{j} \bmod N\right\rangle \\
+   &=\frac{1}{\sqrt{r 2^{t}}} \Sigma_{j=0}^{2^{t}-1} \Sigma_{s=0}^{r-1} e^{\frac{2 \pi i j s}{r}}|j\rangle\left|u_{s}\right\rangle=:|\psi\rangle
+   \end{aligned}
+
+ 对第一个寄存器进行IQFT，有
+
+.. math::
+
+
+   \left(\mathrm{QFT}^{-1} \otimes I^{\otimes L}\right)|\psi\rangle=\frac{1}{\sqrt{r}} \Sigma_{s=0}^{r-1}\left|\frac{2^{t} s}{r}\right\rangle\left|u_{s}\right\rangle
+
+ 测量第一个寄存器得到任意一个非 :math:`|0\rangle` 量子态,
+进而有最逼近实数 :math:`\frac{2^{t_{s}}}{r}` 的整数
+:math:`\left[\frac{2^{t}{r}}{r}\right]`, 对 实数
+:math:`\frac{\left[\frac{2 t_{s}}{r}\right]}{2^{t}}`
+进行连续分数展开得到 :math:`\frac{s}{r}`, 自然可以获得分母 :math:`r` 。
+此处 :math:`L=n=\left[\log _{2} N\right]`, 如果取
+:math:`t=2 n+1+\left[\log \left(2+\frac{1}{2 \varepsilon}\right)\right]`,
+那么可以得到二进制 展开精度为 :math:`2 n+1`
+位的相位估计结果，且测量得到该结果的概率至少为
+:math:`\frac{1-\varepsilon}{r}` 。一般取 :math:`t=2 n` 。
+
+8.10.3 量子线路图与参考代码
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Shor算法的量子线路图如下所示
+
+.. figure:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/Shor.png
+   :alt: \_images/Shor.png
+
+   \_images/Shor.png
+基于pyQPanda的Shor算法源码参见pyQPanda下Shor算法程序源码，
+
+下面是pyQPanda中提供的Shor算法调用接口。
+
+::
+
+    Shor_factorization(int)
+
+输入参数为被质因数分解的大数，返还一个2维list，内容为计算过程是否成功和分解后的质因子对list。
+
+选取 :math:`N=15` ， 验证Shor的代码实例如下
+
+::
+
+    #!/usr/bin/env python
+
+    import pyqpanda as pq
+
+    if __name__ == "__main__":
+
+        N=15
+        r = pq.Shor_factorization(N)
+        print(r)
+
+对 15 的质因子分解结果应该是 15=3∗5
+，所以应当返还算法成功标志和两个质因子 3 和 5 。
+
+::
+
+    (True, (3, 5))
+
+**8.11 量子虚时演化算法**
+-------------------------
+
+虚时演化（Imaginary time
+evolution）是研究量子系统的一个有力工具。虚时演化算法作为一种量子经典混合算法对于任意一个给定哈密顿量H的系统均可以近似求解得到其基态向量，即哈密顿量
+:math:``H``\ 的最小特征值对应的特征向量。此算法的量子线路浅易于实现，应用范围广泛，可以求解一些经典算法难以解决的问题。
+
+8.11.1 问题背景概述
+~~~~~~~~~~~~~~~~~~~
+
+对于给定哈密顿量$ H
+:math:`的系统，随着时间 `\ t\ :math:`，系统根据传播变换（propagator）`\ e^{-i
+H t}\ :math:`演化。对应的虚时`\ (=i t)$
+传播变换为\ :math:`e^{-H t}`\ ，是一个非幺正算符。
+
+给定哈密顿量$ H :math:`和初态 `\ \|ψ⟩$ ,归一化的虚时演化被定义为
+
+.. math::
+
+
+   |\psi(\tau)\rangle=A(\tau) e^{-H t}|\psi(0)\rangle, A(\tau)=\left(\left\langle\psi(0)\left|e^{-2 H t}\right| \psi(0)\right\rangle\right)^{\frac{1}{2}}
+
+:math:`A(τ)`
+为归一化因子，通常多体系统的哈密顿量\ :math:`H=\sum_{i} \lambda_{i} h_{i}`\ ，
+其中\ :math:`\lambda_{i}`\ 为实系数,$
+h\_{i}$为可观测量（observables)并且可以表示为Pauli矩阵的直积。
+
+于是有如下的等价薛定谔方程：
+
+.. math::
+
+
+   \frac{\partial|\psi(\tau)\rangle}{\partial \tau}=-\left(H-\frac{A^{\prime}(\tau)}{A(\tau)}\right)|\psi(\tau)\rangle=-\left(H-E_{\tau}\right)|\psi(\tau)\rangle
+
+*注解：*
+
+实际应用中，QITE的真正难点在于如何将原问题转化为哈密顿系统求基态问题，以及如何对哈密顿系统给出其哈密顿量。
+
+8.11.2 算法原理
+~~~~~~~~~~~~~~~
+
+量子虚时演化算法由2个部分：
+
+1. 通过给定的问题系统哈密顿量，构造相应的薛定谔方程，将薛定谔方程求解问题转化为一个线性方程组求解问题；
+
+2. 求解线性方程组，得到关键变量的时间演化函数，利用虚时演化的特性求得系统最低能量情况下对应的基态，完成对问题的求解。
+
+量子虚时演化算法可用于在任意已知哈密顿量的哈密顿系统由初态求解任意时刻状态及最终稳态。
+
+8.11.2.1 从薛定谔方程到微分方程近似解
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+考虑给定的哈密顿量$ H $所满足的Wick旋转薛定谔方程
+
+.. math::
+
+
+   \left(\frac{\partial}{\partial \tau}-\left(H-E_{\tau}\right)\right)|\psi(\tau)\rangle=0, E_{\tau}=\langle\psi(\tau)|H| \psi(\tau)\rangle
+
+应用McLachlan变分原理，有
+
+.. math::
+
+
+   \delta \|\left(\frac{\partial}{\partial \tau}-\left(H-E_{\tau}\right)\right)|\psi(\tau)\rangle \|=0
+
+以测试态\ :math:`|\phi(\vec{\theta}(\tau))\rangle, \vec{\theta}(\tau)=\left(\theta_{1}(\tau), \theta_{2}(\tau), \cdots, \theta_{N}(\tau)\right)`
+逼近解 :math:`|\psi(\tau)\rangle`\ 。
+
+记
+:math:`\dot{\theta}_{j}=\frac{\partial \theta_{j}}{\partial \tau}, S=\left(\frac{\partial}{\partial \tau}-\left(H-E_{\tau}\right)\right)`,
+同时考虑到归一化条件 :math:`\langle\phi \mid \phi\rangle=1`, 有
+
+.. math::
+
+
+   \begin{aligned}
+   &\frac{\partial \| S|\phi(\tau)\rangle \|}{\partial \dot{\theta}_{i}} \\
+   &=\sum_{i, j} \frac{\partial\langle\phi|}{\partial \theta_{i}} \frac{\partial|\phi\rangle}{\partial \theta_{j}} \dot{\theta}_{j}+\sum_{i}\left(\frac{\partial\langle\phi|}{\partial \theta_{i}} H|\phi\rangle+\langle\phi| H \frac{\partial|\phi\rangle}{\partial \theta_{i}}\right) \\
+   &=\sum_{j} A_{i j} \dot{\theta}_{j}-C_{j}=0
+   \end{aligned}
+
+其中
+
+.. math::
+
+
+   \begin{aligned}
+   &A_{i j}=\operatorname{Re}\left(\frac{\partial\langle\phi|}{\partial \theta_{i}} \frac{\partial|\phi\rangle}{\partial \theta_{i}}\right) \\
+   &C_{i}=-\operatorname{Re}\left(\frac{\partial\langle\phi|}{\partial \theta_{i}} H|\phi\rangle\right)
+   \end{aligned}
+
+于是原薛定谔方程转化为解为的线性方程组。
+
+8.11.2.2 虚时演化逼近基态
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+由 :math:`x^{\dagger} A x>0` 可知 :math:`A` 是正定的，其广义逆
+:math:`A^{-1}` 也是正定的。 于是对系统的平均能量 :math:`E_{\tau}` 有
+
+.. math::
+
+
+   \begin{aligned}
+   &\frac{d E_{\tau}}{d \tau}=\frac{d\langle\psi(\tau)|H| \psi(\tau)\rangle}{d \tau} \\
+   &=\sum_{i} \operatorname{Re}\left(\frac{\partial\langle\phi|}{\partial \theta_{i}} H|\phi\rangle \dot{\theta}_{i}\right)=-\sum_{i} C_{i} \dot{\theta}_{i}=-\sum_{i, j} C_{i} A_{i, j}^{-1} C_{j} \leq 0
+   \end{aligned}
+
+可知运用此量子虚时演化算法会使整个系统的平均能量不断减小。 记测试态$
+\|()=V()\|=U\_{N}(\ *{N}) U*\ {2}(\ *{2})
+U*\ {1}(\ *{1})\|\ :math:`, 其中` U*\ {i} :math:`为么正算符, `\ 
+:math:`为系统的初态（并不是基态 |0\rangle) 。 不失一般性地，可以假设每个`\ U\ :math:`均仅依赖于一个参数theta_i（否则可以进行量子门操作分解），不妨假设每个U{i} 均为旋转或受控旋转门，于是其导数可以表示为`\ =\ *{k}
+f*\ {k, i} U\_{i}(\ *{i}) *\ {k, i}$ ,其中\ :math:`δ_{k,i} `
+为幺正算符，\ :math:`f_{k,i} `
+为标量函数，于是测试态的导数可以表示为\ :math:`\frac{\partial \phi(\tau)}{\partial \theta_{i}}=\sum_{k} f_{k, i} \widetilde{V}_{k, i}|\overline{0}\rangle`
+,其中
+
+.. math::
+
+
+   \widetilde{V}_{k, i}=U_{N}\left(\theta_{N}\right) \cdots U_{i+1}\left(\theta_{i+1}\right) U_{i}\left(\theta_{i}\right) \sigma_{k, i} \cdots U_{2}\left(\theta_{2}\right) U_{1}\left(\theta_{1}\right)
+
+ 于是对于微分方程组 :math:`\sum_{j} A_{i j} \dot{\theta}_{j}=C_{j}` 有
+
+.. math::
+
+
+   \begin{aligned}
+   &A_{i j}=R e\left(\sum_{k, l} f_{k, i}^{*} f_{l, i}\left\langle\overline{0}\left|\tilde{V}_{k, i}^{\dagger} \tilde{V}_{l, j}\right| \overline{0}\right\rangle\right) \\
+   &C_{i}=-R e\left(\sum_{k, l} f_{k, i}^{*} \lambda_{l}\left\langle\overline{0}\left|\tilde{V}_{k, i}^{\dagger} h_{l} V\right| \overline{0}\right\rangle\right)
+   \end{aligned}
+
+ 以上两个表达式均符合一般形式
+:math:`a \operatorname{Re}\left(e^{i \theta}\langle 0|U| \overline{0}\rangle\right)`
+，因而可以使用量子线路对其进行 构造， :math:`A_{i j}` 的构造方式如下:
+
+.. math::
+
+
+   \left\langle\overline{0}\left|\widetilde{V}_{k, i}^{\dagger} \widetilde{V}_{l, j}\right| \overline{0}\right\rangle=\left\langle\overline{0}\left|\mathrm{U}_{1}^{\dagger} \cdots \mathrm{U}_{i-1}^{\dagger} \sigma_{k, i}^{\dagger} \mathrm{U}_{i}^{\dagger} \cdots \mathrm{U}_{j-1}^{\dagger} \sigma_{i, j} \mathrm{U}_{j}^{\dagger} \cdots U_{1}\right| \overline{0}\right\rangle
+
+ 对 :math:`C_{i j}` 有类似结果，于是可以用量子线路构造
+:math:`A_{i j}, C_{i j}` 。
+因此可以引入线性方程组的量子算法，完成求解后得到
+:math:`\dot{\theta}_{j}=\frac{\partial \theta_{j}}{\partial \tau}`,
+进而将 :math:`\phi(\vec{\theta})` 进行
+虚时演化，可以得到系统稳定状态下的基态 :math:`\theta` 。
+
+于是完成了对于任意给定的哈密顿量\ :math:`H`\ 对应的系统基态的近似求解。
+
+8.11.3 量子线路图与参考代码
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+QITE算法中构造线性方程组的左端项矩阵和右端项的量子线路图如下所示
+
+.. figure:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/QITE.png
+   :alt: \_images/QITE.png
+
+   \_images/QITE.png
+基于pyQPanda的QITE算法实现代码参见pyQPanda下QITE算法程序源码
+，pyQPanda中QITE算法相关代码是一个类，因而下面将介绍所有相关的输入输出接口函数。
+
+::
+
+    qite=QITE()
+    qite.set_Hamiltonian(Hamiltonian)
+    qite.set_ansatz_gate(ansatz)
+    qite.set_iter_num(int)
+    qite.set_delta_tau(float)
+    qite.set_upthrow_num(int)
+    qite.set_para_update_mode(GD_VALUE/GD_DIRECTION)
+    qite.exec()
+    qite.get_result()
+
+以上函数中，第一个函数为类的构造函数，后续6个函数作用分别为设置哈密顿量，拟设、迭代数、τ
+的变化率、重置迭代次数、收敛模式参考梯度值或梯度方向、执行虚时演化和获得列表格式的概率结果。
+
+我们可以将量子变分虚时演化算法应用到网络节点重要性排序问题上，综合已有结论快速求解得到节点的重要性权重。选择如下图所示的网络节点重要性排序问题进行代码实现。
+
+.. figure:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/QITE_ex1.png
+   :alt: *images/QITE*\ ex1.png
+
+   *images/QITE*\ ex1.png
+此问题的QITE求解代码实例如下
+
+.. code:: python
+
+    #!/usr/bin/env python
+
+    import pyqpanda as pq
+    import numpy as np
+
+    if __name__ == "__main__":
+        node7graph = [[0, 1 ,0 ,0, 0, 0, 0],
+                     [1, 0 ,1 ,0, 0, 0, 0],
+                     [0, 1 ,0 ,1, 1, 1, 0],
+                     [0, 0 ,1 ,0, 1, 0, 1],
+                     [0, 0 ,1 ,1, 0, 1, 1],
+                     [0, 0 ,1 ,0, 1, 0, 1],
+                     [0, 0 ,0 ,1, 1, 1, 0],]
+
+        problem = pq.NodeSortProblemGenerator()
+        problem.set_problem_graph(node7graph)
+        problem.exec()
+        ansatz_vec = problem.get_ansatz()
+
+        cnt_num = 1
+        iter_num = 100
+        upthrow_num = 3
+        delta_tau = 2.6
+        update_mode = pq.UpdateMode.GD_DIRECTION
+
+        for cnt in range(cnt_num):
+            qite = pq.QITE()
+            qite.set_Hamiltonian(problem.get_Hamiltonian())
+            qite.set_ansatz_gate(ansatz_vec)
+            qite.set_iter_num(iter_num)
+            qite.set_delta_tau(delta_tau)
+            qite.set_upthrow_num(upthrow_num)
+            qite.set_para_update_mode(update_mode)
+            ret = qite.exec()
+            if ret != 0:
+                print(ret)
+            qite.get_result()
+
+可以直接推导得知此7点网络图的节点重要性最大的节点应当为3号，因此结果应当抛出最重要节点3，写法为
+00000100:1.00，如下所示的输出结果符合预期。
+
+::
+
+    4 0.999967
+
+.. |img| image:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/X.png
+.. |Y| image:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/Y.png
+.. |Z| image:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/Z.png
+.. |img| image:: file:///C:\Users\ORIGIN~1\AppData\Local\Temp\ksohtml\wps11FA.tmp.jpg

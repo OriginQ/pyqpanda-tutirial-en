@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>4 Compiling of quantum program &mdash; pyQPanda 1.0.0 文档</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/translations.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="5 Utility tool" href="../chapter5/index.html" />
+    <link rel="prev" title="3 Quantum program information" href="../chapter3/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> pyQPanda
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="在文档中搜索" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../chapter1/index.html">1 Basic Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter2/index.html">2 Deep learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter3/index.html">3 Quantum program information</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">4 Compiling of quantum program</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#conversion-of-qasm-by-a-quantum-program">4.1 Conversion of QASM by a quantum program</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#qasm-introduction">4.1.1 QASM introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example">4.1.2 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#conversion-into-a-quantum-program-by-qasm">4.2 Conversion into a quantum program by QASM</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">4.2.1 QASM introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">4.2.2 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#conversion-into-quil-by-a-quantum-program">4.3 Conversion into Quil by a quantum program</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#introduction">4.3.1 Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#interface-introduction">4.3.2 Interface introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">4.3.3 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#serialization-of-quantum-programs">4.4 Serialization of quantum programs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id4">4.4.1 Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">4.4.2 Interface introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">4.4.3 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#parse-quantum-program-binary-files">4.5 Parse quantum program binary files</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id7">4.5.1 Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id8">4.5.2 Interface introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id9">4.5.3 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#conversion-into-a-quantum-program-by-originir">4.6 Conversion into a quantum program by OriginIR</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#originir">4.6.1 OriginIR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id10">4.6.2 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#conversion-of-originir-by-a-quantum-program">4.7 Conversion of OriginIR by a quantum program</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#originir-introduction">4.7.1 OriginIR introduction</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#qubit">4.7.1.1 Qubit</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#classical-register">4.7.1.2 Classical register</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#quantum-logic-gate">4.7.1.3 Quantum logic gate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transposed-conjugate-operation">4.7.1.4 Transposed conjugate operation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#adding-control-qubit-operation">4.7.1.5 Adding control qubit operation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#qif">4.7.1.6 QIF</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#qwhile">4.7.1.7 QWHILE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#classical-expression">4.7.1.8 Classical expression</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#measure-operation">4.7.1.9 MEASURE operation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#reset-operation">4.7.1.10 RESET operation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#barrier-operation">4.7.1.11 BARRIER operation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#qgate-operation">4.7.1.12 QGATE operation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#originir-program-example">4.7.1.13 OriginIR program example</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id11">4.7.2 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#quantum-program-matching-topology">4.8 Quantum program matching topology</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#interface-description">4.8.1 Interface description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id12">4.8.2 Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter5/index.html">5 Utility tool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter6/index.html">6 Component</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter7/index.html">7 VQC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter8/index.html">8 Basis of quantum algorithm</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pyQPanda</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>4 Compiling of quantum program</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/chapter4/index.rst.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="compiling-of-quantum-program">
+<h1>4 Compiling of quantum program<a class="headerlink" href="#compiling-of-quantum-program" title="永久链接至标题"></a></h1>
+<section id="conversion-of-qasm-by-a-quantum-program">
+<h2>4.1 Conversion of QASM by a quantum program<a class="headerlink" href="#conversion-of-qasm-by-a-quantum-program" title="永久链接至标题"></a></h2>
+<p>You may parse the quantum program created by QPanda2 with this function
+module, and extract the qubit information and quantum logic gate
+operation information contained therein, to obtain the QASM instruction
+set saved in a fixed form.</p>
+<section id="qasm-introduction">
+<h3>4.1.1 QASM introduction<a class="headerlink" href="#qasm-introduction" title="永久链接至标题"></a></h3>
+<p>Quantum Assembly Language is put forward by IBM, and is similar to the
+syntax rules in the QRunes introduction;
+a QASM code segment is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">OPENQASM</span> <span class="mf">2.0</span><span class="p">;</span>
+<span class="n">include</span> <span class="s2">&quot;qelib1.inc&quot;</span><span class="p">;</span>
+<span class="n">qreg</span> <span class="n">q</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
+<span class="n">creg</span> <span class="n">c</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
+
+<span class="n">x</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="n">h</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+<span class="n">tdg</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+<span class="n">sdg</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+<span class="n">cx</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+<span class="n">cx</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>
+<span class="n">u1</span><span class="p">(</span><span class="n">pi</span><span class="p">)</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="n">u2</span><span class="p">(</span><span class="n">pi</span><span class="p">,</span><span class="n">pi</span><span class="p">)</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+<span class="n">u3</span><span class="p">(</span><span class="n">pi</span><span class="p">,</span><span class="n">pi</span><span class="p">,</span><span class="n">pi</span><span class="p">)</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+<span class="n">cz</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">5</span><span class="p">];</span>
+<span class="n">ccx</span> <span class="n">q</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">6</span><span class="p">];</span>
+<span class="n">cu3</span><span class="p">(</span><span class="n">pi</span><span class="p">,</span><span class="n">pi</span><span class="p">,</span><span class="n">pi</span><span class="p">)</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+<span class="n">measure</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-&gt;</span> <span class="n">c</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+<span class="n">measure</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-&gt;</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+</pre></div>
+</div>
+<p>It should be noted that the syntax formats of QASM and QRunes are alike
+but different, with the following differences:</p>
+<ul class="simple">
+<li><p>For quantum logic gates and quantum circuits requiring the transposed conjugate, QRunes needs to place the target between DAGGER and ENDAG-GER sentences; QASM does the conversion directly.</p></li>
+<li><p>QRunes supports the control operation of the quantum logic gates and quantum circuits, but QASM doesn’t. Before the conversion of QASM by a quantum program, the control operation contained therein will be decomposed.</p></li>
+</ul>
+<p>Refer to <a class="reference external" href="https://quantumexperience.ng.bluemix.net/qx/editor">IBM Q Experience quantum cloud platform for more details on
+the introduction, use, and experience of
+QASM</a>.</p>
+<p>QPanda2 provides the QASM conversion tool interface
+<code class="docutils literal notranslate"><span class="pre">convert_qprog_to_qasm</span></code>, which is easy to use. Reference can be made to
+the following example program.</p>
+</section>
+<section id="example">
+<h3>4.1.2 Example<a class="headerlink" href="#example" title="永久链接至标题"></a></h3>
+<p>The following routine demonstrates the process of converting QASM
+instruction set by a quantum program through a simple interface call.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyqpanda</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">qvm</span> <span class="o">=</span> <span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">)</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="n">qvm</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">qvm</span><span class="o">.</span><span class="n">cAlloc_many</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+    <span class="n">prog</span> <span class="o">=</span> <span class="n">QProg</span><span class="p">()</span>
+    <span class="n">cir</span> <span class="o">=</span> <span class="n">QCircuit</span><span class="p">()</span>
+    <span class="n">cir</span> <span class="o">&lt;&lt;</span> <span class="n">T</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">S</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">CNOT</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">prog</span> <span class="o">&lt;&lt;</span> <span class="n">cir</span>
+    <span class="n">prog</span> <span class="o">&lt;&lt;</span> <span class="n">X</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">Y</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">CU</span><span class="p">(</span><span class="mf">1.2345</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">q</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>\
+        <span class="o">&lt;&lt;</span> <span class="n">H</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">RX</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="mf">3.14</span><span class="p">)</span>\
+        <span class="o">&lt;&lt;</span> <span class="n">Measure</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="n">qasm</span> <span class="o">=</span> <span class="n">convert_qprog_to_qasm</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">qvm</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">qasm</span><span class="p">)</span>
+    <span class="n">qvm</span><span class="o">.</span><span class="n">finalize</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The specific steps are as follows:</p>
+<ul class="simple">
+<li><p>Firstly, initialize a quantum simulator object with <code class="docutils literal notranslate"><span class="pre">init_quantum_machine</span></code> in the main program, in order to manage a series of subsequent behaviors</p></li>
+<li><p>Then, initialize the number of qubits and classical registers with <code class="docutils literal notranslate"><span class="pre">qAlloc_many</span></code> and <code class="docutils literal notranslate"><span class="pre">cAlloc_many</span></code>.</p></li>
+<li><p>Next, call <code class="docutils literal notranslate"><span class="pre">QProg</span></code> to create the quantum program.</p></li>
+<li><p>Finally, the interface <code class="docutils literal notranslate"><span class="pre">convert_qprog_to_qasm</span></code> is called to output the QASM instruction set; <code class="docutils literal notranslate"><span class="pre">finalize</span> <span class="pre">()</span></code> is used to release system resources</p></li>
+</ul>
+<p>The running results are as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">OPENQASM</span> <span class="mf">2.0</span><span class="p">;</span>
+<span class="n">include</span> <span class="s2">&quot;qelib1.inc&quot;</span><span class="p">;</span>
+<span class="n">qreg</span> <span class="n">q</span><span class="p">[</span><span class="mi">6</span><span class="p">];</span>
+<span class="n">creg</span> <span class="n">c</span><span class="p">[</span><span class="mi">6</span><span class="p">];</span>
+<span class="n">u3</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.78539816339744828</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="n">u3</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mf">1.5707963267948966</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+<span class="n">cx</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="n">u3</span><span class="p">(</span><span class="mf">3.1415926535897931</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">3.1415926535897931</span><span class="p">)</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="n">u3</span><span class="p">(</span><span class="mf">3.1415926535897931</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+<span class="n">u3</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mf">0.33629632679489674</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="n">q</span><span class="p">[</span><span class="mi">5</span><span class="p">];</span>
+<span class="n">u3</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mf">0.67259265358979359</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+<span class="n">cx</span> <span class="n">q</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+<span class="n">u3</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.33629632679489674</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+<span class="n">cx</span> <span class="n">q</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+<span class="n">u3</span><span class="p">(</span><span class="mf">1.1415926535897929</span><span class="p">,</span><span class="mf">3.1415926535897931</span><span class="p">,</span><span class="mf">2.8672963267948974</span><span class="p">)</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+<span class="n">u3</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mf">1.5707963267948963</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="n">q</span><span class="p">[</span><span class="mi">5</span><span class="p">];</span>
+<span class="n">cx</span> <span class="n">q</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+<span class="n">u3</span><span class="p">(</span><span class="mf">1.1415926535897929</span><span class="p">,</span><span class="o">-</span><span class="mf">1.1947036732051033</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+<span class="n">cx</span> <span class="n">q</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+<span class="n">u3</span><span class="p">(</span><span class="mf">1.5707963267949034</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mf">1.3362963267948968</span><span class="p">)</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+<span class="n">u3</span><span class="p">(</span><span class="mf">3.1400000000000001</span><span class="p">,</span><span class="o">-</span><span class="mf">1.5707963267948966</span><span class="p">,</span><span class="mf">1.5707963267948966</span><span class="p">)</span> <span class="n">q</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+<span class="n">measure</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-&gt;</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="conversion-into-a-quantum-program-by-qasm">
+<h2>4.2 Conversion into a quantum program by QASM<a class="headerlink" href="#conversion-into-a-quantum-program-by-qasm" title="永久链接至标题"></a></h2>
+<p>You may parse the QASM text file with this function module, and extract
+the quantum logic gate operation information therein, to obtain the
+quantum program that is operable in QPanda 2.</p>
+<section id="id1">
+<h3>4.2.1 QASM introduction<a class="headerlink" href="#id1" title="永久链接至标题"></a></h3>
+<p>Reference can be made to the <a class="reference external" href="https://qpanda-tutorial.readthedocs.io/zh/latest/QASMToQProg.html#id1">QASM
+introduction</a>
+in the module of converting QASM by a quantum program for the writing
+format specifications and routines of QASM.</p>
+<p>QPanda 2 provides the QASM file conversion tool interface
+<code class="docutils literal notranslate"><span class="pre">convert_qasm_to_qprog()</span></code>, which is easy to use. Reference can be made
+to the following example program.</p>
+</section>
+<section id="id2">
+<h3>4.2.2 Example<a class="headerlink" href="#id2" title="永久链接至标题"></a></h3>
+<p>The following demonstrates the process of converting the quantum program
+by QASM instruction set through a simple interface call.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyqpanda</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span><span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="n">machine</span> <span class="o">=</span> <span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">)</span>
+
+<span class="c1"># Write QASM files</span>
+<span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;testfile.txt&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span><span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+<span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;// test QASM file</span>
+<span class="s2">OPENQASM 2.0;</span>
+<span class="s2">include &quot;qelib1.inc&quot;;</span>
+<span class="s2">qreg q[3];</span>
+<span class="s2">creg c[3];</span>
+<span class="s2">x q[0];</span>
+<span class="s2">x q[1];</span>
+<span class="s2">z q[2];</span>
+<span class="s2">h q[0];</span>
+<span class="s2">tdg q[1];</span>
+<span class="s2">measure q[0] -&gt; c[0];</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+<span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="c1"># QASM converts quantum programs and returns quantum programs, quantum bits,</span>
+<span class="c1"># and classical registers</span>
+<span class="n">prog_trans</span><span class="p">,</span> <span class="n">qv</span><span class="p">,</span> <span class="n">cv</span> <span class="o">=</span> <span class="n">convert_qasm_to_qprog</span><span class="p">(</span><span class="s2">&quot;testfile.txt&quot;</span><span class="p">,</span> <span class="n">machine</span><span class="p">)</span>
+
+<span class="c1"># Quantum program conversion QASM</span>
+<span class="n">qasm</span> <span class="o">=</span> <span class="n">convert_qprog_to_qasm</span><span class="p">(</span><span class="n">prog_trans</span><span class="p">,</span><span class="n">machine</span><span class="p">)</span>
+
+<span class="c1"># Print and compare the conversion results</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">qasm</span><span class="p">)</span>
+<span class="n">destroy_quantum_machine</span><span class="p">(</span><span class="n">machine</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The specific steps are as follows:</p>
+<ul class="simple">
+<li><p>Firstly, compile QASM and save it in a designated file</p></li>
+<li><p>Then, initialize a quantum simulator object with <code class="docutils literal notranslate"><span class="pre">init_quantum_machine</span></code> in the main program, in order to manage a series of subsequent behaviors</p></li>
+<li><p>Next, call the <code class="docutils literal notranslate"><span class="pre">convert_qasm_to_qprog</span></code> interface to convert QASM into a quantum program</p></li>
+<li><p>Finally, call the <code class="docutils literal notranslate"><span class="pre">convert_qprog_to_qasm</span></code> interface to convert the quantum program into QASM, decide whether QASM is converted into the quantum program correctly by comparing the execution results of the quantum program, and release system resources by <code class="docutils literal notranslate"><span class="pre">destroy_quantum_machine</span></code></p></li>
+</ul>
+<p>The running results are as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">OPENQASM</span> <span class="mf">2.0</span><span class="p">;</span>
+<span class="n">include</span> <span class="s2">&quot;qelib1.inc&quot;</span><span class="p">;</span>
+<span class="n">qreg</span> <span class="n">q</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+<span class="n">creg</span> <span class="n">c</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+<span class="n">u3</span><span class="p">(</span><span class="mf">1.5707963267949037</span><span class="p">,</span><span class="mf">3.1415926535897931</span><span class="p">,</span><span class="mf">3.1415926535897931</span><span class="p">)</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="n">u3</span><span class="p">(</span><span class="mf">3.1415926535897931</span><span class="p">,</span><span class="mf">2.3561944901923386</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+<span class="n">u3</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mf">3.1415926535897931</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+<span class="n">measure</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-&gt;</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+</pre></div>
+</div>
+<div class="admonition-note admonition">
+<p class="admonition-title">Note</p>
+<p>In the above example, since QASM supports U3 gate, the quantum circuit is optimized when QProg is converted to QASM, and only U3 gate is in the output QASM, which can effectively reduce the quantum circuit depth. For the types that are not supported temporarily, errors may occur during the process of converting QASM into a quantum program.</p>
+</div>
+</section>
+</section>
+<section id="conversion-into-quil-by-a-quantum-program">
+<h2>4.3 Conversion into Quil by a quantum program<a class="headerlink" href="#conversion-into-quil-by-a-quantum-program" title="永久链接至标题"></a></h2>
+<section id="introduction">
+<h3>4.3.1 Introduction<a class="headerlink" href="#introduction" title="永久链接至标题"></a></h3>
+<p>Quil can directly describe quantum programs and quantum algorithms from
+a very low level, which is similar to the hardware description language
+or assembly language in classical computers. Quil basically adopts the
+design method of “instruction + parameter list”. An example of a simple
+quantum program is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">X</span> <span class="mi">0</span>
+<span class="n">Y</span> <span class="mi">1</span>
+<span class="n">CNOT</span> <span class="mi">0</span> <span class="mi">1</span>
+<span class="n">H</span> <span class="mi">0</span>
+<span class="n">RX</span><span class="p">(</span><span class="o">-</span><span class="mf">3.141593</span><span class="p">)</span> <span class="mi">0</span>
+<span class="n">MEASURE</span> <span class="mi">1</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>● The purpose of <code class="docutils literal notranslate"><span class="pre">X</span></code> is to perform <code class="docutils literal notranslate"><span class="pre">Pauli-X</span></code> gate operations on target qubits.
+Similar keywords include <code class="docutils literal notranslate"><span class="pre">Y</span></code>, <code class="docutils literal notranslate"><span class="pre">Z</span></code>, <code class="docutils literal notranslate"><span class="pre">H</span></code>, etc.</p>
+<p>● The purpose of <code class="docutils literal notranslate"><span class="pre">Y</span></code> is to perform <code class="docutils literal notranslate"><span class="pre">Pauli-Y</span></code> gate operations on target
+qubits.</p>
+<p>● The purpose of <code class="docutils literal notranslate"><span class="pre">CNOT</span></code> is to perform <code class="docutils literal notranslate"><span class="pre">CNOT</span></code> operations on two qubits. The
+input parameters are the control qubit serial number and target qubit
+serial number.</p>
+<p>● The purpose of <code class="docutils literal notranslate"><span class="pre">H</span></code> is to perform <code class="docutils literal notranslate"><span class="pre">Hadamard</span></code> gate operations on target
+qubits.</p>
+<p>● The purpose of <code class="docutils literal notranslate"><span class="pre">MEASURE</span></code> is to measure target qubits and save the
+measuring results in a classical register. The input parameters are
+serial numbers of target qubits and classical registers where the
+measuring results are saved.</p>
+<p>The above is just a small part of Quil instruction set syntax. Reference
+can be made to
+<a class="reference external" href="https://pyquil.readthedocs.io/en/stable/compiler.html">pyQuil</a> for
+more details.</p>
+</section>
+<section id="interface-introduction">
+<h3>4.3.2 Interface introduction<a class="headerlink" href="#interface-introduction" title="永久链接至标题"></a></h3>
+<p>We create a quantum program with pyqpanda at first:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">prog</span> <span class="o">=</span> <span class="n">QProg</span><span class="p">()</span>
+<span class="n">prog</span> <span class="o">&lt;&lt;</span> <span class="n">X</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">Y</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>\
+    <span class="o">&lt;&lt;</span> <span class="n">H</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">RX</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="mf">3.14</span><span class="p">)</span>\
+    <span class="o">&lt;&lt;</span> <span class="n">Measure</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">cbits</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Then ,call the <code class="docutils literal notranslate"><span class="pre">convert_qprog_to_quil</span></code> for the transformation</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">quil</span> <span class="o">=</span> <span class="n">convert_qprog_to_quil</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">qvm</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id3">
+<h3>4.3.3 Example<a class="headerlink" href="#id3" title="永久链接至标题"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyqpanda</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">qvm</span> <span class="o">=</span> <span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">)</span>
+    <span class="n">qubits</span> <span class="o">=</span> <span class="n">qvm</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+    <span class="n">cbits</span> <span class="o">=</span> <span class="n">qvm</span><span class="o">.</span><span class="n">cAlloc_many</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+    <span class="n">prog</span> <span class="o">=</span> <span class="n">QProg</span><span class="p">()</span>
+
+    <span class="c1"># Building quantum programs</span>
+    <span class="n">prog</span> <span class="o">&lt;&lt;</span> <span class="n">X</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">Y</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>\
+        <span class="o">&lt;&lt;</span> <span class="n">H</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">RX</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="mf">3.14</span><span class="p">)</span>\
+        <span class="o">&lt;&lt;</span> <span class="n">Measure</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">cbits</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="c1"># The quantum program converts the Quil and prints the Quil</span>
+    <span class="n">quil</span> <span class="o">=</span> <span class="n">convert_qprog_to_quil</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">qvm</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">quil</span><span class="p">)</span>
+
+    <span class="n">qvm</span><span class="o">.</span><span class="n">finalize</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Running results:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">X</span> <span class="mi">0</span>
+<span class="n">Y</span> <span class="mi">1</span>
+<span class="n">H</span> <span class="mi">2</span>
+<span class="n">RX</span><span class="p">(</span><span class="mf">3.140000</span><span class="p">)</span> <span class="mi">3</span>
+<span class="n">MEASURE</span> <span class="mi">0</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">警告</p>
+<p>The new interface <code class="docutils literal notranslate"><span class="pre">convert_qprog_to_quil()</span></code> is provided with the same function as the old one <code class="docutils literal notranslate"><span class="pre">transform_qprog_to_quil()</span></code>.</p>
+</div>
+</section>
+</section>
+<section id="serialization-of-quantum-programs">
+<h2>4.4 Serialization of quantum programs<a class="headerlink" href="#serialization-of-quantum-programs" title="永久链接至标题"></a></h2>
+<section id="id4">
+<h3>4.4.1 Introduction<a class="headerlink" href="#id4" title="永久链接至标题"></a></h3>
+<p>A protocol is defined to serialize quantum programs to binary data for
+the convenience of saving and transmitting quantum programs.</p>
+</section>
+<section id="id5">
+<h3>4.4.2 Interface introduction<a class="headerlink" href="#id5" title="永久链接至标题"></a></h3>
+<p>We create a quantum program with pyqpanda at first:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">prog</span> <span class="o">=</span> <span class="n">QProg</span><span class="p">()</span>
+<span class="n">prog</span> <span class="o">&lt;&lt;</span> <span class="n">H</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> \
+    <span class="o">&lt;&lt;</span> <span class="n">CNOT</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">qubits</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> \
+    <span class="o">&lt;&lt;</span> <span class="n">CNOT</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">qubits</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> \
+    <span class="o">&lt;&lt;</span> <span class="n">CNOT</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">qubits</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Next, call the <code class="docutils literal notranslate"><span class="pre">convert_qprog_to_binary</span></code> interface for serialization.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">prog_str</span> <span class="o">=</span> <span class="n">convert_qprog_to_binary</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">qvm</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition-note admonition">
+<p class="admonition-title">Note</p>
+<p>Quantum program serialization is a two-step process that first serializes a quantum program into a binary and then converts the binary into a string encoded in base 64 format.</p>
+</div>
+</section>
+<section id="id6">
+<h3>4.4.3 Example<a class="headerlink" href="#id6" title="永久链接至标题"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyqpanda</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">base64</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">qvm</span> <span class="o">=</span> <span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">)</span>
+    <span class="n">qubits</span> <span class="o">=</span> <span class="n">qvm</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+    <span class="n">cbits</span> <span class="o">=</span> <span class="n">qvm</span><span class="o">.</span><span class="n">cAlloc_many</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+
+    <span class="c1"># Building quantum programs</span>
+    <span class="n">prog</span> <span class="o">=</span> <span class="n">QProg</span><span class="p">()</span>
+    <span class="n">prog</span> <span class="o">&lt;&lt;</span> <span class="n">H</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> \
+        <span class="o">&lt;&lt;</span> <span class="n">CNOT</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">qubits</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> \
+        <span class="o">&lt;&lt;</span> <span class="n">CNOT</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">qubits</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> \
+        <span class="o">&lt;&lt;</span> <span class="n">CNOT</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">qubits</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+
+    <span class="c1"># Quantum program serialization</span>
+    <span class="n">binary_data</span> <span class="o">=</span> <span class="n">convert_qprog_to_binary</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">qvm</span><span class="p">)</span>
+
+    <span class="c1"># The resulting binary data is encoded in Base64 and printed</span>
+    <span class="n">str_base64_data</span> <span class="o">=</span>  <span class="n">base64</span><span class="o">.</span><span class="n">encodebytes</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">binary_data</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">str_base64_data</span><span class="p">)</span>
+
+    <span class="n">destroy_quantum_machine</span><span class="p">(</span><span class="n">qvm</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Running results:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sa">b</span><span class="s1">&#39;AAAAAAQAAAAEAAAABAAAAA4AAQAAAAAAJAACAAAAAQAkAAMAAQACACQABAACAAMA</span><span class="se">\n</span><span class="s1">&#39;</span>
+</pre></div>
+</div>
+<div class="admonition-note admonition">
+<p class="admonition-title">Note</p>
+<p>The binary data cannot be output directly and should be subject to base64 encoding, to obtain corresponding character strings.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">警告</p>
+<p>The new interface <code class="docutils literal notranslate"><span class="pre">convert_qprog_to_binary()</span></code> is provided with the same function as the old one <code class="docutils literal notranslate"><span class="pre">transform_qprog_to_binary()</span></code>.</p>
+</div>
+</section>
+</section>
+<section id="parse-quantum-program-binary-files">
+<h2>4.5 Parse quantum program binary files<a class="headerlink" href="#parse-quantum-program-binary-files" title="永久链接至标题"></a></h2>
+<section id="id7">
+<h3>4.5.1 Introduction<a class="headerlink" href="#id7" title="永久链接至标题"></a></h3>
+<p>Parse quantum programs that are serialized by the quantum program
+serialization method.</p>
+</section>
+<section id="id8">
+<h3>4.5.2 Interface introduction<a class="headerlink" href="#id8" title="永久链接至标题"></a></h3>
+<p>We create a quantum program with pyqpanda at first:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">prog</span> <span class="o">=</span> <span class="n">QProg</span><span class="p">()</span>
+<span class="n">prog</span> <span class="o">&lt;&lt;</span> <span class="n">H</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> \
+    <span class="o">&lt;&lt;</span> <span class="n">CNOT</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">qubits</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> \
+    <span class="o">&lt;&lt;</span> <span class="n">CNOT</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">qubits</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> \
+    <span class="o">&lt;&lt;</span> <span class="n">CNOT</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">qubits</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>After the serialization and base64 encoding, the result is (refer to the
+quantum program serialization for specific serialized method).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sa">b</span><span class="s1">&#39;AAAAAAQAAAAEAAAABAAAAA4AAQAAAAAAJAACAAAAAQAkAAMAAQACACQABAACAAMA</span><span class="se">\n</span><span class="s1">&#39;</span>
+</pre></div>
+</div>
+<p>Now, deserialized this result. Firstly, decode the base64 result into
+binary data:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">str_base64_data</span> <span class="o">=</span><span class="sa">b</span><span class="s1">&#39;AAAAAAQAAAAEAAAABAAAAA4AAQAAAAAAJAACAAAAAQAkAAMAAQACACQABAACAAMA</span><span class="se">\n</span><span class="s1">&#39;</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">base64</span><span class="o">.</span><span class="n">decodebytes</span><span class="p">(</span><span class="n">str_base64_data</span><span class="p">))]</span>
+</pre></div>
+</div>
+<p>We may use one interface encapsulated by QPanda2:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">convert_binary_data_to_qprog</span><span class="p">(</span><span class="n">qvm</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">qubits_parse</span><span class="p">,</span> <span class="n">cbits_parse</span><span class="p">,</span> <span class="n">parseProg</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="id9">
+<h3>4.5.3 Example<a class="headerlink" href="#id9" title="永久链接至标题"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyqpanda</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">base64</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">qvm</span> <span class="o">=</span> <span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">)</span>
+
+    <span class="c1"># Base64 decoding of the way to get binary data</span>
+    <span class="n">str_base64_data</span> <span class="o">=</span>\ <span class="sa">b</span><span class="s1">&#39;AAAAAAQAAAAEAAAABAAAAA4AAQAAAAAAJAACAAAAAQAkAAMAAQACACQABAACAAMA</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">base64</span><span class="o">.</span><span class="n">decodebytes</span><span class="p">(</span><span class="n">str_base64_data</span><span class="p">))]</span>
+
+    <span class="c1"># Parse binary data, get quantum programs</span>
+    <span class="n">parseProg</span> <span class="o">=</span> <span class="n">QProg</span><span class="p">()</span>
+    <span class="n">parseProg</span> <span class="o">=</span> <span class="n">convert_binary_data_to_qprog</span><span class="p">(</span><span class="n">qvm</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+
+    <span class="c1"># The quantum program converts OriginIR and prints it</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">convert_qprog_to_originir</span><span class="p">(</span><span class="n">parseProg</span><span class="p">,</span><span class="n">qvm</span><span class="p">))</span>
+
+    <span class="n">destroy_quantum_machine</span><span class="p">(</span><span class="n">qvm</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Running results:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">QINIT</span> <span class="mi">4</span>
+<span class="n">CREG</span> <span class="mi">4</span>
+<span class="n">H</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">CNOT</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">CNOT</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">CNOT</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="admonition-note admonition">
+<p class="admonition-title">Note</p>
+<p>If the running results are correct, serialized quantum programs can beparsed correctly</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">警告</p>
+<p>The new interface <code class="docutils literal notranslate"><span class="pre">convert_binary_data_to_qprog()</span></code> is provided with the same function as the old one <code class="docutils literal notranslate"><span class="pre">transform_binary_data_to_qprog()</span></code> .</p>
+</div>
+</section>
+</section>
+<section id="conversion-into-a-quantum-program-by-originir">
+<h2>4.6 Conversion into a quantum program by OriginIR<a class="headerlink" href="#conversion-into-a-quantum-program-by-originir" title="永久链接至标题"></a></h2>
+<p>You may parse the OriginIR text file with this function module, and
+extract the quantum logic gate operation information therein, to obtain
+the quantum program that is operable in QPanda 2.</p>
+<section id="originir">
+<h3>4.6.1 OriginIR<a class="headerlink" href="#originir" title="永久链接至标题"></a></h3>
+<p>Reference can be made to the OriginIR introduction in the module of
+converting OriginIR by a quantum program for the writing format
+specifications and routines of OriginIR.</p>
+<p>QPanda 2 provides the OriginIR file conversion tool interface
+<code class="docutils literal notranslate"><span class="pre">convert_originir_to_qprog()</span></code> ,which is easy to use. Reference can be
+made to the following example program.</p>
+</section>
+<section id="id10">
+<h3>4.6.2 Example<a class="headerlink" href="#id10" title="永久链接至标题"></a></h3>
+<p>The following demonstrates the process of converting the quantum program
+by OriginIR through a simple interface call.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyqpanda</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span><span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">machine</span> <span class="o">=</span> <span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">)</span>
+
+    <span class="c1"># Write OriginIR files</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;testfile.txt&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span><span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;QINIT 4</span>
+<span class="s2">        CREG 4</span>
+<span class="s2">        DAGGER</span>
+<span class="s2">        X q[1]</span>
+<span class="s2">        X q[2]</span>
+<span class="s2">        CONTROL q[1], q[2]</span>
+<span class="s2">        RY q[0], (1.047198)</span>
+<span class="s2">        ENDCONTROL</span>
+<span class="s2">        ENDDAGGER</span>
+<span class="s2">        MEASURE q[0], c[0]</span>
+<span class="s2">        QIF c[0]</span>
+<span class="s2">        H q[1]</span>
+<span class="s2">        H q[2]</span>
+<span class="s2">        RZ q[2], (2.356194)</span>
+<span class="s2">        CU q[2], q[3], (3.141593, 4.712389, 1.570796, -1.570796)</span>
+<span class="s2">        CNOT q[2], q[1]</span>
+<span class="s2">        ENDQIF</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="c1"># OriginIR converts a quantum program and returns the converted quantum</span>
+<span class="c1"># program, the quantum bits used by the quantum program, and the classical</span>
+<span class="c1"># registers</span>
+<span class="n">prog</span><span class="p">,</span> <span class="n">qv</span><span class="p">,</span> <span class="n">cv</span> <span class="o">=</span> <span class="n">convert_originir_to_qprog</span><span class="p">(</span><span class="s2">&quot;testfile.txt&quot;</span><span class="p">,</span> <span class="n">machine</span><span class="p">)</span>
+
+<span class="c1"># The quantum program converts OriginIR, prints and compares the conversion</span>
+<span class="c1"># results</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">convert_qprog_to_originir</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span><span class="n">machine</span><span class="p">))</span>
+
+    <span class="n">destroy_quantum_machine</span><span class="p">(</span><span class="n">machine</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The specific steps are as follows:</p>
+<p>● Firstly, compile OriginIR and save it in a designated file</p>
+<p>● Then, initialize a quantum simulator object with
+<code class="docutils literal notranslate"><span class="pre">init_quantum_machine</span></code> in the main program in order to manage a series
+of subsequent behaviors</p>
+<p>● Next, call <code class="docutils literal notranslate"><span class="pre">convert_originir_to_qprog()</span></code> for the conversion</p>
+<p>● Finally, call the <code class="docutils literal notranslate"><span class="pre">convert_qprog_to_originir()</span></code> to convert the
+quantum program into OriginIR, decide whether OriginIR is converted into
+the quantum program correctly by comparing whether the QASMs input and
+generated are the same, and release system resources by
+<code class="docutils literal notranslate"><span class="pre">destroy_quantum_machine</span></code></p>
+<p>The running results are as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">QINIT</span> <span class="mi">4</span>
+<span class="n">CREG</span> <span class="mi">4</span>
+<span class="n">DAGGER</span>
+<span class="n">X</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">X</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">CONTROL</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">RY</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],(</span><span class="mf">1.047198</span><span class="p">)</span>
+<span class="n">ENCONTROL</span>
+<span class="n">ENDDAGGER</span>
+<span class="n">MEASURE</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">QIF</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">H</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">H</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">RZ</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">],(</span><span class="mf">2.356194</span><span class="p">)</span>
+<span class="n">CU</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">3</span><span class="p">],(</span><span class="mf">3.141593</span><span class="p">,</span><span class="mf">4.712389</span><span class="p">,</span><span class="mf">1.570796</span><span class="p">,</span><span class="o">-</span><span class="mf">1.570796</span><span class="p">)</span>
+<span class="n">CNOT</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">ENDQIF</span>
+</pre></div>
+</div>
+<div class="admonition-note admonition">
+<p class="admonition-title">Note</p>
+<p>For the types that are not supported temporarily, errors may occur during the process of converting OriginIR into a quantum program.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">警告</p>
+<p>The new interface <code class="docutils literal notranslate"><span class="pre">convert_originir_to_qprog()</span></code> is provided with the same function as the old one <code class="docutils literal notranslate"><span class="pre">transform_originir_to_QProg()</span></code>.</p>
+</div>
+</section>
+</section>
+<section id="conversion-of-originir-by-a-quantum-program">
+<h2>4.7 Conversion of OriginIR by a quantum program<a class="headerlink" href="#conversion-of-originir-by-a-quantum-program" title="永久链接至标题"></a></h2>
+<p>You may parse the quantum program created by pyqpanda with this function
+module, and extract the qubit information and quantum logic gate
+operation information contained therein, to obtain the OriginIR saved in
+a fixed form.</p>
+<section id="originir-introduction">
+<h3>4.7.1 OriginIR introduction<a class="headerlink" href="#originir-introduction" title="永久链接至标题"></a></h3>
+<p>OriginIR is an intermediate representation of quantum programs based on
+QPanda, and plays an important role in supporting properties of QPanda.
+OriginIR not only indicates most of the quantum logic gate types,
+indicates dagger operation for quantum circuits, and adds control qubits
+for quantum circuits, but also supports Qif and QWhile unique to QPanda
+and implements classical programs where quantum programs are embedded.</p>
+<p>OriginIR mainly includes qubit, classical register, quantum logic gate,
+transposed conjugate operation, adding control qubit operation, QIf,
+QWhile, and classical expression.</p>
+<section id="qubit">
+<h4>4.7.1.1 Qubit<a class="headerlink" href="#qubit" title="永久链接至标题"></a></h4>
+<p>OriginIR applies for qubits with QINIT. The format is QINIT followed by
+space + the total number of qubits, like QINIT 6. It should be noted
+that QINIT must be at the first row of the OriginIR program, except
+notes. When qubits are used, OriginIR uses q[i] to indicate a certain
+specific qubit; i is the No. of the qubit, and can be a unsigned
+numerical constant or a variable; it can also use an alternate
+expression comprising c[i], like q[1], q[c[0]], q[c[1]+c[2]+c[3]].</p>
+</section>
+<section id="classical-register">
+<h4>4.7.1.2 Classical register<a class="headerlink" href="#classical-register" title="永久链接至标题"></a></h4>
+<p>OriginIR applies for classical registers with CREG. The format is CREG
+followed by space + the total number of classical registers, like CREG
+6; when the classical registers are used, OriginIR uses c[i] to indicate
+a certain specific classical register; i is the No. of the classical
+register, and must be an unsigned numeric constant, like c[1].</p>
+</section>
+<section id="quantum-logic-gate">
+<h4>4.7.1.3 Quantum logic gate<a class="headerlink" href="#quantum-logic-gate" title="永久链接至标题"></a></h4>
+<p>OriginIR divides quantum logic gates into the following categories:
+keywords of the single-gate without parameters, single-gate with one
+parameter, single-gate with two parameters, single-gate with three
+parameters, single-gate with four parameters, double-gate without
+parameters, double-gate with one parameter, double-gate with four
+parameters, and tri-gate without parameters. It should be noted that for
+all single-gate operations, the target qubit can be the entire qubit
+array or a single qubit. In case of the entire qubit array, for example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">H</span> <span class="n">q</span>
+</pre></div>
+</div>
+<p>When the qubit array size is 3, it is equivalent to:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">H</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">H</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">H</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>1.Keywords of the single-gate without parameters: H, T, S, X, Y, Z, X1,
+Y1, Z1, and I; indicating the single-quantum logic gate without
+parameters; the format is quantum logic gate keyword + space + target
+qubit. Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">H</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>2.Keywords of the single-gate with one parameter: RX, RY, RZ, and U1;
+indicating the single-quantum logic gate with one parameter; the format
+is quantum logic gate keyword + space + target qubit + comma +
+(deflection angle). Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">RX</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],(</span><span class="mf">1.570796</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>3.Keywords of the single-gate with two parameters: U2 and RPhi;
+indicating the single-quantum logic gate with two parameters; the format
+is quantum logic gate keyword + space + target qubit + comma + (two
+deflection angles). Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">U2</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],(</span><span class="mf">1.570796</span><span class="p">,</span><span class="o">-</span><span class="mf">3.141593</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>4.Keyword of the single-gate with three parameters: U3; indicating the
+single-quantum logic gate with three parameters; the format is quantum
+logic gate keyword + space + target qubit + comma + (three deflection
+angles). Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">U3</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],(</span><span class="mf">1.570796</span><span class="p">,</span><span class="mf">4.712389</span><span class="p">,</span><span class="mf">1.570796</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>5.Keyword of the single-gate with four parameters: U4; indicating the
+single-quantum logic gate with four parameters; the format is quantum
+logic gate keyword + space + target qubit + comma + (four deflection
+angles). Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">U4</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],(</span><span class="mf">3.141593</span><span class="p">,</span><span class="mf">4.712389</span><span class="p">,</span><span class="mf">1.570796</span><span class="p">,</span><span class="o">-</span><span class="mf">3.141593</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>6.Keywords of the double-gate without parameters: CNOT, CZ, ISWAP,
+SQISWAP, and SWAP; indicating the double-quantum logic gate without
+parameters; the format is quantum logic gate keyword + space + control
+qubit + comma + target qubit. Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CNOT</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>7.Keywords of the double-gate with one parameter: ISWAPTHETA and CR;
+indicating the single-quantum logic gate with one parameter; the format
+is quantum logic gate keyword + space + control qubit + comma + target
+qubit + comma + (deflection angle). Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CR</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],(</span><span class="mf">1.570796</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>8.Keyword of the double-gate with four parameters: CU; indicating the
+single-quantum logic gate with four parameters; the format is quantum
+logic gate keyword + space + control qubit + comma + target qubit +
+comma + (four deflection angles). Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CU</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">3</span><span class="p">],(</span><span class="mf">3.141593</span><span class="p">,</span><span class="mf">4.712389</span><span class="p">,</span><span class="mf">1.570796</span><span class="p">,</span><span class="o">-</span><span class="mf">3.141593</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>9.Keyword of the tri-gate without parameters: TOFFOLI; indicating the
+tri-quantum logic gate without parameters; the format is quantum logic
+gate keyword + space + control qubit 1 + comma + control qubit 2 + comma
++ target qubit. Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">TOFFOLI</span>  <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="transposed-conjugate-operation">
+<h4>4.7.1.4 Transposed conjugate operation<a class="headerlink" href="#transposed-conjugate-operation" title="永久链接至标题"></a></h4>
+<p>The transposed conjugate operation can be performed for one or more
+quantum logic gates in OriginIR, which defines the range of transposed
+conjugate operation with keywords, i.e. DAGGER and ENDDAGGER. One DAGGER
+must match with one ENDDAGGER; for example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">DAGGER</span>
+<span class="n">H</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">CNOT</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">ENDDAGGER</span>
+</pre></div>
+</div>
+</section>
+<section id="adding-control-qubit-operation">
+<h4>4.7.1.5 Adding control qubit operation<a class="headerlink" href="#adding-control-qubit-operation" title="永久链接至标题"></a></h4>
+<p>The control qubits can be added for one or more quantum logic gates in
+OriginIR, which defines the range of adding control qubits with
+keywords, i.e. CONTROL and ENDCONTROL. CONTROL is followed by space +
+control qubit list; Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CONTROL</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+<span class="n">H</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">CNOT</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">ENDCONTROL</span>
+</pre></div>
+</div>
+</section>
+<section id="qif">
+<h4>4.7.1.6 QIF<a class="headerlink" href="#qif" title="永久链接至标题"></a></h4>
+<p>The judgment programs for quantum conditions can be indicated in
+OriginIR, which determines the range of different ranches of judgment
+programs for quantum conditions by QIF, ELSE, and ENDIF. QIF must match
+with one ENDIF; if QIF has two branches, ELSE is required; if QIF only
+has one branch, ELSE is not required; QIF is followed by space +
+judgment expression. Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>1、QIF There&#39;s only one conditional branch
+QIF c[0]==c[1]
+H q[0]
+CNOT q[0],q[1]
+ENDIF
+
+2、QIF There are two conditional branches
+QIF c[0]+c[1]&lt;5
+H q[0]
+CNOT q[0],q[1]
+ELSE
+H q[0]
+X q[1]
+ENDIF
+</pre></div>
+</div>
+</section>
+<section id="qwhile">
+<h4>4.7.1.7 QWHILE<a class="headerlink" href="#qwhile" title="永久链接至标题"></a></h4>
+<p>The judgment programs for quantum loops can be indicated in OriginIR,
+which determines the range of judgment programs for loops by QIF, ELSE,
+and ENDIF; QWHILE is followed by space + judgment expression. Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">QWHILE</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&lt;</span><span class="mi">5</span>
+<span class="n">H</span> <span class="n">q</span><span class="p">[</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+<span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span>
+<span class="n">ENDQWHILE</span>
+</pre></div>
+</div>
+</section>
+<section id="classical-expression">
+<h4>4.7.1.8 Classical expression<a class="headerlink" href="#classical-expression" title="永久链接至标题"></a></h4>
+<p>OriginIR can embed a classical expression in the quantum program, like
+c[0]==c[1]+c[2]; Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">QWHILE</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&lt;</span><span class="mi">5</span>
+<span class="n">H</span> <span class="n">q</span><span class="p">[</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+<span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span>
+<span class="n">ENDQWHILE</span>
+</pre></div>
+</div>
+<p>The expression indicates the H gate operation performed for q[0]~q[4]
+qubit; the classical expression must be comprised of classical registers
+and constants; the operators of the classical expression include.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="n">PLUS</span> <span class="p">,</span> <span class="s2">&quot;+&quot;</span><span class="p">},</span>
+<span class="p">{</span><span class="n">MINUS</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">},</span>
+<span class="p">{</span><span class="n">MUL</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">},</span>
+<span class="p">{</span><span class="n">DIV</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">},</span>
+<span class="p">{</span><span class="n">EQUAL</span><span class="p">,</span> <span class="s2">&quot;==&quot;</span> <span class="p">},</span>
+<span class="p">{</span> <span class="n">NE</span><span class="p">,</span> <span class="s2">&quot;!=&quot;</span> <span class="p">},</span>
+<span class="p">{</span> <span class="n">GT</span><span class="p">,</span> <span class="s2">&quot;&gt;&quot;</span> <span class="p">},</span>
+<span class="p">{</span> <span class="n">EGT</span><span class="p">,</span> <span class="s2">&quot;&gt;=&quot;</span> <span class="p">},</span>
+<span class="p">{</span> <span class="n">LT</span><span class="p">,</span> <span class="s2">&quot;&lt;&quot;</span> <span class="p">},</span>
+<span class="p">{</span> <span class="n">ELT</span><span class="p">,</span> <span class="s2">&quot;&lt;=&quot;</span> <span class="p">},</span>
+<span class="p">{</span><span class="n">AND</span><span class="p">,</span> <span class="s2">&quot;&amp;&amp;&quot;</span><span class="p">},</span>
+<span class="p">{</span><span class="n">OR</span><span class="p">,</span> <span class="s2">&quot;||&quot;</span><span class="p">},</span>
+<span class="p">{</span><span class="n">NOT</span><span class="p">,</span> <span class="s2">&quot;!&quot;</span><span class="p">},</span>
+<span class="p">{</span><span class="n">ASSIGN</span><span class="p">,</span> <span class="s2">&quot;=&quot;</span> <span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="measure-operation">
+<h4>4.7.1.9 MEASURE operation<a class="headerlink" href="#measure-operation" title="永久链接至标题"></a></h4>
+<p>MEASURE indicates the measurement operation performed for designated
+qubits, and saving the results to the designated classical register.
+MEASURE is followed by space + target qubit + ‘,’ + target classical
+register. Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">MEASURE</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>If the number of qubits applied is the same as that of the classical
+registers, q can be used to indicate all qubits, and c indicates all
+classical bits. Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">MEAUSRE</span> <span class="n">q</span><span class="p">,</span><span class="n">c</span>
+</pre></div>
+</div>
+<p>If the number of qubits and the number of classical bits are 3
+respectively, it is equivalent to</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">MEAUSRE</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">MEAUSRE</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">MEAUSRE</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">c</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="reset-operation">
+<h4>4.7.1.10 RESET operation<a class="headerlink" href="#reset-operation" title="永久链接至标题"></a></h4>
+<p>RESET operation is to reset the quantum state of qubits operated to
+zero. The format is RESET + space + target qubit where the target qubit
+can be the entire qubit array or a single qubit. Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">RESET</span> <span class="n">q</span>
+
+<span class="n">RESET</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="barrier-operation">
+<h4>4.7.1.11 BARRIER operation<a class="headerlink" href="#barrier-operation" title="永久链接至标题"></a></h4>
+<p>BARRIER operation is to block the qubits operated, so as to prevent the
+optimization and execution on the circuit. The format is BARRIER + space
++ target qubit where the target qubit can be the entire qubit array or a
+single qubit or multiple qubits. Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">BARRIER</span> <span class="n">q</span>
+<span class="n">BARRIER</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">BARRIER</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="qgate-operation">
+<h4>4.7.1.12 QGATE operation<a class="headerlink" href="#qgate-operation" title="永久链接至标题"></a></h4>
+<p>QGATE is user-defined logic gate operation, during which multiple logic
+gates can be combined into a new one. The scope of user-defined logic
+gates is framed through QGATE and ENDQGATE. It should be noted that the
+parameter name of the user-defined logic gate can not conflict with any
+of the related keywords as described above.</p>
+<p>The rules for declaration of user-defined logic gates are as below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>QGATE UserDefinedeGateName BitParameter,(angle)
+//UserDefinedeGateName, user-defined logical gate name，string
+//BitParameter, user-defined logical gate parameter information，string
+//angle, angle information，string
+// Other relevant information[&quot;,&quot;、&quot;(&quot; etc.]It must be written in the defined format
+// Among them &quot;,” and subsequent information can be blank, the angle information can be null
+</pre></div>
+</div>
+<p>A simplified example is shown below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">QGATE</span> <span class="n">new_H</span> <span class="n">a</span>
+<span class="n">H</span> <span class="n">a</span>
+<span class="n">X</span> <span class="n">a</span>
+<span class="n">ENDQGATE</span>
+
+
+<span class="n">QGATE</span> <span class="n">new_RX</span> <span class="n">a</span><span class="p">,(</span><span class="n">b</span><span class="p">)</span>
+<span class="n">RX</span> <span class="n">a</span><span class="p">,(</span><span class="n">PI</span><span class="o">/</span><span class="mi">2</span><span class="o">+</span><span class="n">b</span><span class="p">)</span>
+<span class="n">CONTROL</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">RX</span> <span class="n">a</span><span class="p">,(</span><span class="o">-</span><span class="mf">3.141593</span><span class="p">)</span>
+<span class="n">DAGGER</span>
+<span class="n">H</span> <span class="n">a</span>
+<span class="n">ENDDAGGER</span>
+<span class="n">ENDCONTROL</span>
+<span class="n">DAGGER</span>
+<span class="n">H</span> <span class="n">a</span>
+<span class="n">DAGGER</span>
+<span class="n">H</span> <span class="n">a</span>
+<span class="n">ENDDAGGER</span>
+<span class="n">ENDDAGGER</span>
+<span class="n">ENDQGATE</span>
+</pre></div>
+</div>
+<p>The user, after applying for qubits and classical registers, can call
+user-defined logic gates in the following format:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>UserDefinedeGateName  argue,(angle)
+//UserDefinedeGateName, user-defined logical gate name，string, be consistent with the definition section above
+//BitParameter, user-defined logical gate parameter information，string，It must be q[x], and x needs to be less than the number of qubits requested
+//angle, angle information，string，it can be a number, or an expression related to PI
+</pre></div>
+</div>
+<p>A simplified example is shown below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">new_H</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">new_RX</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],(</span><span class="n">PI</span><span class="o">/</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="originir-program-example">
+<h4>4.7.1.13 OriginIR program example<a class="headerlink" href="#originir-program-example" title="永久链接至标题"></a></h4>
+<p>OPE algorithm</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">QINIT</span> <span class="mi">3</span>
+<span class="n">CREG</span> <span class="mi">2</span>
+<span class="n">H</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">H</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">H</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">CONTROL</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">RX</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">],(</span><span class="o">-</span><span class="mf">3.141593</span><span class="p">)</span>
+<span class="n">ENCONTROL</span>
+<span class="n">CONTROL</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">RX</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">],(</span><span class="o">-</span><span class="mf">3.141593</span><span class="p">)</span>
+<span class="n">RX</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">],(</span><span class="o">-</span><span class="mf">3.141593</span><span class="p">)</span>
+<span class="n">ENCONTROL</span>
+<span class="n">DAGGER</span>
+<span class="n">H</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">CR</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],(</span><span class="mf">1.570796</span><span class="p">)</span>
+<span class="n">H</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">ENDDAGGER</span>
+<span class="n">MEASURE</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">MEASURE</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>QPanda2 provides an OriginIR conversion interface (std::string
+<code class="docutils literal notranslate"><span class="pre">convert_qprog_to_originir()</span></code> which is easy to use. See the following
+example program for details.</p>
+</section>
+</section>
+<section id="id11">
+<h3>4.7.2 Example<a class="headerlink" href="#id11" title="永久链接至标题"></a></h3>
+<p>The following example demonstrates the process of converting OriginIR by
+a quantum program through a simple interface call.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyqpanda</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">machine</span> <span class="o">=</span> <span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">)</span>
+    <span class="n">qlist</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+    <span class="n">clist</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">cAlloc_many</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+    <span class="n">prog</span> <span class="o">=</span> <span class="n">create_empty_qprog</span><span class="p">()</span>
+    <span class="n">prog_cir</span> <span class="o">=</span> <span class="n">create_empty_circuit</span><span class="p">()</span>
+
+    <span class="c1"># Building quantum circuits</span>
+    <span class="n">prog_cir</span> <span class="o">&lt;&lt;</span> <span class="n">Y</span><span class="p">(</span><span class="n">qlist</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">H</span><span class="p">(</span><span class="n">qlist</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">CNOT</span><span class="p">(</span><span class="n">qlist</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">qlist</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="c1"># Build a QWhile that uses quantum circuitry for loop branching</span>
+    <span class="n">qwhile</span> <span class="o">=</span> <span class="n">create_while_prog</span><span class="p">(</span><span class="n">clist</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">prog_cir</span><span class="p">)</span>
+
+    <span class="c1"># Build the quantum program and insert QWhile into the quantum program</span>
+    <span class="n">prog</span> <span class="o">&lt;&lt;</span> <span class="n">H</span><span class="p">(</span><span class="n">qlist</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">Measure</span><span class="p">(</span><span class="n">qlist</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">clist</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">&lt;&lt;</span> <span class="n">qwhile</span>
+
+    <span class="c1"># The quantum program converts the QriginIR and prints the OriginI</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">convert_qprog_to_originir</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span><span class="n">machine</span><span class="p">))</span>
+
+    <span class="n">destroy_quantum_machine</span><span class="p">(</span><span class="n">machine</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The specific steps are as follows:</p>
+<p>● Firstly, initialize a quantum simulator object with
+<code class="docutils literal notranslate"><span class="pre">init_quantum_machine</span></code> in the main program in order to manage a series
+of subsequent behaviors.</p>
+<p>● Then, initialize the number of qubits and classical registers with
+<code class="docutils literal notranslate"><span class="pre">qAlloc_many</span></code> and <code class="docutils literal notranslate"><span class="pre">cAlloc_many</span></code>.</p>
+<p>● Next, call <code class="docutils literal notranslate"><span class="pre">create_empty_qprog</span></code> to create the quantum program.</p>
+<p>● Finally, Call the <code class="docutils literal notranslate"><span class="pre">convert_qprog_to_originir</span></code> interface to output the
+OriginIR，string and use <code class="docutils literal notranslate"><span class="pre">destroy_quantum_machine</span></code> to release system
+resources.</p>
+<p>The running results are as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">QINIT</span> <span class="mi">4</span>
+<span class="n">CREG</span> <span class="mi">4</span>
+<span class="n">H</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">MEASURE</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">QWHILE</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">Y</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">H</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">CNOT</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">ENDQWHILE</span>
+</pre></div>
+</div>
+<div class="admonition-note admonition">
+<p class="admonition-title">Note</p>
+<p>For operations which are not currently supported, OriginIR will display UnSupported XXXNode where XXX indicates the type of nodes.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">警告</p>
+<p>The new interface <code class="docutils literal notranslate"><span class="pre">convert_qprog_to_originir()</span></code> is provided with the same function as the old one <code class="docutils literal notranslate"><span class="pre">transform_qprog_to_originIR()</span></code>.</p>
+</div>
+</section>
+</section>
+<section id="quantum-program-matching-topology">
+<h2>4.8 Quantum program matching topology<a class="headerlink" href="#quantum-program-matching-topology" title="永久链接至标题"></a></h2>
+<p>A quantum computing device has finite connections between qubits,
+allowing only two qubit gates to be applied to finite pairs of qubits.
+When the quantum program is applied to the target device, the original
+quantum program must be converted to adapt to the hardware restriction
+to allow the two qubits in the double qubit gates in compliance with the
+physical topology, thus to ensure normal operation of the double qubit
+gates. Most of the existing solutions require inserting additional SWAP
+operations between two qubits failing to interact in order to “move” the
+logic qubits to a position where they can interact. This solution is
+called quantum program matching topology.</p>
+<section id="interface-description">
+<h3>4.8.1 Interface description<a class="headerlink" href="#interface-description" title="永久链接至标题"></a></h3>
+<p>Two matching topology methods are available in the current version:</p>
+<p><code class="docutils literal notranslate"><span class="pre">Interface</span> <span class="pre">topology_match</span></code></p>
+<p>By adopting circuit layering and A* search algorithms, the number of
+inserted SWAP operations is approximately minimized in the process of
+matching thus to minimize the overall approximate consumption of the
+algorithms. The interface requires input of 5 parameters: the quantum
+program constructed, the set of qubits used, the simulator pointer
+initialized, the mode of SWAP operation used, and the type of topology.
+And also the interface can return to the mapped quantum program.</p>
+</section>
+<section id="id12">
+<h3>4.8.2 Example<a class="headerlink" href="#id12" title="永久链接至标题"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyqpanda</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span><span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">qvm</span> <span class="o">=</span> <span class="n">CPUQVM</span><span class="p">()</span>
+    <span class="n">qvm</span><span class="o">.</span><span class="n">init_qvm</span><span class="p">()</span>
+    <span class="n">qv</span> <span class="o">=</span> <span class="n">qvm</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">qvm</span><span class="o">.</span><span class="n">cAlloc_many</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+    <span class="n">src_prog</span> <span class="o">=</span> <span class="n">QProg</span><span class="p">()</span>
+    <span class="c1"># Building quantum programs</span>
+    <span class="n">src_prog</span> <span class="o">&lt;&lt;</span> <span class="n">CNOT</span><span class="p">(</span><span class="n">qv</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">qv</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span> \
+            <span class="o">&lt;&lt;</span> <span class="n">CNOT</span><span class="p">(</span><span class="n">qv</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">qv</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> \
+            <span class="o">&lt;&lt;</span> <span class="n">CNOT</span><span class="p">(</span><span class="n">qv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">qv</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span> \
+            <span class="o">&lt;&lt;</span> <span class="n">CZ</span><span class="p">(</span><span class="n">qv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">qv</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> \
+            <span class="o">&lt;&lt;</span> <span class="n">CZ</span><span class="p">(</span><span class="n">qv</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">qv</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> \
+            <span class="o">&lt;&lt;</span> <span class="n">T</span><span class="p">(</span><span class="n">qv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>  \
+            <span class="o">&lt;&lt;</span> <span class="n">S</span><span class="p">(</span><span class="n">qv</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>  \
+            <span class="o">&lt;&lt;</span> <span class="n">H</span><span class="p">(</span><span class="n">qv</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+
+    <span class="c1"># The probability measurement of src_prog results in results_1</span>
+    <span class="n">qvm</span><span class="o">.</span><span class="n">directly_run</span><span class="p">(</span><span class="n">src_prog</span><span class="p">)</span>
+    <span class="n">results_1</span> <span class="o">=</span> <span class="n">qvm</span><span class="o">.</span><span class="n">pmeasure_no_index</span><span class="p">(</span><span class="n">qv</span><span class="p">)</span>
+
+<span class="c1"># The quantum program out_prog matching IBM_QX5_ARCH topology is obtained</span>
+<span class="c1"># by topology matching src_prog</span>
+    <span class="n">out_prog</span><span class="p">,</span> <span class="n">out_qv</span> <span class="o">=</span> <span class="n">topology_match</span><span class="p">(</span><span class="n">src_prog</span><span class="p">,</span> <span class="n">qv</span><span class="p">,</span> <span class="n">qvm</span><span class="p">,</span> <span class="n">CNOT_GATE_METHOD</span><span class="p">,</span>\ <span class="n">IBM_QX5_ARCH</span><span class="p">)</span>
+
+    <span class="c1"># The probability of out_prog is measured and the result is results_2</span>
+    <span class="n">qvm</span><span class="o">.</span><span class="n">directly_run</span><span class="p">(</span><span class="n">out_prog</span><span class="p">)</span>
+    <span class="n">results_2</span> <span class="o">=</span> <span class="n">qvm</span><span class="o">.</span><span class="n">pmeasure_no_index</span><span class="p">(</span><span class="n">out_qv</span><span class="p">)</span>
+
+<span class="c1"># Compare the probability measurement results_1 and Results_2, and print</span>
+<span class="c1"># the same result</span>
+    <span class="nb">len</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">results_1</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">results_2</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">results_1</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">-</span> <span class="n">results_2</span><span class="p">[</span><span class="n">index</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mf">1.0e-6</span> <span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">results_1</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The results are different&quot;</span><span class="p">)</span>
+    <span class="n">destroy_quantum_machine</span><span class="p">(</span><span class="n">qvm</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The specific steps are as follows:</p>
+<p>● Firstly, create a quantum simulator, a quantum register and a
+classical register.</p>
+<p>● Then, write the quantum program <code class="docutils literal notranslate"><span class="pre">src_prog</span></code>, and measure the probability
+of the program to obtain the <code class="docutils literal notranslate"><span class="pre">result_1</span></code>.</p>
+<p>● Next, call <code class="docutils literal notranslate"><span class="pre">topology_match()</span></code> to map <code class="docutils literal notranslate"><span class="pre">src_prog</span></code> to a circuit in
+compliance with the specific physical structure thus to get the quantum
+program <code class="docutils literal notranslate"><span class="pre">out_prog</span></code> matching with the specific physical structure.</p>
+<p>● Finally, measure the probability of the program <code class="docutils literal notranslate"><span class="pre">out_prog</span></code> to obtain
+the <code class="docutils literal notranslate"><span class="pre">result_2</span></code>.</p>
+<p>● The mapping of quantum program, as an additional <code class="docutils literal notranslate"><span class="pre">SWAP</span></code> operation to the
+original circuit to adapt to the physical topology, does not affect the
+structure of the circuit. Therefore, the mapping of the circuit is
+correct if <code class="docutils literal notranslate"><span class="pre">result_1</span></code> and <code class="docutils literal notranslate"><span class="pre">result_2</span></code> are the same.</p>
+<p>The results are as below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">0.49999999999999645</span>
+<span class="n">The</span> <span class="n">results</span> <span class="n">are</span> <span class="n">different</span>
+<span class="mf">0.0</span>
+<span class="mf">0.0</span>
+<span class="mf">0.0</span>
+<span class="mf">0.0</span>
+<span class="mf">0.0</span>
+<span class="mf">0.0</span>
+<span class="n">The</span> <span class="n">results</span> <span class="n">are</span> <span class="n">different</span>
+<span class="mf">0.0</span>
+<span class="mf">0.0</span>
+<span class="mf">0.0</span>
+<span class="mf">0.0</span>
+<span class="mf">0.0</span>
+<span class="mf">0.0</span>
+<span class="mf">0.0</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../chapter3/index.html" class="btn btn-neutral float-left" title="3 Quantum program information" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> 上一页</a>
+        <a href="../chapter5/index.html" class="btn btn-neutral float-right" title="5 Utility tool" accesskey="n" rel="next">下一页 <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2021, BYLZ.</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用了 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a>开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

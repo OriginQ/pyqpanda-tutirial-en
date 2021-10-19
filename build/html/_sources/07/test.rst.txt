@@ -1,0 +1,892 @@
+**7 VQC**
+=========
+
+**7.1 变量**
+------------
+
+变量类是实现符号计算的用户类，用于存储特定混合量子经典网络的变量。
+通常任务是优化变量以最小化成本函数。 变量可以是标量，矢量或矩阵。
+
+变量具有树形结构，它可以包含子节点或父节点。
+如果变量没有子节点，那么我们称之为叶子节点。
+我们可以将变量设置为特定值，另一方面，如果变量的所有叶子节点都已设置了值，我们也可以获得该变量的值。
+
+7.1.1 接口介绍
+~~~~~~~~~~~~~~
+
+我们可以通过传入一个浮点型的数据来构造一个标量变量，也可以通过传入numpy库生成的多维数组来构造一个矢量或矩阵变量。
+
+::
+
+    v1 = var(1)
+
+    a = np.array([[1.],[2.],[3.],[4.]])
+    v2 = var(a)
+    b = np.array([[1.,2.],[3.,4.]])
+    v3 = var(b)
+
+*注解：*
+
+在定义变量的时候，可以定义变量的类型是否可以微分，默认情况下我们定义的变量的类型都是不可微分的，不可微分的变量相当于placeholder
+。 定义可微分的变量时，需要指定构造函数的第二个参数为True, 例如：v1 =
+var(1, True)。
+
+我们可以先定义计算对应的表达式，表达式由变量之间进行加减乘除操作或其它操作组成，表达式也是一个变量。
+
+::
+
+    v1 = var(10)
+    v2 = var(5)
+
+    add = v1 + v2
+    minus = v1 - v2
+    multiply = v1 * v2
+    divide = v1 / v2
+
+我们可以在不改变表达式结构的情况下，通过 set\_value
+接口改变某个变量的值，即可得到不同的计算结果。我们可以调用 eval
+接口，来计算该变量当前的值。
+
+::
+
+    v1 = var(1)
+    v2 = var(2)
+
+    add = v1 + v2
+    print(eval(add)) # 输出为[[3.]]
+
+    v1.set_value([[3.]])
+    print(eval(add)) # 输出为[[5.]]
+
+*注解：*
+
+变量的 get\_value
+接口返回的是变量当前的值，不会根据变量的叶子节点来计算当前变量的值。如果变量是个表达式需要根据叶子节点来计算其值，需要调用
+eval 接口进行前向求值。
+
+7.1.2 实例
+~~~~~~~~~~
+
+下面我们将以更多的示例来展示变量类相关接口的使用。
+
+::
+
+    from pyqpanda import *
+    import numpy as np
+
+    if __name__=="__main__":
+
+        m1 = np.array([[1., 2.],[3., 4.]])
+        v1 = var(m1)
+
+        m2 = np.array([[5., 6.],[7., 8.]])
+        v2 = var(m2)
+
+        sum = v1 + v2
+        minus = v1 - v2
+        multiply = v1 * v2
+
+        print("v1: ", v1.get_value())
+        print("v2: ", v2.get_value())
+        print("sum: " , eval(sum))
+        print("minus: " , eval(minus))
+        print("multiply: " , eval(multiply))
+
+        m3 = np.array([[4., 3.],[2., 1.]])
+        v1.set_value(m3)
+
+        print("sum: " , eval(sum))
+        print("minus: " , eval(minus))
+        print("multiply: " , eval(multiply))
+
+.. figure:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/VarExample.png
+   :alt: \_images/VarExample.png
+
+   \_images/VarExample.png
+**7.2 运算符**
+--------------
+
+VQNet包含许多类型的运算符， 这些运算符可以操作变量或占位符。
+其中，一些运算符是经典运算符，例如加，减，乘，除，指数，对数和点乘等。
+VQNet还包含来自经典机器学习中所有常见操作符。
+
+VQNet还包含有量子运算符，它们是qop和qop pmeasure。 另外，qop和qop
+pmeasure与量子计算机芯片有关，使用它们需要量子环境。
+为此，我们需要在使用这两个运算符时需要添加额外的参数。
+一般来说，我们需要添加量子机器的引用和申请的量子比特来提供量子环境。
+
+VQNet定义了如下表所示运算符，所有运算符返回的都是类型为 var 的变量。
+
++---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| The operator        | Describe                                                                                                                                                                                                                                                                                                                               |
++=====================+========================================================================================================================================================================================================================================================================================================================================+
+| 运算符              | 描述                                                                                                                                                                                                                                                                                                                                   |
++---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``plus``            | 加。示例：a + b，其中a和b都是类型为 ``var`` 的变量。                                                                                                                                                                                                                                                                                   |
++---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``minus``           | 减。示例：a - b。                                                                                                                                                                                                                                                                                                                      |
++---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``multiply``        | 乘。示例：a \* b。                                                                                                                                                                                                                                                                                                                     |
++---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``divide``          | 除。示例：a / b。                                                                                                                                                                                                                                                                                                                      |
++---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``exponent``        | 指数。示例：exp(a)。                                                                                                                                                                                                                                                                                                                   |
++---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``log``             | 对数。示例：log(a)。                                                                                                                                                                                                                                                                                                                   |
++---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``polynomial``      | 幂。示例：poly(a, 2)。                                                                                                                                                                                                                                                                                                                 |
++---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``dot``             | 矩阵点乘。示例：dot(a, b)。                                                                                                                                                                                                                                                                                                            |
++---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``inverse``         | 求矩阵逆。示例：inverse(a)。                                                                                                                                                                                                                                                                                                           |
++---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``transpose``       | 矩阵转置。示例：transpose(a)。                                                                                                                                                                                                                                                                                                         |
++---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``sum``             | 矩阵求和。示例：sum(a)。                                                                                                                                                                                                                                                                                                               |
++---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``stack``           | 矩阵按列(axis = 0)或行(axis = 1)方向进行拼接。示例：stack(axis, a, b, c)。                                                                                                                                                                                                                                                             |
++---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``subscript``       | 下标操作。示例：a[0]。                                                                                                                                                                                                                                                                                                                 |
++---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``qop``             | 量子操作，它将 ``VQC`` 和几个哈密顿量作为输入，并输出输入哈密顿量的期望。示例：如果w表示 ``VQC`` 的变量，qop(VQC(w)，Hamiltonians，[量子环境])。                                                                                                                                                                                       |
++---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``qop_pmeasure``    | 量子操作，它类似于qop。 qop\_pmeasure的输入包括VQC，待测量的量子位和分量。它可以计算由待测量的量子比特构成的子空间中的所有投影状态的概率，并返回其中的一些。分量存储目标投影状态的标签。 很明显，任何投射状态的概率都可以看作哈密顿量的期望，所以qop\_pmeasure是qop的一个特例。示例：qop\_pmeasure(VQC(w), components, [量子环境])。   |
++---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``sigmoid``         | 激活函数。示例：sigmoid(a)。                                                                                                                                                                                                                                                                                                           |
++---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``softmax``         | 激活函数。示例：softmax(a)。                                                                                                                                                                                                                                                                                                           |
++---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``cross_entropy``   | 交叉熵。示例：crossEntropy(a, b)。                                                                                                                                                                                                                                                                                                     |
++---------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+**7.3 可变量子逻辑门**
+----------------------
+
+要在VQNet中使用量子操作 qop 或 qop\_pmeasure
+，就必须要包含可变量子线路(VariationalQuantumCircuit，别名VQC)而可变量子逻辑门则是构成
+VariationalQuantumCircuit 的基本单位。
+可变量子逻辑门(VariationalQuantumGate，别名
+VQG)，内部维护着一组变量参数以及一组常量参数。 在构造 VQG
+的时候只能对其中一组参数进行赋值。若含有一组常量参数，则可以通过 VQG
+生成含确定参数的普通量子逻辑门,
+若含有变量参数，则可以动态修改参数值，并生成对应的参数的普通量子逻辑门。
+
+目前在pyQPanda中定义了如下可变量子逻辑门，它们都继承自
+VariationalQuantumGate 。
+
++--------------------------------+-------------+
+| VQG                            | 别名        |
++================================+=============+
+| VariationalQuantumGate\_H      | VQG\_H      |
++--------------------------------+-------------+
+| VariationalQuantumGate\_RX     | VQG\_RX     |
++--------------------------------+-------------+
+| VariationalQuantumGate\_RY     | VQG\_RY     |
++--------------------------------+-------------+
+| VariationalQuantumGate\_RZ     | VQG\_RZ     |
++--------------------------------+-------------+
+| VariationalQuantumGate\_CZ     | VQG\_CZ     |
++--------------------------------+-------------+
+| VariationalQuantumGate\_CNOT   | VQG\_CNOT   |
++--------------------------------+-------------+
+
+7.3.1 接口介绍
+~~~~~~~~~~~~~~
+
+我们可以通过向可变量子线路中插入可变量子逻辑门，来使用可变量子逻辑门。我们可以向需要传入参数的可变量子逻辑门中传入变量参数，
+例如我们对可变量子逻辑门RX和RY传入变量参数x和y。也可以对可变量子逻辑门传入常量参数，例如RZ我们传入了一个常量参数0.12。
+我们可以通过修改变量的参数，从而来改变可变量子逻辑门中的参数。
+
+::
+
+    x = var(1)
+    y = var(2)
+
+    vqc = VariationalQuantumCircuit()
+    vqc.insert(VariationalQuantumGate_H(q[0]))
+    vqc.insert(VariationalQuantumGate_RX(q[0], x))
+    vqc.insert(VariationalQuantumGate_RY(q[1], y))
+    vqc.insert(VariationalQuantumGate_RZ(q[0], 0.12))
+    vqc.insert(VariationalQuantumGate_CZ(q[0], q[1]))
+    vqc.insert(VariationalQuantumGate_CNOT(q[0], q[1]))
+
+    circuit1 = vqc.feed()
+
+    x.set_value(3)
+    y.set_value(4)
+
+    circuit2 = vqc.feed()
+
+7.3.2 实例
+~~~~~~~~~~
+
+::
+
+    from pyqpanda import *
+
+    if __name__=="__main__":
+
+        machine = init_quantum_machine(QMachineType.CPU)
+        q = machine.qAlloc_many(2)
+
+        x = var(1)
+        y = var(2)
+
+
+        vqc = VariationalQuantumCircuit()
+        vqc.insert(VariationalQuantumGate_H(q[0]))
+        vqc.insert(VariationalQuantumGate_RX(q[0], x))
+        vqc.insert(VariationalQuantumGate_RY(q[1], y))
+        vqc.insert(VariationalQuantumGate_RZ(q[0], 0.12))
+        vqc.insert(VariationalQuantumGate_CZ(q[0], q[1]))
+        vqc.insert(VariationalQuantumGate_CNOT(q[0], q[1]))
+
+        circuit1 = vqc.feed()
+
+        prog = QProg()
+        prog.insert(circuit1)
+
+        print(convert_qprog_to_originir(prog, machine))
+
+        x.set_value([[3.]])
+        y.set_value([[4.]])
+
+        circuit2 = vqc.feed()
+        prog2 = QProg()
+        prog2.insert(circuit2)
+        print(convert_qprog_to_originir(prog2, machine))
+
+.. figure:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/VQG_Example.png
+   :alt: *images/VQG*\ Example.png
+
+   *images/VQG*\ Example.png
+**7.4 可变量子逻辑门（VQG）**
+-----------------------------
+
+要在VQNet中使用量子操作 qop 或 qop\_pmeasure
+,就必须要包含可变量子线路(VQC)，而可变量子逻辑门则是构成 VQC
+的基本单位。 可变量子逻辑门(VariationalQuantumGate，别名:
+VQG)，内部维护着一组变量参数以及一组常量参数。 在构造 VQG
+的时候只能对其中一组参数进行赋值。若含有一组常量参数，则可以通过 VQG
+生成含确定参数的普通量子逻辑门,
+若含有变量参数，则可以动态修改参数值，并生成对应的参数的普通量子逻辑门。
+
+目前在QPanda::Variational中定义了如下可变量子逻辑门，它们都继承自 VQG 。
+
++-----------------------------------+----------------+
+| VQG                               | 别名           |
++===================================+================+
+| VariationalQuantumGate\_I         | VQG\_I         |
++-----------------------------------+----------------+
+| VariationalQuantumGate\_H         | VQG\_H         |
++-----------------------------------+----------------+
+| VariationalQuantumGate\_T         | VQG\_T         |
++-----------------------------------+----------------+
+| VariationalQuantumGate\_S         | VQG\_S         |
++-----------------------------------+----------------+
+| VariationalQuantumGate\_X         | VQG\_X         |
++-----------------------------------+----------------+
+| VariationalQuantumGate\_Y         | VQG\_Y         |
++-----------------------------------+----------------+
+| VariationalQuantumGate\_Z         | VQG\_Z         |
++-----------------------------------+----------------+
+| VariationalQuantumGate\_X1        | VQG\_X1        |
++-----------------------------------+----------------+
+| VariationalQuantumGate\_Y1        | VQG\_Y1        |
++-----------------------------------+----------------+
+| VariationalQuantumGate\_Z1        | VQG\_Z1        |
++-----------------------------------+----------------+
+| VariationalQuantumGate\_U1        | VQG\_U1        |
++-----------------------------------+----------------+
+| VariationalQuantumGate\_U2        | VQG\_U2        |
++-----------------------------------+----------------+
+| VariationalQuantumGate\_U3        | VQG\_U3        |
++-----------------------------------+----------------+
+| VariationalQuantumGate\_U4        | VQG\_U4        |
++-----------------------------------+----------------+
+| VariationalQuantumGate\_RX        | VQG\_RX        |
++-----------------------------------+----------------+
+| VariationalQuantumGate\_RY        | VQG\_RY        |
++-----------------------------------+----------------+
+| VariationalQuantumGate\_RZ        | VQG\_RZ        |
++-----------------------------------+----------------+
+| VariationalQuantumGate\_CRX       | VQG\_CRX       |
++-----------------------------------+----------------+
+| VariationalQuantumGate\_CRY       | VQG\_CRY       |
++-----------------------------------+----------------+
+| VariationalQuantumGate\_CRZ       | VQG\_CRZ       |
++-----------------------------------+----------------+
+| VariationalQuantumGate\_CNOT      | VQG\_CNOT      |
++-----------------------------------+----------------+
+| VariationalQuantumGate\_CZ        | VQG\_CZ        |
++-----------------------------------+----------------+
+| VariationalQuantumGate\_SWAP      | VQG\_SWAP      |
++-----------------------------------+----------------+
+| VariationalQuantumGate\_iSWAP     | VQG\_iSWAP     |
++-----------------------------------+----------------+
+| VariationalQuantumGate\_SqiSWAP   | VQG\_SqiSWAP   |
++-----------------------------------+----------------+
+
+7.4.1 接口介绍
+~~~~~~~~~~~~~~
+
+\ **class** VariationalQuantumGate
+
+​ *VariationalQuantumGate()*
+
+​ 功能
+
+​ 构造函数。
+
+​ 参数
+
+​ 无
+
+​ *size\_t n\_var()*
+
+​ 功能
+
+​ 该可变量子逻辑门内部变量个数。
+
+​ 参数
+
+​ 无
+
+​ 返回值
+
+​ 变量个数。
+
+​ *std::vector<`var <#_CPPv43var>`__\ > &get\_vars()*
+
+​ 功能
+
+​ 获取该可变量子逻辑门内部变量。
+
+​ 参数
+
+​ 无
+
+​ 返回值
+
+​ 该可变量子逻辑门内部变量。
+
+​ *std::vector &get\_constants()*
+
+​ 功能
+
+​ 获取该可变量子逻辑门内部常量。
+
+​ 参数
+
+​ 无
+
+​ 返回值
+
+​ 该可变量子逻辑门内部常量。
+
+​ \*int var\_pos(\ `var <#_CPPv43var>`__\ \_var)\*
+
+​ 功能
+
+​ 获取变量在该可变量子逻辑门内部索引。
+
+​ 参数
+
+​ • \_var 变量
+
+​ 返回值
+
+​ 内部索引，如果不存在在返回-1。
+
+​ *virtual QGate feed()const = 0*
+
+​ 功能
+
+​ 实例化 QGate 。
+
+​ 参数
+
+​ 无
+
+​ 返回值
+
+​ 普通量子逻辑门。
+
+*virtual* QGate feed(std::map offset)const\*
+
+​ 功能
+
+​ 通过指定偏移来实例化 QGate 。
+
+​ 参数
+
+​ • offset 变量对应的偏移映射
+
+​ 返回值
+
+​ 普通量子逻辑门。
+
+下面将简要介绍各个可变量子逻辑门的构造方式
+
+\ **class** VariationalQuantumGate\_H
+
+​ *VariationalQuantumGate\_H(Qubit *\ q)
+
+​ 功能
+
+​ H门构造函数。
+
+​ 参数
+
+​ • q 目标比特
+
+\ **class** **VariationalQuantumGate\_RX**\ 
+
+​ VariationalQuantumGate\_RX(Qubit \*q, var\_var)
+
+​ 功能
+
+​ RX门构造函数。
+
+​ 参数
+
+​ • q 目标比特
+
+​ • \_var 参数变量
+
+​ VariationalQuantumGate\_RX(Qubit \*q, double angle)
+
+​ 功能
+
+​ RX门构造函数。
+
+​ 参数
+
+​ • q 目标比特
+
+​ • angle 参数
+
+\ **class**\ VariationalQuantumGate\_RY
+
+​ VariationalQuantumGate\_RY(Qubit \*q, var\_var)
+
+​ 功能
+
+​ RY门构造函数。
+
+​ 参数
+
+​ • q 目标比特
+
+​ • \_var 参数变量
+
+​ VariationalQuantumGate\_RY(Qubit \*q, double angle)
+
+​ 功能
+
+​ RY门构造函数。
+
+​ 参数
+
+​ • q 目标比特
+
+​ • angle 参数
+
+\ **class**\ VariationalQuantumGate\_RZ
+
+​ VariationalQuantumGate\_RZ(Qubit \*q, var\_var)
+
+​ 功能
+
+​ RZ门构造函数。
+
+​ 参数
+
+​ • q 目标比特
+
+​ • \_var 参数变量
+
+​ VariationalQuantumGate\_RZ(Qubit \*q, double angle)
+
+​ 功能
+
+​ RZ门构造函数。
+
+​ 参数
+
+​ • q 目标比特
+
+​ • angle 参数
+
+\ **class**\ VariationalQuantumGate\_CZ
+
+​ VariationalQuantumGate\_CZ(Qubit *q1, Qubit *\ q2)
+
+​ 功能
+
+​ CZ门构造函数。
+
+​ 参数
+
+​ • q1 控制比特
+
+​ • q2 目标比特
+
+\ **class**\ VariationalQuantumGate\_CNOT
+
+​ VariationalQuantumGate\_CNOT(Qubit *q1, Qubit *\ q2)
+
+​ 功能
+
+​ CNOT门构造函数。
+
+​ 参数
+
+​ • q1 控制比特
+
+​ • q2 目标比特
+
+可变量子逻辑门的使用方法和量子逻辑门的使用方法类似，这里就不再一一赘述，有问题可以查看量子逻辑门相关内容。
+
+7.4.2 动态修改参数方法
+~~~~~~~~~~~~~~~~~~~~~~
+
+若构造的VQC中含有变量参数，可以通过以下方法动态修改参数值，并生成对应的参数的普通量子逻辑门。
+
+（1）：setValue()，使用方法如下：
+
+    object.setValue(newValue);
+
+（2）："="运算符重新赋值，使用方法如下：
+
+    object = newValue;
+
+7.4.3 更新可变量子线路
+~~~~~~~~~~~~~~~~~~~~~~
+
+通过以下方法可以向可变量子线路中插入VQG或VQC
+
+（1）：insert()，使用方法如下：
+
+    object.insert(VQC);
+
+    // or object.insert(VQG);
+
+（2）："<<"运算符插入，使用方法如下：
+
+    object << VQC;
+
+    //or object << VQG;
+
+7.4.4 实例
+~~~~~~~~~~
+
+::
+
+    import pyqpanda as pq
+    import numpy as np
+
+    if __name__=="__main__":
+
+        machine = pq.init_quantum_machine(pq.CPU)
+        q = machine.qAlloc_many(2)
+
+        x = pq.var(1)
+        y = pq.var(2)
+
+        temp = np.matrix([5])
+        ss=pq.var(temp)
+
+
+        vqc = pq.VariationalQuantumCircuit()
+        vqc.insert(pq.VariationalQuantumGate_H(q[0]))
+        vqc.insert(pq.VariationalQuantumGate_RX(q[0], ss))
+        vqc.insert(pq.VariationalQuantumGate_RY(q[1], y))
+        vqc.insert(pq.VariationalQuantumGate_RZ(q[0], 0.12))
+        vqc.insert(pq.VariationalQuantumGate_CZ(q[0], q[1]))
+        vqc.insert(pq.VariationalQuantumGate_CNOT(q[0], q[1]))
+        vqc.insert(pq.VariationalQuantumGate_U1(q[0], x))
+        vqc.insert(pq.VariationalQuantumGate_U2(q[0], np.pi, x))
+        vqc.insert(pq.VariationalQuantumGate_U3(q[0], np.pi, x,  y))
+        vqc.insert(pq.VariationalQuantumGate_U4(q[0], np.pi, x,  y,ss))
+
+
+
+        circuit1 = vqc.feed()
+
+        prog = pq.QProg()
+        prog.insert(circuit1)
+
+        print(pq.convert_qprog_to_originir(prog, machine))
+
+        x.set_value([[3.]])
+        y.set_value([[4.]])
+
+        circuit2 = vqc.feed()
+        prog2 = pq.QProg()
+        prog2.insert(circuit2)
+        print(pq.convert_qprog_to_originir(prog2, machine))
+
+上述示例会得到以下结果：
+
+::
+
+    QINIT 2
+    CREG 0
+    H q[0]
+    RX q[0],(56)
+    RY q[1],(2)
+    RZ q[0],(0.12)
+    CZ q[0],q[1]
+    CNOT q[0],q[1]
+    U1 q[0],(1)
+    U2 q[0],(3.1415927,1)
+    U3 q[0],(3.1415927,1,2)
+    U4 q[0],(3.1415927,1,2,5)
+
+    QINIT 2
+    CREG 0
+    H q[0]
+    RX q[0],(56)
+    RY q[1],(4)
+    RZ q[0],(0.12)
+    CZ q[0],q[1]
+    CNOT q[0],q[1]
+    U1 q[0],(3)
+    U2 q[0],(3.1415927,3)
+    U3 q[0],(3.1415927,3,4)
+    U4 q[0],(3.1415927,3,4,5)
+
+**7.5 优化算法(梯度下降法)**
+----------------------------
+
+本章节将讲解VQNet中优化算法的使用，包括经典梯度下降算法和改进后的梯度下降算法，它们都是在求解机器学习算法的模型参数，即无约束优化问题时，最常采用的方法之一。
+我们在 pyQPanda 中实现了这些算法，VanillaGradientDescentOptimizer 、
+MomentumOptimizer 、 AdaGradOptimizer 、 RMSPropOptimizer 和
+AdamOptimizer，它们都继承自 Optimizer 。
+
+7.5.1接口介绍
+~~~~~~~~~~~~~
+
+我们通过调用梯度下降优化器的 minimize
+接口来生成一个优化器。常见的梯度下降优化器构造方式如下所示，
+
+::
+
+    VanillaGradientDescentOptimizer.minimize(
+        loss,  # 损失函数
+        0.01,  # 学习率
+        1.e-6) # 结束条件
+
+    MomentumOptimizer.minimize(
+        loss,  # 损失函数
+        0.01,  # 学习率
+        0.9)   # 动量系数
+
+    AdaGradOptimizer.minimize(
+        loss,  # 损失函数
+        0.01,  # 学习率
+        0.0,   # 累加量起始值
+        1.e-10)# 很小的数值以避免零分母
+
+    RMSOptimizer.minimize(
+        loss,  # 损失函数
+        0.01,  # 学习率
+        0.9,   # 历史或即将到来的梯度的贴现因子
+        1.e-10)# 很小的数值以避免零分母
+
+    AdamOptimizer.minimize(
+        loss,  # 损失函数
+        0.01,  # 学习率
+        0.9,   # 一阶动量衰减系数
+        0.999, # 二阶动量衰减系数
+        1.e-10)# 很小的数值以避免零分母
+
+7.5.2实例
+~~~~~~~~~
+
+示例代码主要演示对离散点用直线进行拟合，我们定义训练数据X和Y，这两个变量表示离散点的坐标。定义两个可微分的变量w和b，其中w表示斜率b表示y轴截距。定义变量Y下划线表示斜率w乘上变量x加上截距。
+
+接着我们定义损失函数loss。计算变量Y和变量Y下划线之间的均方值。
+
+我们调用梯度下降优化器的 minimize
+接口以损失函数，学习率和结束条件作为参数构造生成一个经典梯度下降优化器。
+
+我们通过优化器的 get\_variables 接口可以获得所有可微分的节点。
+
+我们定义迭代次数为1000。然后调用优化器的 run
+接口执行一次优化操作，其第二个参数表示当前的优化次数，目前只有
+AdamOptimizer 这个优化器使用到了这个参数，其它优化器我们直接给0值即可。
+
+我们可以通过优化器 get\_loss
+接口获得当前优化后的损失值。我们通过eval接口可以求得可微分变量的当前值。
+
+::
+
+    from pyqpanda import *
+    import numpy as np
+
+    x = np.array([3.3, 4.4, 5.5, 6.71, 6.93, 4.168, 9.779, 6.182, 7.59,
+                 2.167, 7.042, 10.791, 5.313, 7.997, 5.654, 9.27,3.1])
+    y = np.array([1.7, 2.76, 2.09, 3.19, 1.694, 1.573, 3.366, 2.596, 2.53,
+                 1.221, 2.827, 3.465, 1.65, 2.904, 2.42, 2.94,1.3])
+
+
+    X = var(x.reshape(len(x), 1))
+    Y = var(y.reshape(len(y), 1))
+
+    W = var(0, True)
+    B = var(0, True)
+
+    Y_ = W*X + B
+
+    loss = sum(poly(Y_ - Y, var(2))/len(x))
+
+    optimizer = VanillaGradientDescentOptimizer.minimize(loss, 0.01, 1.e-6)
+    leaves = optimizer.get_variables()
+
+    for i in range(1000):
+        optimizer.run(leaves, 0)
+        loss_value = optimizer.get_loss()
+        print("i: ", i, " loss: ", loss_value, " W: ", eval(W,True), " b: ", eval(B, True))
+
+.. figure:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/GradientExample.png
+   :alt: \_images/GradientExample.png
+
+   \_images/GradientExample.png
+我们将散列点和拟合的直线进行绘图
+
+::
+
+    import matplotlib.pyplot as plt
+
+    w2 = W.get_value()[0, 0]
+    b2 = B.get_value()[0, 0]
+
+    plt.plot(x, y, 'o', label = 'Training data')
+    plt.plot(x, w2*x + b2, 'r', label = 'Fitted line')
+    plt.legend()
+    plt.show()
+
+.. figure:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/GradientExamplePlot.png
+   :alt: \_images/GradientExamplePlot.png
+
+   \_images/GradientExamplePlot.png
+**7.6 综合示例**
+----------------
+
+7.6.1 QAOA
+~~~~~~~~~~
+
+QAOA 是众所周知的量子经典混合算法。
+对于n对象的MAX-CUT问题，需要n个量子位来对结果进行编码，其中测量结果（二进制串）表示问题的切割配置。
+
+我们通过 VQNet 可以有效地实现 MAX-CUT 问题的 QAOA 算法。
+VQNet中QAOA的流程图如下所示。
+
+.. figure:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/VQNetQAOAFlow.png
+   :alt: \_images/VQNetQAOAFlow.png
+
+   \_images/VQNetQAOAFlow.png
+我们给定一个MAX-CUT的问题如下
+
+.. figure:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/QAOA_7bit_Problem.png
+   :alt: *images/QAOA*\ 7bit\_Problem.png
+
+   *images/QAOA*\ 7bit\_Problem.png
+首先，我们输入 MAX-CUT 问题的图形信息，以用来构造相应的问题哈密顿量。
+
+::
+
+    roblem = {'Z0 Z4':0.73,'Z0 Z5':0.33,'Z0 Z6':0.5,'Z1 Z4':0.69,'Z1 Z5':0.36,
+           'Z2 Z5':0.88,'Z2 Z6':0.58,'Z3 Z5':0.67,'Z3 Z6':0.43}
+
+然后，使用哈密顿量和待优化的变量参数beta和gamma，构建 QAOA 的vqc。 QOP
+的输入参数是问题哈密顿量、VQC 、 一组量子比特和量子运行环境。QOP
+的输出是问题哈密顿量的期望。
+在这个问题中，损失函数是问题哈密顿量的期望，因此需要最小化 QOP 的输出。
+我们通过使用梯度下降优化器 MomentumOptimizer
+来优化vqc中的变量beta和gamma。
+
+::
+
+    from pyqpanda import *
+    import numpy as np
+
+    def oneCircuit(qlist, Hamiltonian, beta, gamma):
+        vqc=VariationalQuantumCircuit()
+        for i in range(len(Hamiltonian)):
+            tmp_vec=[]
+            item=Hamiltonian[i]
+            dict_p = item[0]
+            for iter in dict_p:
+                if 'Z'!= dict_p[iter]:
+                    pass
+                tmp_vec.append(qlist[iter])
+
+            coef = item[1]
+
+            if 2 != len(tmp_vec):
+                pass
+
+            vqc.insert(VariationalQuantumGate_CNOT(tmp_vec[0], tmp_vec[1]))
+            vqc.insert(VariationalQuantumGate_RZ(tmp_vec[1], 2*gamma*coef))
+            vqc.insert(VariationalQuantumGate_CNOT(tmp_vec[0], tmp_vec[1]))
+
+        for j in qlist:
+            vqc.insert(VariationalQuantumGate_RX(j,2.0*beta))
+        return vqc
+
+
+    if __name__=="__main__":
+        problem = {'Z0 Z4':0.73,'Z0 Z5':0.33,'Z0 Z6':0.5,'Z1 Z4':0.69,'Z1 Z5':0.36,
+               'Z2 Z5':0.88,'Z2 Z6':0.58,'Z3 Z5':0.67,'Z3 Z6':0.43}
+        Hp = PauliOperator(problem)
+        qubit_num = Hp.getMaxIndex()
+
+        machine=init_quantum_machine(QMachineType.CPU)
+        qlist = machine.qAlloc_many(qubit_num)
+
+        step = 4
+
+        beta = var(np.ones((step,1),dtype = 'float64'), True)
+        gamma = var(np.ones((step,1),dtype = 'float64'), True)
+
+        vqc=VariationalQuantumCircuit()
+
+        for i in qlist:
+            vqc.insert(VariationalQuantumGate_H(i))
+
+        for i in range(step):
+            vqc.insert(oneCircuit(qlist,Hp.toHamiltonian(1),beta[i], gamma[i]))
+
+
+        loss = qop(vqc, Hp, machine, qlist)
+        optimizer = MomentumOptimizer.minimize(loss, 0.02, 0.9)
+
+        leaves = optimizer.get_variables()
+
+        for i in range(100):
+            optimizer.run(leaves, 0)
+            loss_value = optimizer.get_loss()
+            print("i: ", i, " loss:",loss_value )
+
+        # 验证结果
+        prog = QProg()
+        qcir = vqc.feed()
+        prog.insert(qcir)
+        directly_run(prog)
+
+        result = quick_measure(qlist, 100)
+        print(result)
+
+.. figure:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/QAOA_7bit_Optimizer_Example.png
+   :alt: *images/QAOA*\ 7bit\_Optimizer\_Example.png
+
+   *images/QAOA*\ 7bit\_Optimizer\_Example.png
+我们将测量的结果绘制出柱状图，可以看到'0001111'和'1110000'这两个比特串测量得到的概率最大，也正是我们这个问题的解。
+
+.. figure:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/QAOA_result.png
+   :alt: *images/QAOA*\ result.png
+
+   *images/QAOA*\ result.png

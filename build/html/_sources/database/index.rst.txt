@@ -1,0 +1,2079 @@
+.. pyQPanda documentation master file, created by
+   sphinx-quickstart on Sat Oct  9 14:45:08 2021.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+
+**2 深入学习**
+==============
+
+2.1 **量子逻辑门**
+------------------
+
+经典计算中，最基本的单元是比特，而最基本的控制模式是逻辑门。我们可以通过逻辑门的组合来达到我们控制电路的目的。类似地，处理量子比特的方式就是量子逻辑门。使用量子逻辑门，我们有意识的使量子态发生演化。所以，量子逻辑门是构成量子算法的基础。
+
+量子逻辑门由酉矩阵表示。最常见的量子门在一个或两个量子位的空间上工作，就像常见的经典逻辑门在一个或两个位上操作一样。
+
+2.1.1 常见量子逻辑门矩阵形式
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+2.1.1.1单比特量子逻辑门
+^^^^^^^^^^^^^^^^^^^^^^^
+
++----------------------------------------------------------------------------------+------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ` <https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/QGate_I.png>`__    | I          | :math:`\left[\begin{array}{ll}1 & 0 \\ 0 & 1\end{array}\right]`                                                                                                                                                |
++==================================================================================+============+================================================================================================================================================================================================================+
+| ` <https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/QGate_H.png>`__    | Hadamard   | :math:`\left[\begin{array}{cc}1 / \sqrt{2} & 1 / \sqrt{2} \\ 1 / \sqrt{2} & -1 / \sqrt{2}\end{array}\right]`                                                                                                   |
++----------------------------------------------------------------------------------+------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ` <https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/QGate_T.png>`__    | T          | :math:`\left[\begin{array}{cc}1 & 0 \\ 0 & \exp (i \pi / 4)\end{array}\right]`                                                                                                                                 |
++----------------------------------------------------------------------------------+------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ` <https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/QGate_S.png>`__    | S          | :math:`\left[\begin{array}{cc}1 & 0 \\ 0 & 1 i\end{array}\right]`                                                                                                                                              |
++----------------------------------------------------------------------------------+------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ` <https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/QGate_X.png>`__    | Pauli-X    | :math:`\left[\begin{array}{ll}0 & 1 \\ 1 & 0\end{array}\right]`                                                                                                                                                |
++----------------------------------------------------------------------------------+------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ` <https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/QGate_Y.png>`__    | Pauli-Y    | :math:`\left[\begin{array}{cc}0 & -1 i \\ 1 i & 0\end{array}\right]`                                                                                                                                           |
++----------------------------------------------------------------------------------+------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ` <https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/QGate_Z.png>`__    | Pauli-Z    | :math:`\left[\begin{array}{cc}1 & 0 \\ 0 & -1\end{array}\right]`                                                                                                                                               |
++----------------------------------------------------------------------------------+------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ` <https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/QGate_X1.png>`__   | X1         | :math:`\left[\begin{array}{cc}1 / \sqrt{2} & -1 i / \sqrt{2} \\ -1 i / \sqrt{2} & 1 / \sqrt{2}\end{array}\right]`                                                                                              |
++----------------------------------------------------------------------------------+------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ` <https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/QGate_Y1.png>`__   | Y1         | :math:`\left[\begin{array}{cc}1 / \sqrt{2} & -1 / \sqrt{2} \\ 1 / \sqrt{2} & 1 / \sqrt{2}\end{array}\right]`                                                                                                   |
++----------------------------------------------------------------------------------+------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ` <https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/QGate_Z1.png>`__   | Z1         | :math:`\left[\begin{array}{cc}\exp (-i \pi / 4) & 0 \\ 0 & \exp (i \pi / 4)\end{array}\right]`                                                                                                                 |
++----------------------------------------------------------------------------------+------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ` <https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/QGate_RX.png>`__   | RX         | :math:`\left[\begin{array}{cc}\cos (\theta / 2) & -1 i \times \sin (\theta / 2) \\ -1 i \times \sin (\theta / 2) & \cos (\theta / 2)\end{array}\right]`                                                        |
++----------------------------------------------------------------------------------+------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ` <https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/QGate_RY.png>`__   | RY         | :math:`\left[\begin{array}{cc}\cos (\theta / 2) & -\sin (\theta / 2) \\ \sin (\theta / 2) & \cos (\theta / 2)\end{array}\right]`                                                                               |
++----------------------------------------------------------------------------------+------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ` <https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/QGate_RZ.png>`__   | RZ         | :math:`\left[\begin{array}{cc}\exp (-i \theta / 2) & 0 \\ 0 & \exp (i \theta / 2)\end{array}\right]`                                                                                                           |
++----------------------------------------------------------------------------------+------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ` <https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/QGate_U1.png>`__   | U1         | :math:`\left[\begin{array}{cc}1 & 0 \\ 0 & \exp (i \theta)\end{array}\right]`                                                                                                                                  |
++----------------------------------------------------------------------------------+------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ` <https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/QGate_U2.png>`__   | U2         | :math:`\left[\begin{array}{cc}1 / \sqrt{2} & -\exp (i \lambda) / \sqrt{2} \\ \exp (i \phi) / \sqrt{2} & \exp (i \lambda+i \phi) / \sqrt{2}\end{array}\right]`                                                  |
++----------------------------------------------------------------------------------+------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ` <https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/QGate_U3.png>`__   | U3         | :math:`\left[\begin{array}{cc}\cos (\theta / 2) & -\exp (i \lambda) \times \sin (\theta / 2) \\ \exp (i \phi) \times \sin (\theta / 2) & \exp (i \lambda+i \phi) \times \cos (\theta / 2)\end{array}\right]`   |
++----------------------------------------------------------------------------------+------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ` <https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/QGate_U4.png>`__   | U4         | :math:`\left[\begin{array}{ll}u 0 & u 1 \\ u 2 & u 3\end{array}\right]`                                                                                                                                        |
++----------------------------------------------------------------------------------+------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+2.1.1.2 多比特量子逻辑门
+^^^^^^^^^^^^^^^^^^^^^^^^
+
++-------------------------------------------------------------------------------------+------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+|                                                                                     | CNOT       | :math:`\left[\begin{array}{llll}1 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 0 & 1 \\ 0 & 0 & 1 & 0\end{array}\right]`                                                                                                                                                                                                           |
++=====================================================================================+============+===============================================================================================================================================================================================================================================================================================================================+
+| ` <https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/QGate_CR.png>`__      | CR         | :math:`\left[\begin{array}{cccc}1 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 1 & 0 \\ 0 & 0 & 0 & \exp (i \theta)\end{array}\right]`                                                                                                                                                                                             |
++-------------------------------------------------------------------------------------+------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ` <https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/QGate_iSWAP.png>`__   | iSWAP      | :math:`\left[\begin{array}{cccc}1 & 0 & 0 & 0 \\ 0 & \cos (\theta) & -i \times \sin (\theta) & 0 \\ 0 & -i \times \sin (\theta) & \cos (\theta) & 0 \\ 0 & 0 & 0 & 1\end{array}\right]`                                                                                                                                       |
++-------------------------------------------------------------------------------------+------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+|                                                                                     | SWAP       | :math:`\left[\begin{array}{llll}1 & 0 & 0 & 0 \\ 0 & 0 & 1 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 0 & 1\end{array}\right]`                                                                                                                                                                                                           |
++-------------------------------------------------------------------------------------+------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ` <https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/QGate_CZ.png>`__      | CZ         | :math:`\left[\begin{array}{cccc}1 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 1 & 0 \\ 0 & 0 & 0 & -1\end{array}\right]`                                                                                                                                                                                                          |
++-------------------------------------------------------------------------------------+------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ` <https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/QGate_CU.png>`__      | CU         | :math:`\left[\begin{array}{cccc}1 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & u 0 & u 1 \\ 0 & 0 & u 2 & u 3\end{array}\right]`                                                                                                                                                                                                   |
++-------------------------------------------------------------------------------------+------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ` <https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/QGate_Toff.png>`__    | Hadamard   | :math:`\left[\begin{array}{llllllll}1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\ 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 \\ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 \\ 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0\end{array}\right]`   |
++-------------------------------------------------------------------------------------+------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+QPanda2把所有的量子逻辑门封装为API向用户提供使用，并可获得QGate类型的返回值。比如，您想要使用Hadamard门，就可以通过如下方式获得：
+
+::
+
+    from pyqpanda import
+    import numpy as np
+    init(QMachineType.CPU)
+    qubits = qAlloc_many(4)
+    h = H(qubits[0])
+
+其中参数为目标比特，返回值为量子逻辑门。
+
+pyqpanda中支持的不含角度的单门有： I 、 H 、 T 、 S 、 X 、 Y 、 Z 、 X1
+、 Y1 、 Z1
+
+qubit如何申请会在量子虚拟机部分介绍。
+
+单门带有一个旋转角的逻辑门门，例如RX门：
+
+::
+
+    rx = RX(qubits[0]，np.pi/3)
+
+第一个参数为目标比特，第二个参数为旋转角度。
+
+pyqpanda中支持的单门带有一个旋转角度的逻辑门有： RX 、 RY 、 RZ 、U1、 P
+
+pyqpanda中还支持 U2、U3、U4 门，其用法如下：
+
+::
+
+    # U2(qubit, phi, lambda) 有两个角度
+    u2 = U2(qubits[0]，np.pi, np.pi/2)
+
+    # U3(qubit, theta, phi, lambda) 有三个角度
+    u3 = U3(qubits[0]，np.pi, np.pi/2, np.pi/4)
+
+    # U4(qubit, alpha, beta, gamma, delta) 有四个角度
+    u4 = U4(qubits[0]，np.pi, np.pi/2, np.pi/4, np.pi/2)
+
+两比特量子逻辑门的使用和单比特量子逻辑门的用法相似，只不过是输入的参数不同，例如CNOT门：
+
+::
+
+    cnot = CNOT(qubits[0]，qubits[1])
+
+第一个参数为控制比特，第二个参数为目标比特。（注：两个比特不能相同）
+
+pyqpanda中支持的双门不含角度的逻辑门有：CNOT、CZ
+、SWAP、iSWAp、SqiSWAP。
+
+两比特量子逻辑门的使用和单比特量子逻辑门的用法相似，只不过是输入的参数不同，举个使用CNOT的例子：
+
+::
+
+    cnot = CNOT(control_qubit, target_qubit);
+
+CNOT门接收两个参数，第一个是控制比特，第二个是目标比特。
+
+pyqpanda中支持的双门含旋转角度的逻辑门有：CR、CU 、CP
+
+双门带有旋转角度的门，例如CR门：
+
+::
+
+    # CU(control, target, alpha, beta, gamma, delta) 有四个角度
+    cu = CU(qubits[0]，qubits[1]，np.pi,np.pi/2,np.pi/3,np.pi/4)
+
+第一个参数为控制比特, 第二个参数为目标比特，第三个参数为旋转角度。
+
+支持CU门，使用方法如下：
+
+::
+
+    # CU(control, target, alpha, beta, gamma, delta) 有四个角度
+    cu = CU(qubits[0]，qubits[1]，np.pi,np.pi/2,np.pi/3,np.pi/4)
+
+获得三量子逻辑门 Toffoli 的方式：
+
+::
+
+    toffoli = Toffoli(qubits[0], qubits[1], qubits[2])
+
+三比特量子逻辑门Toffoli实际上是CCNOT门，前两个参数是控制比特，最后一个参数是目标比特。
+
+::
+
+    toffoli = Toffoli(qubits[0], qubits[1], qubits[2])
+
+pyqpanda还支持在量子逻辑门中添加量子比特数组操作，即将该数组中的所有量子比特赋予同一种逻辑门运算，举个使用单门H的例子：
+
+::
+
+    # 这里返回的是一个量子线路
+    circuit = H(Qvec);
+
+这里的Qvec即为存放量子比特的数组。在对多门进行数组操作时，则是传入对应的多个数组，并按照数组下标顺序进行逻辑门运算。
+
+2.1.2 接口介绍
+~~~~~~~~~~~~~~
+
+在本章的开头介绍过，所有的量子逻辑门都是酉矩阵，那么您也可以对量子逻辑门做转置共轭操作，获得一个量子逻辑门
+dagger 之后的量子逻辑门可以用下面的方法：
+
+::
+
+    rx_dagger = RX(qubits[0], np.pi).dagger()
+
+或：
+
+::
+
+    rx_dagger = RX(qubits[0], np.pi)
+    rx_dagger.set_dagger(true)
+
+也可以为量子逻辑门添加控制比特,获得一个量子逻辑门 control
+之后的量子逻辑门可以用下面的方法：
+
+::
+
+    qvec = [qubits[0], qubits[1]]
+    rx_control = RX(qubits[2], np.pi).control(qvec)或：
+
+::
+
+    qvec = [qubits[0], qubits[1]]
+    rx_control = RX(qubits[2], np.pi)
+    rx_control.set_control(qvec)
+
+pyqpanda 还封装了一些比较方便的接口，会简化一些量子逻辑门的操作。
+
+::
+
+    cir = apply_QGate(qubits, H)
+
+qubits的每个量子比特都添加H门。
+
+2.1.3 实例
+~~~~~~~~~~
+
+以下实例主要是向您展现QGate类型接口的使用方式。
+
+::
+
+    from pyqpanda import *
+
+    if __name__ == "__main__":
+       init(QMachineType.CPU)
+       qubits = qAlloc_many(3)
+       control_qubits = [qubits[0], qubits[1]]
+       prog = create_empty_qprog()
+
+       # 构建量子程序
+       prog  << H(qubits) \
+             << H(qubits[0]).dagger() \
+             << X(qubits[2]).control(control_qubits)
+
+       # 对量子程序进行概率测量
+       result = prob_run_dict(prog, qubits, -1)
+
+       # 打印测量结果
+       print(result)
+       finalize()
+
+计算结果如下：
+
+::
+
+    {'000': 0.24999999999999295, '001': 0.0, '010': 0.24999999999999295, '011': 0.0, '100': 0.24999999999999295, '101': 0.0, '110': 0.24999999999999295, '111': 0.0}
+
+**2.2 量子线路**
+----------------
+
+量子线路，也称量子逻辑电路是最常用的通用量子计算模型，表示在抽象概念下，对于量子比特进行操作的线路。组成包括了量子比特、线路（时间线），以及各种逻辑门。最后常需要量子测量将结果读取出来。
+
+不同于传统电路是用金属线所连接以传递电压讯号或电流讯号，在量子线路中，线路是由时间所连接，亦即量子比特的状态随着时间自然演化，过程中是按照哈密顿运算符的指示，一直到遇上逻辑门而被操作。
+
+由于组成量子线路的每一个量子逻辑门都是一个 酉算子
+，所以整个量子线路整体也是一个大的酉算子。
+
+2.2.1 量子算法线路图
+~~~~~~~~~~~~~~~~~~~~
+
+在目前的量子计算理论研究中，各种量子算法常用量子线路表示，比如下方列出的量子算法中的
+HHL算法 量子线路图。
+
+.. figure:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/HHL_Alg.png
+   :alt: *images/HHL*\ Alg.png
+
+   *images/HHL*\ Alg.png
+2.2.2 接口介绍
+~~~~~~~~~~~~~~
+
+在QPanda2中，QCircuit类是一个仅装载量子逻辑门的容器类型，它也是QNode中的一种，初始化一个QCircuit对象有以下两种：
+
+::
+
+    cir = QCircuit()
+
+或：
+
+::
+
+    cir = create_empty_circuit()
+
+你可以通过如下方式向QCircuit尾部填充节点，在这里pyqpanda重载了 <<
+运算符作为插入量子线路的方法。
+
+::
+
+    cir << node
+
+node的类型可以为QGate或QCircuit。
+
+我们还可以获得QCircuit的转置共轭之后的量子线路，使用方式为：
+
+::
+
+    cir_dagger = cir.dagger()
+
+如果想复制当前的量子线路，并给复制的量子线路添加控制比特，可以使用下面的方式：
+
+::
+
+    qvec = [qubits[0], qubits[1]]
+    cir_control = cir.control(qvec) 
+
+*注解：*
+
+1. 向QCircuit中插入QPorg，QIf，Measure中不会报错，但是运行过程中可能会产生预料之外的错误；
+
+2. 一个构建好的QCircuit不能直接参与量子计算与模拟，需要进一步构建成QProg类型。
+
+2.2.3 实例
+~~~~~~~~~~
+
+::
+
+    from pyqpanda import *
+
+    if __name__ == "__main__":
+
+        init(QMachineType.CPU)
+        qubits = qAlloc_many(4)
+        cbits = cAlloc_many(4)
+
+        # 构建量子程序
+        prog = QProg()
+        circuit = create_empty_circuit()
+
+        circuit << H(qubits[0]) \
+                << CNOT(qubits[0], qubits[1]) \
+                << CNOT(qubits[1], qubits[2]) \
+                << CNOT(qubits[2], qubits[3])
+
+        prog << circuit << Measure(qubits[0], cbits[0])
+
+        # 量子程序运行1000次，并返回测量结果
+        result = run_with_configuration(prog, cbits, 1000)
+
+        # 打印量子态在量子程序多次运行结果中出现的次数
+        print(result)
+        finalize()
+
+运行结果：
+
+::
+
+    {'0000': 486, '0001': 514}
+
+**2.3 QWhile**
+--------------
+
+量子程序循环控制操作，输入参数为条件判断表达式，功能是执行while循环操作。
+
+2.3.1 接口介绍
+~~~~~~~~~~~~~~
+
+在QPanda2中，QWhileProg类用于表示执行量子程序while循环操作，它也是QNode中的一种，初始化一个QWhileProg对象有以下两种：
+
+::
+
+    qwile = QWhileProg(ClassicalCondition, QNode)
+
+或
+
+::
+
+    qwile = create_while_prog(ClassicalCondition, QNode)
+
+上述函数需要提供两个参数，即ClassicalCondition量子表达式与QNode节点可以传入的QNode类型有：QProg、QCircuit、QGate、QWhileProg、QIfProg、QMeasure。
+
+2.3.2 实例
+~~~~~~~~~~
+
+::
+
+    from pyqpanda import *
+
+    if __name__ == "__main__":
+
+        init(QMachineType.CPU)
+        qubits = qAlloc_many(3)
+        cbits = cAlloc_many(3)
+        cbits[0].set_val(0)
+        cbits[1].set_val(1)
+
+        prog = QProg()
+        prog_while = QProg()
+
+        # 构建QWhile的循环分支
+        prog_while << H(qubits[0]) << H(qubits[1])<< H(qubits[2])\
+                << assign(cbits[0], cbits[0] + 1) << Measure(qubits[1], cbits[1])
+
+        # 构建QWhile
+        qwhile = create_while_prog(cbits[1], prog_while)
+
+        # QWhile插入到量子程序中
+        prog << qwhile
+
+        # 运行，并打印测量结果
+        result = directly_run(prog)
+        print(result)
+        print(cbits[0].get_val())
+        finalize()
+
+运行结果：
+
+::
+
+    2
+    {'c1': False}
+
+**2.4 QIf**
+-----------
+
+QIf表示量子程序条件判断操作，输入参数为条件判断表达式，功能是执行条件判断。
+
+2.4.1 接口介绍
+~~~~~~~~~~~~~~
+
+在QPanda2中，QIfProg类用于表示执行量子程序条件判断操作，它也是QNode中的一种，初始化一个QIfProg对象有以下两种：
+
+::
+
+    qif = QIfProg(ClassicalCondition, QNode)
+    qif = QIfProg(ClassicalCondition, QNode, QNode)
+
+或
+
+::
+
+    qif = create_if_prog(ClassicalCondition, QNode)
+    qif = create_if_prog(ClassicalCondition, QNode, QNode)
+
+上述函数需要提供两种类型参数，即ClassicalCondition量子表达式与QNode节点，
+当传入1个QNode参数时，QNode表示正确分支节点，当传入2个QNode参数时，第一个表示正确分支节点，第二个表示错误分支节点。
+可以传入的QNode类型有：
+QProg、QCircuit、QGate、QWhileProg、QIfProg、QMeasure。
+
+2.4.2 实例
+~~~~~~~~~~
+
+::
+
+    from pyqpanda import *
+
+    if __name__ == "__main__":
+
+        init(QMachineType.CPU)
+        qubits = qAlloc_many(3)
+        cbits = cAlloc_many(3)
+        cbits[0].set_val(0)
+        cbits[1].set_val(3)
+
+        prog = QProg()
+        branch_true = QProg()
+        branch_false = QProg()
+
+        # 构建QIf正确分支以及错误分支
+        branch_true << H(qubits[0])<< H(qubits[1]) << H(qubits[2])
+        branch_false << H(qubits[0]) << CNOT(qubits[0], qubits[1]) << CNOT(qubits[1], qubits[2])
+
+        # 构建QIf
+        qif = create_if_prog(cbits[0] > cbits[1], branch_true, branch_false)
+
+        # QIf插入到量子程序中
+        prog << qif
+
+        # 概率测量，并返回目标量子比特的概率测量结果，下标为十进制
+        result = prob_run_tuple_list(prog, qubits, -1)
+
+        # 打印概率测量结果
+        print(result)
+        finalize()
+
+运行结果：
+
+::
+
+    [(0, 0.4999999999999999), (7, 0.4999999999999999), (1, 0.0), (2, 0.0), (3, 0.0), (4, 0.0), (5, 0.0), (6, 0.0)]
+
+**2.5 量子程序**
+----------------
+
+量子程序设计用于量子程序的编写与构造，一般地，
+可以理解为一个操作序列。由于量子算法中也会包含经典计算，因而业界设想，最近将来出现的量子计算机是混合结构的，它包含两大部分一部分是经典计算机，负责执行经典计算与控制；另一部分是量子设备，负责执行量子计算。QPanda-2将量子程序的编程过程视作经典程序运行的一部分，在整个外围的宿主机程序中，一定包含创建量子程序的部分。
+
+2.5.1 接口介绍
+~~~~~~~~~~~~~~
+
+在QPanda2中，QProg是量子编程的一个容器类，是一个量子程序的最高单位。它也是QNode中的一种，初始化一个QProg对象有以下两种：
+
+::
+
+    prog = QProg()
+
+或
+
+::
+
+    prog = create_empty_qprog()
+
+还可以由已有的QNode节点来构建量子程序，如：
+
+::
+
+    qubit = qAlloc()
+    gate = H(qubit)
+    prog = QProg(gate)
+
+可以用类似的方式构建量子程序的有QCircuit、QGate、QWhileProg、QIfProg、ClassicalCondition、QMeasure。
+
+你可以通过如下方式向QProg尾部填充节点, 在这里pyqpanda重载了 <<
+运算符作为插入量子线路的方法。
+
+::
+
+    prog << node
+
+QNode的类型有QGate，QPorg，QIf，Measure等等，QProg支持插入所有类型的QNode。
+
+2.5.2 实例
+~~~~~~~~~~
+
+::
+
+    from pyqpanda import *
+
+    if __name__ == "__main__":
+
+        init(QMachineType.CPU)
+        qubits = qAlloc_many(4)
+        cbits = cAlloc_many(4)
+        prog = QProg()
+
+        # 构建量子程序
+        prog << H(qubits[0]) \
+             << X(qubits[1]) \
+             << iSWAP(qubits[0], qubits[1]) \
+             << CNOT(qubits[1], qubits[2]) \
+             << H(qubits[3]) \
+             << measure_all(qubits, cbits)
+
+        # 量子程序运行1000次，并返回测量结果
+        result = run_with_configuration(prog, cbits, 1000)
+
+        # 打印量子态在量子程序多次运行结果中出现的次数
+        print(result)
+        finalize()
+
+运行结果：
+
+::
+
+    {'1000': 272, '1001': 261, '1110': 220, '1111': 247}
+
+**2.6 量子虚拟机**
+------------------
+
+在真正的量子计算机没有成型之前，需要使用量子虚拟机承担量子算法、量子应用的验证的问题，QPanda2现在支持全振幅量子虚拟机、单振幅量子虚拟机、部分振幅量子虚拟机以及含噪声量子虚拟机。
+
+2.6.1 全振幅量子虚拟机
+~~~~~~~~~~~~~~~~~~~~~~
+
+全振幅量子虚拟机一次可以模拟计算出量子态的所有振幅，计算方式支持CPU、单线程计算和GPU，可以在初始化时配置，使用方式是完全一样的，只是其计算效率不同.
+
+2.6.1.1 接口介绍
+^^^^^^^^^^^^^^^^
+
+全振幅量子虚拟机类型：
+
+::
+
+    class QMachineType(__pybind11_builtins.pybind11_object):
+    """
+        Members:
+
+        CPU
+
+        GPU
+
+        CPU_SINGLE_THREAD
+
+        NOISE
+    """
+
+QPanda2中在构造量子虚拟机时有以下几种方式：
+
+::
+
+    init(QMachineType.CPU)  # 使用init,不会返回qvm，会在代码中生成一个全局的qvm
+    auto qvm = init_quantum_machine(QMachineType.CPU) # 通过接口得到quantum machine对象
+    qvm = CPUQVM() # 新建一个quantum machine对象
+
+*注解：*
+
+init和 init\_quantum\_machine
+这两个函数不是线程安全的，不适用于多线程编程，而且其最大的量子比特个数和经典寄存器个数均为默认值25。
+
+设置好配置之后要初始化量子虚拟机：
+
+::
+
+    qvm.init_qvm()
+
+*注解：*
+
+调用 init 和 init\_quantum\_machine 接口， 就不需要初始化了。
+
+下面我们就需要去申请量子比特和经典寄存器。
+
+设置最大量子比特个数
+
+::
+
+    # 设置最大量子比特个数和最大经典寄存器个数
+    qvm.set_configure(30, 30)
+
+*注解：*
+
+若不设置则默认最大比特为29。
+
+例如我们申请4个量子比特：
+
+::
+
+    qubits = qvm.qAlloc_many(4)
+
+申请一个量子比特时也可以用这个接口：
+
+::
+
+    qubit = qvm.qAlloc()
+
+申请经典寄存器也有类似于申请量子比特的接口，其使用方法和申请量子比特的方法一样，如申请4个经典寄存器的方法：
+
+::
+
+    cbits = qvm.cAlloc_many(4)
+
+申请一个经典寄存器时也可以用这个接口：
+
+::
+
+    cbit = qvm.cAlloc()
+
+在一个量子虚拟机中，申请了几次量子比特或经典寄存器，我们想知道一共申请了多少个量子比特或经典寄存器可以用下面的方法：
+
+::
+
+    num_qubit = qvm.get_allocate_qubit_num() # 申请量子比特的个数
+    num_cbit = qvm.get_allocate_cmem_num() # 申请经典寄存器的个数
+
+我们该如何使用量子虚拟机来执行量子程序呢？ 可以用下面的方法：
+
+::
+
+    prog = QProg()
+    prog << H(qubits[0]) << CNOT(qubits[0], qubits[1]) << Measure(qubits[0], cbits[0])
+
+    result = qvm.directly_run(prog) # 执行量子程序
+
+如果想多次运行一个量子程序，并得到每次量子程序的结果，除了循环调用
+directly\_run 方法外， 我们还提供了一个接口 run\_with\_configuration
+，该接口有两种重载方法，具体方法如下：
+
+::
+
+    result = qvm.run_with_configuration(prog, cbits, shots)
+
+一种方法中 prog 为量子程序， cbits 为 ClassicalCondition list， shots
+是一个整形数据，为量子程序运行次数。
+
+::
+
+    result = qvm.run_with_configuration(prog, cbits, config)
+
+另一种方法中 prog 为量子程序， cbits 为 ClassicalCondition list, config
+是一个字典类型的数据，内容如下：
+
+::
+
+    config = {'shots': 1000}
+
+如果想得到量子程序运行之后各个量子态的振幅值，可以调用 get\_qstate
+函数获得：
+
+::
+
+    stat = qvm.get_qstate()
+
+量子虚拟机中测量和概率使用方法与\ `量子测量 <#_2.8量子测量>`__\ 和\ `概率测量 <#_2.9概率测量>`__\ 中介绍的相同，在这里就不多做赘述。
+
+2.6.1.2 实例1
+^^^^^^^^^^^^^
+
+::
+
+    from pyqpanda import *
+
+    if __name__ == "__main__":
+        qvm = CPUQVM()
+        qvm.init_qvm()
+
+        qvm.set_configure(29, 29)
+        qubits = qvm.qAlloc_many(4)
+        cbits = qvm.cAlloc_many(4)
+
+        # 构建量子程序
+        prog = QProg()
+        prog << H(qubits[0]) << CNOT(qubits[0], qubits[1]) << Measure(qubits[0], cbits[0])
+
+        # 量子程序运行1000次，并返回测量结果
+        result = qvm.run_with_configuration(prog, cbits, 1000)
+
+        # 打印量子态在量子程序多次运行结果中出现的次数
+        print(result)
+        qvm.finalize()
+
+运行结果：
+
+::
+
+    {'0000': 481, '1000': 519}
+
+*注解：*
+
+这个量子程序的运行结果是不确定的，但其 0000 和 0001
+对应的值都应该在500左右。
+
+为了方便使用，pyqpanda还封装了一些面向过程的接口，接口名称和使用方法与上述的基本相同。我们将上面的例子修改为面向过程的接口如下：
+
+2.6.1.3 实例2
+^^^^^^^^^^^^^
+
+::
+
+    from pyqpanda import *
+
+    if __name__ == "__main__":
+        init(QMachineType.CPU)
+        qubits = qAlloc_many(4)
+        cbits = cAlloc_many(4)
+
+        # 构建量子程序
+        prog = QProg()
+        prog << H(qubits[0]) << CNOT(qubits[0], qubits[1]) << Measure(qubits[0], cbits[0])
+
+        # 量子程序运行1000次，并返回测量结果
+        result = run_with_configuration(prog, cbits, 1000)
+
+        # 打印量子态在量子程序多次运行结果中出现的次数
+        print(result)
+        finalize()
+
+运行结果：
+
+::
+
+    {'0000': 484, '1000': 516}
+
+2.6.2 含噪声量子虚拟机
+~~~~~~~~~~~~~~~~~~~~~~
+
+在真实的量子计算机中，受制于量子比特自身的物理特性，常常存在不可避免的计算误差。为了能在量子虚拟机中更好的模拟这种误差，在\ `量子虚拟机 <#_2.6量子虚拟机>`__\ 的基础上，
+QPanda2带来了含噪声量子虚拟机。含噪声量子虚拟机的模拟更贴近真实的量子计算机，我们可以自定义支持的逻辑门类型，自定义逻辑门支持的噪声模型，
+通过这些自定义形式，我们使用QPanda2开发量子程序的现实应用程度将更高。
+
+2.6.2.1 噪声模型介绍
+^^^^^^^^^^^^^^^^^^^^
+
+(1) DAMPING\_KRAUS\_OPERATOR
+
+DAMPING\_KRAUS\_OPERATOR是量子比特的弛豫过程噪声模型，它的kraus算符和表示方法如下所示：
+
+:math:`K_{1}=\left[\begin{array}{cc}1 & 0 \\ 0 & \sqrt{1-p}\end{array}\right], K_{2}=\left[\begin{array}{cc}0 & \sqrt{p} \\ 0 & 0\end{array}\right]`
+
+需要一个噪声参数。
+
+(2) DEPHASING\_KRAUS\_OPERATOR
+
+DEPHASING\_KRAUS\_OPERATOR是量子比特的退相位过程噪声模型，它的kraus算符和表示方法如下所示：
+
+:math:`K_{1}=\left[\begin{array}{cc}\sqrt{1-p} & 0 \\ 0 & \sqrt{1-p}\end{array}\right], K_{2}=\left[\begin{array}{cc}\sqrt{p} & 0 \\ 0 & -\sqrt{p}\end{array}\right]`
+
+需要一个噪声参数。
+
+(3) DECOHERENCE\_KRAUS\_OPERATOR
+
+DECOHERENCE\_KRAUS\_OPERATOR是退相干噪声模型，为上述两种噪声模型的综合，他们的关系如下所示：
+
+:math:`P_{\text {damping }}=1-e^{-\frac{t_{\text {gate }}}{T_{1}}}, P_{\text {dephasing }}=0.5 \times\left(1-e^{-\left(\frac{t_{\text {gate }}}{T_{2}}-\frac{\text { tgate }}{2 T_{1}}\right)}\right)`
+:math:`K_{1}=K_{1 \text { damping }} K_{1 \text { dephasing }} K_{2}=K_{1 \text { damping }} K_{2 \text { dephasing }}`
+:math:`K_{3}=K_{2 \text { dampin }} K_{1 \text { dephasing }} K_{4}=K_{2 \text { dampin }} K_{2 \text { dephasing }}`
+
+需要三个噪声参数。
+
+(4) DEPOLARIZING\_KRAUS\_OPERATOR
+
+DEPOLARIZING\_KRAUS\_OPERATOR去极化噪声模型，即单量子比特有一定的概率被完全混合态I/2代替,
+它的kraus算符和表示方法如下所示：
+
+:math:`K_{1}=\sqrt{1-3 p / 4} \times I, K_{2}=\sqrt{p} / 2 \times X`
+:math:`K_{3}=\sqrt{p} / 2 \times Y, K_{4}=\sqrt{p} / 2 \times Z`
+
+其中I、X、Y、Z分别代表其量子逻辑门对应的矩阵
+
+需要一个参数
+
+(5) BITFLIP\_KRAUS\_OPERATOR
+
+BITFLIP\_KRAUS\_OPERATOR是比特反转噪声模型，它的kraus算符和表示方法如下所示：
+
+:math:`K_{1}=\left[\begin{array}{cc}\sqrt{1-p} & 0 \\ 0 & \sqrt{1-p}\end{array}\right], K_{2}=\left[\begin{array}{cc}0 & \sqrt{p} \\ \sqrt{p} & 0\end{array}\right]`
+
+需要一个噪声参数。
+
+(6) BIT\_PHASE\_FLIP\_OPRATOR
+
+BIT\_PHASE\_FLIP\_OPRATOR是比特-相位反转噪声模型，它的kraus算符和表示方法如下所示：
+
+:math:`K_{1}=\left[\begin{array}{cc}\sqrt{1-p} & 0 \\ 0 & \sqrt{1-p}\end{array}\right], K_{2}=\left[\begin{array}{cc}0 & -i \times \sqrt{p} \\ i \times \sqrt{p} & 0\end{array}\right]`
+
+需要一个噪声参数。
+
+(7) PHASE\_DAMPING\_OPRATOR
+
+PHASE\_DAMPING\_OPRATOR是相位阻尼噪声模型，它的kraus算符和表示方法如下所示：
+
+:math:`K_{1}=\left[\begin{array}{cc}1 & 0 \\ 0 & \sqrt{1-p}\end{array}\right], K_{2}=\left[\begin{array}{cc}0 & 0 \\ 0 & \sqrt{p}\end{array}\right]`
+
+需要一个噪声参数。
+
+(8) 双门噪声模型
+
+双门噪声模型同样也分为上述几种：
+
+DAMPING\_KRAUS\_OPERATOR、DEPHASING\_KRAUS\_OPERATOR、
+
+DECOHERENCE\_KRAUS\_OPERATOR、
+
+DEPOLARIZING\_KRAUS\_OPERATOR、BITFLIP\_KRAUS\_OPERATOR、
+
+BIT\_PHASE\_FLIP\_OPRATOR、PHASE\_DAMPING\_OPRATOR。
+
+它们的输入参数与单门噪声模型一致，双门噪声模型的kraus算符和表示与单门噪声模型存在着对应关系：假设单门噪声模型为：\ :math:`{K1,K2}`
+，那么对应的双门噪声模型为$ {K1⊗K1,K1⊗K2,K2⊗K1,K2⊗K2}$。
+
+2.6.2.2 接口介绍
+^^^^^^^^^^^^^^^^
+
+pyqpanda当前支持的噪声模型
+
+::
+
+    class NoiseModel(__pybind11_builtins.pybind11_object):
+        """
+        Members:
+
+        DAMPING_KRAUS_OPERATOR
+
+        DECOHERENCE_KRAUS_OPERATOR
+
+        DEPHASING_KRAUS_OPERATOR
+
+        PAULI_KRAUS_MAP
+
+        DECOHERENCE_KRAUS_OPERATOR_P1_P2
+
+        BITFLIP_KRAUS_OPERATOR
+
+        DEPOLARIZING_KRAUS_OPERATOR
+
+        BIT_PHASE_FLIP_OPRATOR
+
+        PHASE_DAMPING_OPRATOR
+        """
+
+设置一个噪声参数的使用方法如下：
+
+::
+
+    from pyqpanda import *
+    import numpy as np
+
+    qvm = NoiseQVM()
+    qvm.init_qvm()
+    q = qvm.qAlloc_many(4)
+    c = qvm.cAlloc_many(4)
+
+    # 未指定作用比特则对所有比特生效
+    qvm.set_noise_model(NoiseModel.BITFLIP_KRAUS_OPERATOR, GateType.PAULI_X_GATE, 0.1)
+    # 制定比特时，仅对指定的比特生效
+    qvm.set_noise_model(NoiseModel.BITFLIP_KRAUS_OPERATOR, GateType.RY_GATE, 0.1, [q[0], q[1]])
+    # 双门指定比特时, 需要同时指定两个比特，且对比特的顺序敏感
+    qvm.set_noise_model(NoiseModel.DAMPING_KRAUS_OPERATOR, GateType.CNOT_GATE, 0.1, [[q[0], q[1]], [q[1], q[2]]])
+    #可对线路中所有types加噪声
+    qvm.set_noise_model(NoiseModel.BITFLIP_KRAUS_OPERATOR, types, 0.1)
+    qvm.set_noise_model(NoiseModel.DECOHERENCE_KRAUS_OPERATOR, types, 0.1, 0.2, 0.3)
+    qvm.set_noise_model(NoiseModel.DAMPING_KRAUS_OPERATOR, GateType.CNOT_GATE, 0.1, q)
+
+第一个参数为噪声模型类型，第二个参数为量子逻辑门类型，第三个参数为噪声模型所需的参数。
+
+设置三个噪声参数的使用方法如下：
+
+::
+
+    # 未指定作用比特则对所有比特生效
+    qvm.set_noise_model(NoiseModel.DECOHERENCE_KRAUS_OPERATOR, GateType.PAULI_Y_GATE, 5, 2, 0.01)
+    # 制定比特时，仅对指定的比特生效
+    qvm.set_noise_model(NoiseModel.DECOHERENCE_KRAUS_OPERATOR, GateType.Y_HALF_PI, 5, 2, 0.01, [q[0], q[1]])
+    # 双门指定比特时, 需要同时指定两个比特，且对比特的顺序敏感
+    qvm.set_noise_model(NoiseModel.DECOHERENCE_KRAUS_OPERATOR, GateType.CZ_GATE, 5, 2, 0.01, [[q[0], q[1]], [q[1], q[0]]])
+    #可对线路中所有GateType加噪声
+    qvm.set_noise_model(NoiseModel.BITFLIP_KRAUS_OPERATOR, types, 0.1)
+    qvm.set_noise_model(NoiseModel.DECOHERENCE_KRAUS_OPERATOR, types, 0.1, 0.2, 0.3)
+    qvm.set_noise_model(NoiseModel.DAMPING_KRAUS_OPERATOR, GateType.CNOT_GATE, 0.1, q)
+
+含噪声虚拟机还支持设置带有角度的量子逻辑门的转转角度误差，其接口使用方式如下：
+
+::
+
+    qvm.set_rotation_error(0.05)
+
+即设置角度旋转误差为0.05。
+
+设置测量误差,
+其使用方法与上面的方法类似，只不过不需要指定量子逻辑门的类型
+
+::
+
+    qvm.set_measure_error(NoiseModel.DEPOLARIZING_KRAUS_OPERATOR, 0.1)
+
+设置reset噪声：
+
+::
+
+    p0 = 0.9
+    p1 = 0.05
+    qvm.set_reset_error(p0, p1)
+
+:math:`p0 `\ 表示重置到$ \|0⟩\ :math:`的概率，`\ p1\ :math:`表示重置到`
+\|1⟩\ :math:`的概率，未被重置的概率为` 1-p0-p1$
+
+设置读取误差：
+
+::
+
+    f0 = 0.9
+    f1 = 0.85
+    qvm.set_readout_error([[f0, 1 - f0], [1 - f1, f1]])
+
+表示在读取\ :math:`q0`\ 时0读为0的概率为0.9，读为1的概率为\ :math:`1 - f0`\ ，
+1读为1的概率为0.85，读为0的概率为\ :math:`1 - f1`\ 。
+
+2.6.2.3 实例
+^^^^^^^^^^^^
+
+::
+
+    from pyqpanda import *
+    import numpy as np
+
+    if __name__ == "__main__":
+        qvm = NoiseQVM()
+        qvm.init_qvm()
+        q = qvm.qAlloc_many(4)
+        c = qvm.cAlloc_many(4)
+
+        qvm.set_noise_model(NoiseModel.BITFLIP_KRAUS_OPERATOR, GateType.PAULI_X_GATE, 0.1)
+        qv0 = [q[0], q[1]]
+        qvm.set_noise_model(NoiseModel.DEPHASING_KRAUS_OPERATOR, GateType.HADAMARD_GATE, 0.1, qv0)
+        qves = [[q[0], q[1]], [q[1], q[2]]]
+        qvm.set_noise_model(NoiseModel.DAMPING_KRAUS_OPERATOR, GateType.CNOT_GATE, 0.1, qves)
+
+        f0 = 0.9
+        f1 = 0.85
+        qvm.set_readout_error([[f0, 1 - f0], [1 - f1, f1]])
+        qvm.set_rotation_error(0.05)
+
+        prog = QProg()
+        prog << X(q[0]) << H(q[0]) \
+             << CNOT(q[0], q[1]) \
+             << CNOT(q[1], q[2]) \
+             << CNOT(q[2], q[3]) \
+             << measure_all(q, c)
+
+        result = qvm.run_with_configuration(prog, c, 1000)
+        print(result) 
+
+运行结果：
+
+::
+
+    {'0000': 347, '0001': 55, '0010': 50, '0011': 43, '0100': 41, '0101': 18, '0110': 16, '0111': 34, '1000': 50, '1001': 18, '1010': 18, '1011': 37, '1100': 15, '1101': 49, '1110': 42, '1111': 167}
+
+2.6.3 单振幅量子虚拟机
+~~~~~~~~~~~~~~~~~~~~~~
+
+目前我们可以通过量子计算的相关理论，用经典计算机实现模拟量子虚拟机。
+量子虚拟机的模拟主要有全振幅与单振幅两种解决方案，其主要区别在于，全振幅一次模拟计算就能算出量子态的所有振幅，单振幅一次模拟计算只能计算出\ :math:`2^n`\ 个振幅中的一个。
+
+然而全振幅模拟量子计算时间较长，计算量随量子比特数指数增长，
+在现有硬件下，无法模拟超过49量子比特。通过单振幅量子虚拟机技术可以模拟超过49量子比特，同时模拟速度有较大提升，且算法的计算量不随量子比特数指数提升。
+
+2.6.3.1 使用介绍
+^^^^^^^^^^^^^^^^
+
+其使用方式与前面介绍的量子虚拟机模块非常类似。主要接口有以下几种：
+
+• run
+：输入参数为执行的量子程序，申请的量子比特，最大RANK，quickBB优化的最大运行时间
+
+• pmeasure\_bin\_index
+：输入参数为二进制索引字符串，输出为该索引下的量子态。使用前需要调用run接口，如
+pmeasure\_bin\_index("0000000000")
+，同时保证字符串长度与测量的比特数相同
+
+• pmeasure\_dec\_index
+：输入参数为十进制索引字符串，输出为该索引下的量子态。使用前需要调用run接口。如
+pmeasure\_dec\_index("1")，同时保证索引大小不超过2的n次方(n为比特数)。
+
+• get\_prob\_dict
+：输入参数为要执行的量子程序，以及要测量的量子比特。输出为对应量子比特的所有态结果。使用前需要调用run接口。需要注意的是该接口要求量子比特数为30个以内时使用。
+
+• prob\_run\_dict
+：输入参数为要执行的量子程序，以及要测量的量子比特。输出为对应量子比特的所有态结果。需要注意的是该接口要求量子比特数为30个以内时使用。
+
+首先通过 SingleAmpQVM
+初始化一个单振幅量子虚拟机对象用于管理后续一系列行为
+
+::
+
+    from pyqpanda import *
+    from numpy import pi
+
+    qvm = SingleAmpQVM()
+
+然后是量子程序的初始化、构建与装载过程：
+
+::
+
+    qvm.init_qvm()
+
+    qv = qvm.qAlloc_many(10)
+    cv = qvm.cAlloc_many(10)
+
+    prog = QProg()
+
+    # 构建量子程序
+    prog << CZ(qv[1], qv[5])\
+        << CZ(qv[3], qv[5])\
+        << CZ(qv[2], qv[4])\
+        << CZ(qv[3], qv[7])\
+        << CZ(qv[0], qv[4])\
+        << RY(qv[7], pi / 2)\
+        << RX(qv[8], pi / 2)\
+        << RX(qv[9], pi / 2)\
+        << CR(qv[0], qv[1], pi)\
+        << CR(qv[2], qv[3], pi)\
+        << RY(qv[4], pi / 2)\
+        << RZ(qv[5], pi / 4)\
+        << RX(qv[6], pi / 2)\
+        << RZ(qv[7], pi / 4)\
+        << CR(qv[8], qv[9], pi)\
+        << CR(qv[1], qv[2], pi)\
+        << RY(qv[3], pi / 2)\
+        << RX(qv[4], pi / 2)\
+        << RX(qv[5], pi / 2)\
+        << CR(qv[9], qv[1], pi)\
+        << RY(qv[1], pi / 2)\
+        << RY(qv[2], pi / 2)\
+        << RZ(qv[3], pi / 4)\
+        << CR(qv[7], qv[8], pi)
+
+接口使用如下：
+
+• pmeasure\_bin\_index，使用时需要结合 run 方法。用法示例：
+
+::
+
+    qvm.run(prog,qv)
+    dec_result = qvm.pmeasure_bin_index("0001000000")
+    print("0001000000:",dec_result)
+
+输出结果如下：
+
+::
+
+    0001000000 :  0.001953123603016138
+
+• pmeasure\_dec\_index，使用时需要结合 run 方法。用法示例：
+
+::
+
+    qvm.run(prog, qv)
+    dec_result = qvm.pmeasure_dec_index("2")
+    print("2 : ",dec_result)
+
+输出结果如下：
+
+::
+
+    2 :  0.001953123603016138
+
+• get\_prob\_dict,使用时需要结合run方法。用法示例：
+
+::
+
+    qvm.run(prog, qv)
+    res = qvm.get_prob_dict(qv)
+
+• prob\_run\_dict接口是get\_prob\_dict和run的封装，用法示例：
+
+::
+
+    res_1 = qvm.prob_run_dict(prog, qv)
+
+2.6.4 部分振幅量子虚拟机
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+目前用经典计算机模拟量子虚拟机的主流解决方案有全振幅与单振幅两种。除此之外，还有部分振幅量子虚拟机，该方案能在更低的硬件条件下，实现更高的模拟效率。
+
+2.6.4.1 使用介绍
+^^^^^^^^^^^^^^^^
+
+其使用方式与前面介绍的量子虚拟机模块非常类似，首先通过PartialAmpQVM
+初始化一个部分振幅量子虚拟机对象用于管理后续一系列行为
+
+::
+
+    from pyqpanda import *
+    from numpy import pi
+    machine = PartialAmpQVM()
+
+然后是量子程序的初始化、构建与装载过程，以QPanda2的
+:ref:部分振幅示例程序来演示：
+
+::
+
+    machine.init_qvm()
+
+    q = machine.qAlloc_many(10)
+    c = machine.cAlloc_many(10)
+
+    # 构建量子程序
+    prog = QProg()
+    prog << hadamard_circuit(q)\
+         << CZ(q[1], q[5])\
+         << CZ(q[3], q[7])\
+         << CZ(q[0], q[4])\
+         << RZ(q[7], pi / 4)\
+         << RX(q[5], pi / 4)\
+         << RX(q[4], pi / 4)\
+         << RY(q[3], pi / 4)\
+         << CZ(q[2], q[6])\
+         << RZ(q[3], pi / 4)\
+         << RZ(q[8], pi / 4)\
+         << CZ(q[9], q[5])\
+         << RY(q[2], pi / 4)\
+         << RZ(q[9], pi / 4)\
+         << CZ(q[2], q[3])
+
+    machine.run(prog)
+
+部分接口使用如下：
+
+• pmeasure\_bin\_index(string) ,使用示例
+
+::
+
+    result = machine.pmeasure_bin_index("0000000000")
+    print(result)
+
+输出结果如下：
+
+::
+
+    (-0.00647208746522665-0.006472080945968628j) 
+
+• pmeasure\_dec\_index(string) ,使用示例
+
+::
+
+    result = machine.pmeasure_dec_index("1")
+    print(result)
+
+输出结果如下：
+
+::
+
+    (-6.068964220062867e-10-0.009152906015515327j)
+
+• pmeasure\_subset(state\_index) ,使用示例
+
+::
+
+    state_index = ["0", "1", "2"]
+    result = machine.pmeasure_subset(state_index)
+    print(result)
+
+输出结果如下：
+
+::
+
+    {'0': (-0.00647208746522665-0.006472080945968628j),
+     '1': (-6.068964220062867e-10-0.009152906015515327j),
+     '2': (-6.984919309616089e-10-0.009152908809483051j)}
+
+*警告*
+
+部分旧的接口，比如 get\_qstate() 、 pmeasure(string) 、 pmeasure(string)
+
+以及 get\_prob\_dict(qvec,string) 等已经被弃用了。
+
+2.6.5 张量网络量子虚拟机
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+对于一个\ :math:`N`\ 个量子比特的自旋体系，对应的希尔伯特空间维数为\ :math:`2^N`\ 。
+
+对于该复杂系统的状态演化，传统的全振幅模拟器将其看做一个有\ :math:`2^N`\ 个元素的一维向量。
+
+然而从张量网络的角度来看，整个系统量子态的系数对应\ :math:`2^N`\ 维张量（即N阶张量，即有$
+N
+$个指标，每个指标的维数是2），量子操作算符的系数为\ :math:`2^{2 N}`\ 维张量（\ :math:`2N`\ 阶张量，即有\ :math:`2N`\ 个指标，每个指标的维数是2)，我们可以用如下图形来表示量子态：
+
+.. figure:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/state.png
+   :alt: \_images/state.png
+
+   \_images/state.png
+当量子系统的自旋个数增加时，量子态系数的个数随指数增加，称为指数墙问题，这一障碍限制了传统全振幅模拟器的最大模拟自旋数和模拟性能。
+
+但是可通过张量网络处理这一问题，从而绕过指数墙障碍，在张量网络中，我们对量子系统的模拟，包括量子逻辑门操作和测量操作，均可以通过对于张量的缩并与分解来实现。矩阵乘积态是张量网络中最常用的表示形式，在多线性代数中称为张量列或TT（Tensor-Train），示意图如下。
+
+.. figure:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/MPS.png
+   :alt: \_images/MPS.png
+
+   \_images/MPS.png
+将量子态分解成等式右边的表示形式，对于量子线路中部分量子逻辑门操作，可以将全局问题转化为局部的张量处理问题，从而有效地降低了时间复杂度和空间复杂度。
+
+2.6.5.1 应用场景
+^^^^^^^^^^^^^^^^
+
+在量子电路的模拟方法中，选择合适的模拟后端非常重要，不同量子线路模拟器的适用场所如下：
+
+• 全振幅量子虚拟机
+：全振幅模拟器可以同时模拟和存储量子态的全部振幅，但受限于机器的内存条件，量子比特达到50位已是极限，适合低比特高深度的量子线路，比如低比特下的谷歌随机量子线路以及需要获取全部模拟结果的场景等。
+
+• 部分振幅量子虚拟机
+：部分振幅模拟器依赖于其他模拟器提供的低比特量子线路振幅模拟结果，能模拟更高的比特数量，但能模拟的深度降低，通常用于获取量子态振幅的部分子集模拟结果。
+
+• 单振幅量子虚拟机
+：单振幅模拟器能模拟更高的量子比特线路图，同时模拟的性能较高，不会随着量子比特数目增加呈指数型增长，但随着线路深度增加，模拟性能急剧下降，同时难以模拟多控制门也是其缺点，该模拟器适用于高比特、低深度的量子线路模拟，通常用于快速地模拟获得单个量子态振幅结果。
+
+• 张量网络量子虚拟机
+：张量网络模拟器与单振幅类似，与单振幅对比，可以模拟多控制门，同时在深度较高的线路模拟上存在性能优势。
+
+• 量子云虚拟机
+：量子云虚拟机可以将任务提交在远程高性能计算集群上运行，突破本地硬件性能限制，同时支持在真实的量子芯片上运行量子算法。
+
+2.6.5.2 使用介绍
+^^^^^^^^^^^^^^^^
+
+pyqpanda 中可以通过 MPSQVM
+类实现用张量网络模拟量子电路。和许多其他模拟器的使用方法一样，都具有相同的量子虚拟机接口，比如下述简单的使用示例代码:
+
+::
+
+    from numpy import pi
+    from pyqpanda import *
+
+    # 构建量子虚拟机
+    qvm = MPSQVM()
+
+    # 初始化操作
+    qvm.set_configure(64, 64)
+    qvm.init_qvm()
+
+    q = qvm.qAlloc_many(10)
+    c = qvm.cAlloc_many(10)
+
+    # 构建量子程序
+    prog = QProg()
+    prog << hadamard_circuit(q)\
+        << CZ(q[2], q[4])\
+        << CZ(q[3], q[7])\
+        << CNOT(q[0], q[1])\
+        << Measure(q[0], c[0])\
+        << Measure(q[1], c[1])\
+        << Measure(q[2], c[2])\
+        << Measure(q[3], c[3])
+
+    # 量子程序运行100次，并返回测量结果
+    result = qvm.run_with_configuration(prog, c, 100)
+
+    # 打印量子态在量子程序多次运行结果中出现的次数
+    print(result)
+
+    qvm.finalize()
+
+2.6.5.3 完整示例代码
+^^^^^^^^^^^^^^^^^^^^
+
+以下示例展示了张量网络模拟器计算部分接口的使用方式
+
+::
+
+    from numpy import pi
+    from pyqpanda import *
+
+    qvm = MPSQVM()
+    qvm.set_configure(64, 64)
+    qvm.init_qvm()
+
+    q = qvm.qAlloc_many(10)
+    c = qvm.cAlloc_many(10)
+
+    prog = QProg()
+    prog << hadamard_circuit(q)\
+        << CZ(q[2], q[4])\
+        << CZ(q[3], q[7])\
+        << CNOT(q[0], q[1])\
+        << CZ(q[3], q[7])\
+        << CZ(q[0], q[4])\
+        << RY(q[7], pi / 2)\
+        << RX(q[8], pi / 2)\
+        << RX(q[9], pi / 2)\
+        << CR(q[0], q[1], pi)\
+        << CR(q[2], q[3], pi)\
+        << RY(q[4], pi / 2)\
+        << RZ(q[5], pi / 4)\
+        << Measure(q[0], c[0])\
+        << Measure(q[1], c[1])\
+        << Measure(q[2], c[2])
+
+    # Monte Carlo采样模拟接口
+    result0 = qvm.run_with_configuration(prog, c, 100)
+
+    # 概率测量接口
+    result1 = qvm.prob_run_dict(prog, [q[0], q[1], q[2]], -1)
+
+    print(result0)
+    print(result1)
+
+    qvm.finalize()
+
+上述代码中run\_with\_configuration 与 prob\_run\_dict 接口分别用于Monte
+Carlo采样模拟和概率测量，他们分别输出模拟采样的结果和对应振幅的概率，上述程序的计算结果如下
+
+::
+
+    # Monte Carlo 采样模拟结果
+    {'0000000000': 7,
+     '0000000001': 12,
+     '0000000010': 13,
+     '0000000011': 10,
+     '0000000100': 16,
+     '0000000101': 14,
+     '0000000110': 12,
+     '0000000111': 16}
+
+    # 概率测量结果
+    {'000': 0.12499999999999194,
+     '001': 0.12499999999999185,
+     '010': 0.12499999999999194,
+     '011': 0.124999999999992,
+     '100': 0.12499999999999198,
+     '101': 0.12499999999999194,
+     '110': 0.12499999999999198,
+     '111': 0.12499999999999208}
+
+**2.7 量子比特池**
+------------------
+
+2.7.1 简介
+~~~~~~~~~~
+
+QPanda之前版本中量子比特和经典寄存器都是通过虚拟机进行申请，管理，控制。
+现在提供独立于虚拟机的方法，即量子比特、经典寄存器不通过虚拟机管理，可以由提供的比特池直接申请、释放。
+为了更好的使用量子比特和经典寄存器，我们进一步支持以物理地址代表相应比特使用。
+
+2.7.2 接口说明
+~~~~~~~~~~~~~~
+
+量子比特池：
+
+• OriginQubitPool 获取单例的量子比特池， 通过该池对象申请释放量子比特
+
+• get\_capacity 获取最大容量
+
+• set\_capacity 设置容量
+
+• get\_qubit\_by\_addr 通过物理地址获取量子比特
+
+经典寄存器池：
+
+• OriginCMem 获取单例的经典寄存器池，通过该池对象申请释放经典寄存器
+
+• get\_capacity 获取最大容量
+
+• set\_capacity 设置容量
+
+• get\_cbit\_by\_addr 通过物理地址获取量子比特
+
+由于申请释放方法均和虚拟机提供的方法相同。在\ `量子虚拟机 <#quantummachine>`__\ 中有详细介绍。
+同时对于量子比特和经典寄存器的使用，现在也可以直接通过对应比特的地址传参。
+
+例如 : H(1) 可以理解在物理地址为1的量子比特上作用H门。 Measure(1, 1)
+可以理解在物理地址为1的量子比特施加Meausre测量，并将结果保存在地址为1的经典寄存器上。
+
+2.7.3 实例
+~~~~~~~~~~
+
+::
+
+    from pyqpanda import *
+    from numpy import pi
+    if __name__=="__main__":
+        # 量子比特可以和虚拟机 脱离关系，获取对应池的单例，这里和QPanda不同，构建的对象就是单例的池
+        qpool = OriginQubitPool()
+        qpool_1 = OriginQubitPool()
+        cmem = OriginCMem()
+
+        # 获取量子比特池容量
+        print("get_capacity : ", qpool.get_capacity())
+        # 设置量子比特池容量
+        qpool.set_capacity(20)
+        print("qpool get_capacity : ", qpool.get_capacity())
+
+        #由于获取量子比特池是单例对象，上面设置容量为20，这里qool_1 获取容量也会为20
+        print("qpool_1 get_capacity : ", qpool_1.get_capacity())
+
+        # 通过比特池申请比特，由于是单例模式，要保证申请的比特数量不超过最大容量
+        qv = qpool.qAlloc_many(6)
+        cv = cmem.cAlloc_many(6)
+
+        # 构建虚拟机
+        qvm = CPUQVM()
+        qvm.init_qvm()
+        prog = QProg()
+        # 直接使用物理地址作为量子比特信息入参
+        prog << H(0)\
+            << H(1)\
+            << H(2)\
+            << H(4)\
+            << X(5)\
+            << X1(2)\
+            << CZ(2, 3)\
+            << RX(3, pi / 4)\
+            << CR(4, 5, pi / 2)\
+            << SWAP(3, 5)\
+            << CU(1, 3, pi / 2, pi / 3, pi / 4, pi / 5)\
+            << U4(4, 2.1, 2.2, 2.3, 2.4)\
+            << BARRIER([0, 1,2,3,4,5])\
+            << BARRIER(0)
+
+        #print(prog)
+
+        # 测量方法也可以使用比特物理地址
+        res_0 = qvm.prob_run_dict(prog, [ 0,1,2,3,4,5 ])
+        #res_1 = qvm.prob_run_dict(prog, qv)  #同等上述方法
+        #print(res_0)
+
+        # 同样经典比特地址也可以作为经典比特信息入参
+        prog << Measure(0, 0)\
+            << Measure(1, 1)\
+            << Measure(2, 2)\
+            << Measure(3, 3)\
+            << Measure(4, 4)\
+            << Measure(5, 5)
+
+
+        # 使用经典比特地址入参
+        res_2 = qvm.run_with_configuration(prog, [ 0,1,2,3,4,5 ], 5000)
+        # res_3 = qvm.run_with_configuration(prog, cv, 5000) #同等上述方法
+        #print(res_2)
+
+        qvm.finalize()
+
+
+        # 同时我们还可以再次利用这里申请的qv，避免多次使用虚拟机多次申请比特的问题发生
+        qvm_noise = NoiseQVM()
+        qvm_noise.init_qvm()
+        res_4 = qvm_noise.run_with_configuration(prog, [ 0,1,2,3,4,5 ], 5000)
+        qvm_noise.finalize()
+
+运行结果：
+
+::
+
+    get_capacity :  29
+    qpool get_capacity :  20
+    qpool_1 get_capacity :  20
+
+**2.8 量子测量**
+----------------
+
+量子测量是指通过外界对量子系统进行干扰来获取需要的信息，测量门使用的是蒙特卡洛方法的测量。在量子线路中用如下图标表示：
+
+.. figure:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/QGate_measure.png
+   :alt: *images/QGate*\ measure.png
+
+   *images/QGate*\ measure.png
+2.8.1 接口介绍
+~~~~~~~~~~~~~~
+
+本章主要介绍获得量子测量对象、根据配置运行含有量子测量的量子程序、快速测量。
+
+在量子程序中我们需要对某个量子比特做测量操作，并把测量结果存储到经典寄存器上，可以通过下面的方式获得一个测量对象：
+
+::
+
+    measure = Measure(qubit, cbit);
+
+可以看到Measure接两个参数，第一个是测量比特，第二个是经典寄存器。
+
+如果想测量所有的量子比特并将其存储到对应的经典寄存器上， 可以如下操作：
+
+::
+
+    measureprog = measure_all(qubits， cbits);
+
+其中qubits的类型是 QVec ， cbits的类型是ClassicalCondition list。
+
+*注解：*
+
+measure\_all 的返回值类型是 QProg。
+
+在得到含有量子测量的程序后，我们可以调用directly\_run 或
+run\_with\_configuration 来得到量子程序的测量结果。
+
+directly\_run 的功能是运行量子程序并返回运行的结果，使用方法如下：
+
+::
+
+    prog = QProg()
+    prog << H(qubits[0])\
+         << CNOT(qubits[0], qubits[1])\
+         << CNOT(qubits[1], qubits[2])\
+         << CNOT(qubits[2], qubits[3])\
+         << Measure(qubits[0], cbits[0])
+
+    result = directly_run(prog)
+
+run\_with\_configuration 的功能是统计量子程序多次运行的测量结果，
+使用方法如下：
+
+::
+
+    prog = QProg()
+    prog << H(qubits[0])\
+         << H(qubits[0])\
+         << H(qubits[1])\
+         << H(qubits[2])\
+         << measure_all(qubits, cbits)
+
+    result = run_with_configuration(prog, cbits, 1000)
+
+其中第一个参数是量子程序，第二个参数是ClassicalCondition list，
+第三个参数是运行的次数。
+
+2.8.2 实例
+~~~~~~~~~~
+
+::
+
+    from pyqpanda import *
+
+    if __name__ == "__main__":
+        init(QMachineType.CPU)
+        qubits = qAlloc_many(4)
+        cbits = cAlloc_many(4)
+
+        # 构建量子程序
+        prog = QProg()
+        prog << H(qubits[0])\
+             << H(qubits[1])\
+             << H(qubits[2])\
+             << H(qubits[3])\
+             << measure_all(qubits, cbits)
+
+        # 量子程序运行1000次，并返回测量结果
+        result = run_with_configuration(prog, cbits, 1000)
+
+        # 打印测量结果
+        print(result)
+        finalize()
+
+运行结果：
+
+::
+
+    {'0000': 59, '0001': 69, '0010': 52, '0011': 62,
+    '0100': 63, '0101': 67, '0110': 79, '0111': 47,
+    '1000': 73, '1001': 59, '1010': 72, '1011': 60,
+    '1100': 61, '1101': 71, '1110': 50, '1111': 56}
+
+**2.9 概率测量**
+----------------
+
+概率测量是指获得目标量子比特的振幅，目标量子比特可以是一个量子比特也可以是多个量子比特的集合。
+在QPanda2中概率测量又称为PMeasure
+。概率测量和\ `量子测量 <#measure>`__\ 是完全不同的过程，Measure是执行了一次测量，并返回一个确定的0/1结果，并且改变了量子态。
+
+2.9.1 接口介绍
+~~~~~~~~~~~~~~
+
+QPanda2提供了三种获得PMeasure结果的方式，其中有 prob\_run\_list 、
+prob\_run\_tuple\_list 、 prob\_run\_dict。
+
+• prob\_run\_list ： 获得目标量子比特的概率测量结果列表。
+
+• prob\_run\_tuple\_list：
+获得目标量子比特的概率测量结果，为字典类型，其对应的下标为十进制。
+
+• prob\_run\_dict ：
+获得目标量子比特的概率测量结果，为字典类型，其对应的下标为二进制。
+
+这三个函数的使用方式是一样的，下面就以 prob\_run\_dict
+为例介绍，使用方式如下：
+
+::
+
+    prog = QProg()
+    prog << H(qubits[0])\
+         << CNOT(qubits[0], qubits[1])\
+         << CNOT(qubits[1], qubits[2])\
+         << CNOT(qubits[2], qubits[3])
+
+    result = prob_run_dict(prog, qubits, 3)
+
+第一个参数是量子程序， 第二个参数是QVec它指定了我们关注的量子比特。
+第三个参的值为-1时，获取所有的概率测量结果，大于0时表示获取最大的前几个数。
+
+2.9.2 实例
+~~~~~~~~~~
+
+::
+
+    from pyqpanda import *
+
+    if __name__ == "__main__":
+        init(QMachineType.CPU)
+        qubits = qAlloc_many(2)
+        cbits = cAlloc_many(2)
+
+        prog = QProg()
+        prog << H(qubits[0])\
+            << CNOT(qubits[0], qubits[1])
+
+        print("prob_run_dict: ")
+        result1 = prob_run_dict(prog, qubits, -1)
+        print(result1)
+
+        print("prob_run_tuple_list: ")
+        result2 = prob_run_tuple_list(prog, qubits, -1)
+        print(result2)
+
+        print("prob_run_list: ")
+        result3 = prob_run_list(prog, qubits, -1)
+        print(result3)
+
+        finalize()
+
+运行结果：
+
+::
+
+    prob_run_dict:
+    {'00': 0.4999999999999999, '01': 0.0, '10': 0.0, '11': 0.4999999999999999}
+    prob_run_tuple_list:
+    [(0, 0.4999999999999999), (3, 0.4999999999999999), (1, 0.0), (2, 0.0)]
+    prob_run_list:
+    [0.4999999999999999, 0.0, 0.0, 0.4999999999999999]
+
+*注解：*
+
+概率测量 不支持噪声虚拟机
+
+**2.10 本源量子云服务**
+-----------------------
+
+在复杂的量子线路模拟中有必要借助于高性能计算机集群或真实的量子计算机，用云计算的方式替代本地计算，在一定程度上减轻用户的计算成本，获得更好的计算体验。
+
+本源量子量子云平台经由调度服务器向部署在远程的量子计算机或计算集群提交任务，并接收返回的结果，流程如下图所示。
+
+.. figure:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/qcloud.png
+   :alt: \_images/qcloud.png
+
+   \_images/qcloud.png
+pyqpanda封装了量子云虚拟机，可以向本源量子的计算服务器集群或量子真实芯片发送计算指令，并获取计算结果，在使用下文介绍的各种虚拟机之前，需要确保已开通对应的虚拟机产品。
+
+.. figure:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/real.png
+   :alt: \_images/real.png
+
+   \_images/real.png
+.. figure:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/cloud.png
+   :alt: \_images/cloud.png
+
+   \_images/cloud.png
+2.10.1 真实芯片计算服务
+~~~~~~~~~~~~~~~~~~~~~~~
+
+2.10.1.1 本源悟源超导芯片
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+本源悟源
+是2020年9月12日本源量子自主研发的超导量子计算机（搭载6比特超导量子处理器夸父
+KF
+C6-130）。得益于本源超导量子计算云平台，量子计算机可以走出实验室，为众多潜在行业提供探索量子计算的基础条件，推进量子计算产业落地与工程化发展，真正为人类社会服务。
+
+超导量子计算云平台作为连接用户和量子计算系统之间的桥梁，在用户向量子系统发起计算任务到量子系统完成计算任务后返回计算结果过程中，发挥着重要的协调中转作用。
+
+本源悟源的 芯片拓扑结构图 如下：
+
+.. figure:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/tuopu.png
+   :alt: \_images/tuopu.png
+
+   \_images/tuopu.png
+对应的 芯片参数 信息如下图：
+
+.. figure:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/param.png
+   :alt: \_images/param.png
+
+   \_images/param.png
+接口介绍如下：
+
+• 1.蒙特卡洛测量接口： real\_chip\_measure ,使用示例如下：
+
+::
+
+    from pyqpanda import *
+
+    PI = 3.1416
+
+    # 通过QCloud()创建量子云虚拟机
+    QCM = QCloud()
+
+    # 通过传入当前用户的token来初始化
+    QCM.init_qvm("E02BB115D5294012AA88D4BE82603984", True)
+
+    q = QCM.qAlloc_many(6)
+    c = QCM.cAlloc_many(6)
+
+    # 构建量子程序
+    prog = QProg()
+    prog << hadamard_circuit(q)\
+        << RX(q[1], PI / 4)\
+        << RX(q[2], PI / 4)\
+        << RX(q[1], PI / 4)\
+        << CZ(q[0], q[1])\
+        << CZ(q[1], q[2])\
+        << Measure(q[0], c[0])\
+        << Measure(q[1], c[1])
+
+    # 调用真实芯片计算接口，至少需要量子程序和测量次数两个参数，后面的三个默认参数依次为芯片类型，是否开启线路映射与线路优化功能。
+    result = QCM.real_chip_measure(prog, 1000, real_chip_type.origin_wuyuan_d4)
+    print(result)
+
+    QCM.finalize()
+
+上述过程需要注意的是， init 需要用户传入量子云平台用户验证标识 token
+，可以从本源量子云平台个人信息下获取，具体见下方截图。
+
+.. figure:: https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/token.png
+   :alt: \_images/token.png
+
+   \_images/token.png
+输出结果如下,左侧是量子态的二进制表示，右边表示测量次数对应的概率：
+
+::
+
+    {'00': 0.24987328940699444, '01': 0.2524075012671059, '10': 0.2519006588950836, '11': 0.24581855043081605}
+
+• 2.获取量子态qst层析结果接口： get\_state\_tomography\_density
+,使用示例如下：
+
+::
+
+    from pyqpanda import *
+
+    PI = 3.1416
+
+    # 通过QCloud()创建量子云虚拟机
+    QCM = QCloud()
+
+    # 通过传入当前用户的token来初始化
+    QCM.init_qvm("E02BB115D5294012AA88D4BE82603984", True)
+
+    q = QCM.qAlloc_many(6)
+    c = QCM.cAlloc_many(6)
+
+    # 构建量子程序
+    prog = QProg()
+    prog << hadamard_circuit(q)\
+        << RX(q[1], PI / 4)\
+        << RX(q[2], PI / 4)\
+        << RX(q[1], PI / 4)\
+        << CZ(q[0], q[1])\
+        << CZ(q[1], q[2])\
+        << Measure(q[0], c[0])\
+        << Measure(q[1], c[1])
+
+    # 调用真实芯片计算接口，至少需要量子程序和测量次数两个参数，后面的三个默认参数依次为芯片类型，是否开启线路映射与线路优化功能。
+    result = QCM.get_state_tomography_density( prog, 1000, real_chip_type.origin_wuyuan_d4)
+    print(result)
+
+    QCM.finalize()
+
+输出结果如下：
+
+::
+
+    [[(0.26001013684744045+0j), (0.23492143943233657+0.000760263558033436j), (0.01267105930055755+0.002280790674100364j), (-0.003547896604156095-0.003294475418144968j)],
+    [(0.23492143943233657-0.000760263558033436j), (0.250886974151039+0j), (0.00937658388241254+0.003547896604156081j), (0.009883426254434847-0.0025342118601114905j)],
+    [(0.01267105930055755-0.002280790674100364j), (0.00937658388241254-0.003547896604156081j), (0.2412569690826153+0j), (-0.2240243284338571-0.009123162696401413j)],
+    [(-0.003547896604156095+0.003294475418144968j), (0.009883426254434847+0.0025342118601114905j), (-0.2240243284338571+0.009123162696401413j), (0.24784591991890528+0j)]]
+
+• 3.获取量子态保真度接口： get\_state\_fidelity ,使用示例如下：
+
+::
+
+    from pyqpanda import *
+
+    PI = 3.1416
+
+    # 通过QCloud()创建量子云虚拟机
+    QCM = QCloud()
+
+    # 通过传入当前用户的token来初始化
+    QCM.init_qvm("E02BB115D5294012AA88D4BE82603984", True)
+
+    q = QCM.qAlloc_many(6)
+    c = QCM.cAlloc_many(6)
+
+    # 构建量子程序
+    prog = QProg()
+    prog << hadamard_circuit(q)\
+        << RX(q[1], PI / 4)\
+        << RX(q[2], PI / 4)\
+        << RX(q[1], PI / 4)\
+        << CZ(q[0], q[1])\
+        << CZ(q[1], q[2])\
+        << Measure(q[0], c[0])\
+        << Measure(q[1], c[1])
+
+    # 调用真实芯片计算接口，至少需要量子程序和测量次数两个参数，后面的三个默认参数依次为芯片类型，是否开启线路映射与线路优化功能。
+    result = QCM.get_state_fidelity(prog, 1000, real_chip_type.origin_wuyuan_d4)
+    print(result)
+
+    QCM.finalize()
+
+输出结果如下：
+
+::
+
+    0.942748
+
+在使用本源悟源真实芯片测量操作时，经常会遇到各种错误，下面给出部分错误信息，可以根据抛出的错误异常信息进行对号入座。
+
+• server connection failed ：该异常表示服务器宕机或与服务器连接失败。
+
+• api key error
+：该异常表示用户的API-Key参数异常，请去官网确认个人资料的信息。
+
+• un-activate products or lack of computing power
+：该异常表示用户未开通该产品或算力不足。
+
+• build system error ：该异常表示编译系统运行出错。
+
+• exceeding maximum timing sequence ：该异常表示量子程序时序过长。
+
+• unknown task status ：其他任务状态异常的情况。
+
+*注解：*
+
+1. 使用对应的计算接口时，需要确认当前用户已经开通了该产品，否则可能会导致提交计算任务失败。
+
+2. 在噪声模拟时，退相干的单门噪声和双门参数参数分别有3个，不同于其他噪声
+
+3. 本源悟源测量操作支持的测量次数范围在1000至10000之间，且目前仅支持6及以下量子比特的量子线路模拟，未来会加入其他的量子芯片，敬请期待。
+
+4. 在使用时遇到任何问题，请给我们提交用户反馈
+   ，我们看到后会尽快解决你的问题
+
+2.10.2 本源高性能计算集群云服务
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+本源量子的高性能计算集群提供多种功能强大的虚拟机计算后端，适用于不同情况下的量子线路模拟需求，完整示例程序介绍如下：
+
+::
+
+    from pyqpanda import *
+    import numpy as np
+
+    # 通过QCloud()创建量子云虚拟机
+    QCM = QCloud()
+
+    # 通过传入当前用户的token来初始化
+    QCM.init_qvm("3B1AC640AAC248C6A7EE4E8D8537370D")
+
+    qlist = QCM.qAlloc_many(6)
+    clist = QCM.cAlloc_many(6)
+
+    # 构建量子程序，可以手动输入，也可以来自OriginIR或QASM语法文件等
+    measure_prog = QProg()
+    measure_prog << hadamard_circuit(qlist)\
+                 << CZ(qlist[1], qlist[5])\
+                 << Measure(qlist[0], clist[0])\
+                 << Measure(qlist[1], clist[1])
+
+    pmeasure_prog = QProg()
+    pmeasure_prog << hadamard_circuit(qlist)\
+                  << CZ(qlist[1], qlist[5])\
+                  << RX(qlist[2], np.pi / 4)\
+                  << RX(qlist[1], np.pi / 4)\
+
+    # 调用全振幅蒙特卡洛测量操作计算接口，需要量子程序和测量次数两个参数
+    result = QCM.full_amplitude_measure(measure_prog, 1000)
+    print(result)
+
+2.10.2.1 全振幅模拟云计算
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+接口介绍如下：
+
+• full\_amplitude\_measure(全振幅蒙特卡洛测量操作) ：
+
+::
+
+    result0 = QCM.full_amplitude_measure(measure_prog, 100)
+    print(result0)
+
+​
+需要传入的第二个参数是测量次数，输出结果如下,左侧是量子态的二进制表示，右边表示测量次数对应的概率：
+
+::
+
+    {'00': 0.25,
+     '01': 0.28,
+     '10': 0.22,
+     '11': 0.25}
+
+• full\_amplitude\_pmeasure(全振幅概率测量操作) ：
+
+::
+
+    result1 = QCM.full_amplitude_pmeasure(pmeasure_prog, [0, 1, 2])
+    print(result1)
+
+​
+需要传入的第二个参数是测量的比特，输出结果如下,左侧是量子态的二进制表示，右边表示测量对应的概率：
+
+::
+
+    {'000': 0.125,
+     '001': 0.125,
+     '010': 0.125,
+     '011': 0.125,
+     '100': 0.125,
+     '110': 0.125,
+     '111': 0.125} 
+
+2.10.2.2 部分振幅模拟云计算
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+• partial\_amplitude\_pmeasure(部分振幅概率测量操作) ：
+
+::
+
+    result2 = QCM.partial_amplitude_pmeasure(pmeasure_prog, ["0", "1", "2"])
+    print(result2)
+
+​
+需要传入的第二个参数是测量的量子态振幅的十进制表示，输出结果如下,左侧是量子态振幅的十进制表示，右边表示复数形式的振幅值：
+
+::
+
+    {'0': (0.08838832192122936-0.08838833495974541j),
+     '1': (0.08838832192122936-0.08838833495974541j),
+     '2': (0.08838832192122936-0.08838833495974541j }
+
+2.10.2.3 单振幅云计算
+^^^^^^^^^^^^^^^^^^^^^
+
+• single\_amplitude\_pmeasure(单振幅概率测量操作) ：
+
+::
+
+    result3 = QCM.single_amplitude_pmeasure(pmeasure_prog, "0")
+    print(result3)
+
+​
+需要传入的第二个参数是测量的振幅（十进制表示），输出结果如下,只会输出一个量子态对应的复数形式的振幅值：
+
+::
+
+    (0.08838833056846361-0.08838833850593952j)
+
+2.10.2.4 噪声模拟云计算
+^^^^^^^^^^^^^^^^^^^^^^^
+
+• noise\_measure(噪声虚拟机测量操作) ：
+
+::
+
+    QCM.set_noise_model(NoiseModel.BIT_PHASE_FLIP_OPRATOR, [0.01], [0.02])
+    result4 = QCM.noise_measure(measure_prog, 100)
+    print(result4)
+
+通过 set\_noise\_model
+设置噪声参数，第一个参数是噪声模型，后面分别是单门噪声参数和双门噪声参数，噪声模型的定义如下：
+
+::
+
+    enum NOISE_MODEL
+    {
+        DAMPING_KRAUS_OPERATOR,
+        DEPHASING_KRAUS_OPERATOR,
+        DECOHERENCE_KRAUS_OPERATOR_P1_P2,
+        BITFLIP_KRAUS_OPERATOR,
+        DEPOLARIZING_KRAUS_OPERATOR,
+        BIT_PHASE_FLIP_OPRATOR,
+        PHASE_DAMPING_OPRATOR,
+        DECOHERENCE_KRAUS_OPERATOR,
+        PAULI_KRAUS_MAP,
+        KRAUS_MATRIX_OPRATOR,
+        MIXED_UNITARY_OPRATOR,
+    };
+
+可以通过pyqpanda的枚举类 NoiseModel
+来获取，该接口输出结果如下,左侧是量子态的二进制表示，右边表示测量对应的概率：
+
+::
+
+    {'00': 0.26,
+     '01': 0.21,
+     '10': 0.29,
+     '11': 0.24}
+
+2.10.2.5 求取量子态层析结果
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+::
+
+    from pyqpanda import *
+
+    qm = QCloud()
+
+    qm.init_qvm("E02BB115D5294012AA88D4BE82603984")
+
+    qlist = qm.qAlloc_many(6)
+    clist = qm.cAlloc_many(6)
+
+    prog = QProg()
+    prog << hadamard_circuit(qlist)\
+        << CZ(qlist[1], qlist[5])\
+        << Measure(qlist[0], clist[0])\
+        << Measure(qlist[1], clist[1])
+
+    result = qm.get_state_tomography_density(prog, 1000)
+    print(result)
+    qm.finalize()
+
+使用方式类似蒙特卡洛测量，输出结果如下：
+
+::
+
+    [[(0.2587544156749868-8.004934191929294e-19j), (0.251211804846972+0.001414451655940455j), (-0.008943457002333129+0.0014876032160007612j), (-0.0040247742512866495+0.007632530135083866j)],
+    [(0.2512118048469719-0.001414451655940456j), (0.25003193002089275-6.776263578034404e-19j), (0.0026098957997104447-0.0145657172180014j), (0.001739623577306608+0.003430686695967179j)],
+    [(-0.008943457002333132-0.001487603216000763j), (0.002609895799710438+0.0145657172180014j), (0.24548904782784528+2.1684043449710093e-19j), (0.2290859282493824+0.000791060320984212j)],
+    [(-0.0040247742512866495-0.007632530135083866j), (0.001739623577306601-0.0034306866959671776j), (0.2290859282493824-0.0007910603209842113j), (0.2457246064762752-2.710505431213761e-20j)]]
+
+*注解：*
+
+1. 使用对应的计算接口时，需要确认当前用户已经开通了该产品，否则可能会导致提交计算任务失败。
+2. 在噪声模拟时，退相干的单门噪声和双门参数参数分别有3个，不同于其他噪声。
+3. 本源悟源测量操作支持的测量次数范围在1000至10000之间，且目前仅支持6及以下量子比特的量子线路模拟，未来会加入其他的量子芯片，敬请期待。
+
+4. 在使用时遇到任何问题，请给我们提交 用户反馈
+   ，我们看到后会尽快解决你的问题。

@@ -1,0 +1,1050 @@
+
+**4 编译量子程序**
+==================
+
+**4.1 量子程序转化QASM**
+------------------------
+
+通过该功能模块，你可以解析通过QPanda2构建的量子程序，将其中包含的量子比特信息以及量子逻辑门操作信息提取出来，得到按固定格式存储的QASM指令集。
+
+4.1.1 QASM介绍
+~~~~~~~~~~~~~~
+
+QASM(Quantum Assembly Language)是IBM公司提出的量子汇编语言，与
+QRunes介绍 中的语法规则类似，一段QASM代码如下所示：
+
+::
+
+    OPENQASM 2.0;
+    include "qelib1.inc";
+    qreg q[10];
+    creg c[10];
+
+    x q[0];
+    h q[1];
+    tdg q[2];
+    sdg q[2];
+    cx q[0],q[2];
+    cx q[1],q[4];
+    u1(pi) q[0];
+    u2(pi,pi) q[1];
+    u3(pi,pi,pi) q[2];
+    cz q[2],q[5];
+    ccx q[3],q[4],q[6];
+    cu3(pi,pi,pi) q[0],q[1];
+    measure q[2] -> c[2];
+    measure q[0] -> c[0];
+
+需要注意的是，QASM 的语法格式与 QRunes
+形相似而神不同，主要区别有以下几点:
+
+• QRunes 对于需要进行转置共轭操作的量子逻辑门与量子线路，需要将目标置于
+DAGGER 与 ENDAG- GER 语句之间，而 QASM 会直接进行转化。
+
+• QRunes 支持对量子逻辑门与量子线路施加控制操作，而 QASM
+不支持，在对量子程序转化 QASM
+指令集之前，会对其中包含的控制操作进行分解。
+
+关于 QASM 更多详细信息的介绍、使用与体验请参考 `IBM Q Experience
+量子云平台 <https://quantumexperience.ng.bluemix.net/qx/editor>`__
+
+QPanda2 提供了QASM 转换工具接口 conver\_qprog\_to\_qasm
+该接口使用非常简单，具体可参考下方示例程序。
+
+4.1.2 实例
+~~~~~~~~~~
+
+下面的例程通过简单的接口调用演示了量子程序转化QASM指令集的过程
+
+::
+
+    from pyqpanda import *
+
+    if __name__ == "__main__":
+        qvm = init_quantum_machine(QMachineType.CPU)
+        q = qvm.qAlloc_many(6)
+        c = qvm.cAlloc_many(6)
+        prog = QProg()
+        cir = QCircuit()
+        cir << T(q[0]) << S(q[1]) << CNOT(q[1], q[0])
+        prog << cir
+        prog << X(q[0]) << Y(q[1]) << CU(1.2345, 3, 4, 5, q[5], q[2])\
+            << H(q[2]) << RX(q[3], 3.14)\
+            << Measure(q[0], c[0])
+
+        qasm = convert_qprog_to_qasm(prog, qvm)
+        print(qasm)
+        qvm.finalize()
+
+具体步骤如下:
+
+• 首先在主程序中用init\_quantum\_machine
+初始化一个量子虚拟机对象，用于管理后续一系列行为
+
+• 接着用 qAlloc\_many 和 cAlloc\_many 初始化量子比特与经典寄存器数目
+
+• 然后调用 QProg 构建量子程序
+
+• 最后调用接口 convert\_qprog\_to\_qasm 输出QASM指令集。finalize()
+用于释放系统资源
+
+运行结果如下：
+
+::
+
+    OPENQASM 2.0;
+    include "qelib1.inc";
+    qreg q[6];
+    creg c[6];
+    u3(0,0.78539816339744828,0) q[0];
+    u3(0,1.5707963267948966,0) q[1];
+    u3(0,-0.67259265358979359,0) q[2];
+    u3(3.1400000000000001,-1.5707963267948966,1.5707963267948966) q[3];
+    u3(0,-0.33629632679489674,0) q[5];
+    cx q[1],q[0];
+    cx q[5],q[2];
+    u3(3.1415926535897931,3.14159265358979,0) q[0];
+    u3(3.1415926535897931,6.2831853071795827,0) q[1];
+    u3(0,0.33629632679489674,0) q[2];
+    measure q[0] -> c[0];
+    cx q[5],q[2];
+    u3(1.1415926535897933,3.1415926535897931,2.8672963267948974) q[2];
+    u3(0,1.5707963267948963,0) q[5];
+    cx q[5],q[2];
+    u3(1.1415926535897929,-1.1947036732051033,0) q[2];
+    cx q[5],q[2];
+    u3(1.5707963267949037,0,-1.3362963267948968) q[2];
+
+**4.2 QASM转化为量子程序**
+--------------------------
+
+通过该功能模块，你可以解析QASM文本文件，将其中的量子逻辑门操作信息提取出来，得到QPanda
+2内部可操作的量子程序。
+
+4.2.1 QASM介绍
+~~~~~~~~~~~~~~
+
+QASM的书写格式规范与例程可以参考量子程序转化QASM模块中的
+`QASM介绍 <#id1>`__ 部分。
+
+QPanda 2提供了QASM文件转换工具接口 convert\_qasm\_to\_qprog()
+该接口使用非常简单，具体可参考下方示例程序。
+
+4.2.2 实例
+~~~~~~~~~~
+
+接下来通过简单的接口调用演示了QASM转化量子程序的过程，
+
+::
+
+    from pyqpanda import *
+
+    if __name__=="__main__":
+        machine = init_quantum_machine(QMachineType.CPU)
+
+        # 编写QASM文件
+        f = open('testfile.txt', mode='w',encoding='utf-8')
+        f.write("""// test QASM file
+            OPENQASM 2.0;
+            include "qelib1.inc";
+            qreg q[3];
+            creg c[3];
+            x q[0];
+            x q[1];
+            z q[2];
+            h q[0];
+            tdg q[1];
+            measure q[0] -> c[0];
+            """)
+        f.close()
+
+        # QASM转换量子程序， 并返回量子程序、量子比特以及经典寄存器
+        prog_trans, qv, cv = convert_qasm_to_qprog("testfile.txt", machine)
+
+        # 量子程序转换QASM
+        qasm = convert_qprog_to_qasm(prog_trans,machine)
+
+        # 打印并对比转换结果
+        print(qasm)
+        destroy_quantum_machine(machine)
+
+具体步骤如下:
+
+• 首先编写 QASM，并将其保存到指定文件中
+
+• 接着在主程序中用init\_quantum\_machine
+初始化一个量子虚拟机对象，用于管理后续一系列行为
+
+• 然后调用 convert\_qasm\_to\_qprog 接口将 QASM 转换为量子程序
+
+• 最后调用convert\_qprog\_to\_qasm 接口，把量子程序转为
+QASM，通过比较量子程序执行结果，判断 QASM 是否正确转换成量子程序，并且用
+destroy\_quantum\_machine 释放系统资源
+
+运行结果如下：
+
+::
+
+    OPENQASM 2.0;
+    include "qelib1.inc";
+    qreg q[3];
+    creg c[3];
+    u3(1.5707963267949037,3.1415926535897931,3.1415926535897931) q[0];
+    u3(3.1415926535897931,2.3561944901923386,0) q[1];
+    u3(0,3.1415926535897931,0) q[2];
+    measure q[0] -> c[0];
+
+*注解*\ ：
+
+上述示例中，由于QASM支持U3门，所以在QProg转QASM时，对量子线路做了优化，输出的QASM中只有U3门，这样可以有效降低量子线路深度。对于暂不支持的操作类型，可能会在QASM转化成量子程序的过程中发生错误。
+
+**4.3 量子程序转化为Quil**
+--------------------------
+
+4.3.1 简介
+~~~~~~~~~~
+
+Quil可以从一个很低级的层次直接描述量子程序、量子算法，它的地位类似于经典计算机中的硬件描述语言或者汇编语言。Quil基本采用“指令+参数列表”的设计方法。一个简单的量子程序例子如下：
+
+::
+
+    X 0
+    Y 1
+    CNOT 0 1
+    H 0
+    RX(-3.141593) 0
+    MEASURE 1 [0]
+
+• X 的作用是对目标量子比特进行 Pauli-X 门操作。与之类似的关键词有 Y 、Z
+、 H 等等。
+
+• Y 的作用是对目标量子比特进行 Pauli-Y 门操作。
+
+• CNOT 的作用是对两个量子比特执行 CNOT
+操作。输入参数为控制量子比特序号和目标量子比特序号。
+
+• H 的作用是对目标量子比特进行 Hadamard 门操作。
+
+• MEASURE
+的作用对目标量子比特进行测量并将测量结果保存在对应的经典寄存器里面，输入参数为目标量子比特序号和保存测量结果的经典寄存器序号。
+
+上述仅为Quil指令集语法的一小部分， 详细介绍请参考
+`pyQuil <https://pyquil.readthedocs.io/en/stable/compiler.html>`__ 。
+
+4.3.2 接口介绍
+~~~~~~~~~~~~~~
+
+我们先用pyqpanda构建一个量子程序：
+
+::
+
+    prog = QProg()
+    prog << X(qubits[0]) << Y(qubits[1])\
+        << H(qubits[2]) << RX(qubits[3], 3.14)\
+        << Measure(qubits[0], cbits[0])
+
+然后调用 convert\_qprog\_to\_quil接口实现转化
+
+::
+
+    quil = convert_qprog_to_quil(prog, qvm)
+
+4.3.3 实例
+~~~~~~~~~~
+
+::
+
+    from pyqpanda import *
+
+    if __name__ == "__main__":
+        qvm = init_quantum_machine(QMachineType.CPU)
+        qubits = qvm.qAlloc_many(4)
+        cbits = qvm.cAlloc_many(4)
+        prog = QProg()
+
+        # 构建量子程序
+        prog << X(qubits[0]) << Y(qubits[1])\
+            << H(qubits[2]) << RX(qubits[3], 3.14)\
+            << Measure(qubits[0], cbits[0])
+
+        # 量子程序转换Quil， 并打印Quil
+        quil = convert_qprog_to_quil(prog, qvm)
+        print(quil)
+
+        qvm.finalize()
+
+运行结果：
+
+::
+
+    X 0
+    Y 1
+    H 2
+    RX(3.140000) 3
+    MEASURE 0 [0]
+
+*警告*
+
+新增接口 convert\_qprog\_to\_quil()
+，与老版本接口transform\_qprog\_to\_quil()功能相同。
+
+**4.4 量子程序序列化**
+----------------------
+
+4.4.1 介绍
+~~~~~~~~~~
+
+定义一种协议将量子程序序列化为二进制数据，方便量子程序的存储与传输。
+
+4.4.2 接口介绍
+~~~~~~~~~~~~~~
+
+我们先用pyqpanda构建一个量子程序：
+
+::
+
+    prog = QProg()
+    prog << H(qubits[0]) \
+        << CNOT(qubits[0], qubits[1]) \
+        << CNOT(qubits[1], qubits[2]) \
+        << CNOT(qubits[2], qubits[3])
+
+然后调用convert\_qprog\_to\_binary接口实现序列化
+
+::
+
+    prog_str = convert_qprog_to_binary(prog, qvm)
+
+*注解：*
+
+量子程序序列化是两个过程， 首先将量子程序序列化为二进制，
+然后再将二进制以base64的格式编码，转化为字符串。
+
+4.4.3 实例
+~~~~~~~~~~
+
+::
+
+    from pyqpanda import *
+    import base64
+
+    if __name__ == "__main__":
+        qvm = init_quantum_machine(QMachineType.CPU)
+        qubits = qvm.qAlloc_many(4)
+        cbits = qvm.cAlloc_many(4)
+
+        # 构建量子程序
+        prog = QProg()
+        prog << H(qubits[0]) \
+            << CNOT(qubits[0], qubits[1]) \
+            << CNOT(qubits[1], qubits[2]) \
+            << CNOT(qubits[2], qubits[3])
+
+        # 量子程序序列化
+        binary_data = convert_qprog_to_binary(prog, qvm)
+
+        # 将得到的二进制数据以base64的方式编码，并打印
+        str_base64_data =  base64.encodebytes(bytes(binary_data))
+        print(str_base64_data)
+
+        destroy_quantum_machine(qvm)
+
+运行结果：
+
+::
+
+    b'AAAAAAQAAAAEAAAABAAAAA4AAQAAAAAAJAACAAAAAQAkAAMAAQACACQABAACAAMA\n'
+
+*注解：*
+
+二进制数据不能直接输出，以base64的编码格式编码，得到相应的字符串
+
+*警告：*
+
+新增接口 convert\_qprog\_to\_binary() ，与老版本接口
+
+transform\_qprog\_to\_binary() 功能相同。
+
+**4.5 解析量子程序二进制文件**
+------------------------------
+
+4.5.1 简介
+~~~~~~~~~~
+
+解析 量子程序序列化 方法序列化的量子程序。
+
+4.5.2 接口介绍
+~~~~~~~~~~~~~~
+
+我们先用pyqPanda构建一个量子程序：
+
+::
+
+    prog = QProg()
+    prog << H(qubits[0]) \
+        << CNOT(qubits[0], qubits[1]) \
+        << CNOT(qubits[1], qubits[2]) \
+        << CNOT(qubits[2], qubits[3])
+
+序列化之后经过base64编码之后得到的结果是（具体序列化的方法参照
+量子程序序列化）
+
+::
+
+    b'AAAAAAQAAAAEAAAABAAAAA4AAQAAAAAAJAACAAAAAQAkAAMAAQACACQABAACAAMA\n'
+
+现在就对这个结果反序列化，先将base64的结果解码成二进制数据：
+
+::
+
+    str_base64_data = b'AAAAAAQAAAAEAAAABAAAAA4AAQAAAAAAJAACAAAAAQAkAAMAAQACACQABAACAAMA\n'
+    data = [int(x) for x in bytes(base64.decodebytes(str_base64_data))]
+
+我们可以使用QPanda2封装的一个接口：
+
+::
+
+    convert_binary_data_to_qprog(qvm, data, qubits_parse, cbits_parse, parseProg);
+
+4.5.3 实例
+~~~~~~~~~~
+
+::
+
+    from pyqpanda import *
+    import base64
+
+    if __name__ == "__main__":
+        qvm = init_quantum_machine(QMachineType.CPU)
+
+        # base64的方式解码，得到的二进制数据
+        str_base64_data = b'AAAAAAQAAAAEAAAABAAAAA4AAQAAAAAAJAACAAAAAQAkAAMAAQACACQABAACAAMA\n';
+        data = [int(x) for x in bytes(base64.decodebytes(str_base64_data))]
+
+        # 解析二进制数据，得到量子程序
+        parseProg = QProg()
+        parseProg = convert_binary_data_to_qprog(qvm, data)
+
+        # 量子程序转换OriginIR并打印
+        print(convert_qprog_to_originir(parseProg,qvm))
+
+        destroy_quantum_machine(qvm)
+
+运行结果：
+
+::
+
+    QINIT 4
+    CREG 4
+    H q[0]
+    CNOT q[0],q[1]
+    CNOT q[1],q[2]
+    CNOT q[2],q[3]
+
+*注解*\ ：
+
+可以运行出正确的结果说明可以将序列化的量子程序正确的解析出来
+
+*警告：*
+
+新增接口 convert\_binary\_data\_to\_qprog()
+，与老版本接口transform\_binary\_data\_to\_qprog() 功能相同。
+
+**4.6 OriginIR 转化为量子程序**
+-------------------------------
+
+通过该功能模块，你可以解析OriginIR文本文件，将其中的量子逻辑门操作信息提取出来，得到QPanda
+2内部可操作的量子程序。
+
+4.6.1 OriginIR
+~~~~~~~~~~~~~~
+
+OriginIR的书写格式规范与例程可以参考量子程序转化OriginIR模块中的
+OriginIR介绍部分。
+
+QPanda 2提供了OriginIR文件转换工具接口 convert\_originir\_to\_qprog()
+该接口使用非常简单，具体可参考下方示例程序。
+
+4.6.2实例
+~~~~~~~~~
+
+接下来通过简单的接口调用演示了OriginIR转化量子程序的过程
+
+::
+
+    from pyqpanda import *
+    if __name__=="__main__":
+        machine = init_quantum_machine(QMachineType.CPU)
+
+        # 编写OriginIR文件
+        f = open('testfile.txt', mode='w',encoding='utf-8')
+        f.write("""QINIT 4
+            CREG 4
+            DAGGER
+            X q[1]
+            X q[2]
+            CONTROL q[1], q[2]
+            RY q[0], (1.047198)
+            ENDCONTROL
+            ENDDAGGER
+            MEASURE q[0], c[0]
+            QIF c[0]
+            H q[1]
+            H q[2]
+            RZ q[2], (2.356194)
+            CU q[2], q[3], (3.141593, 4.712389, 1.570796, -1.570796)
+            CNOT q[2], q[1]
+            ENDQIF
+            """)
+
+        f.close()
+
+        # OriginIR转换量子程序, 返回转换后的量子程序、量子程序使用的量子比特以及经典寄存器
+        prog, qv, cv = convert_originir_to_qprog("testfile.txt", machine)
+
+        # 量子程序转换OriginIR，打印并对比转换结果
+        print(convert_qprog_to_originir(prog,machine))
+
+        destroy_quantum_machine(machine)
+
+具体步骤如下:
+
+• 首先编写OriginIR，并将其保存到指定文件中
+
+• 接着在主程序中用 init\_quantum\_machine
+初始化一个量子虚拟机对象，用于管理后续一系列行为
+
+• 然后调用 convert\_originir\_to\_qprog() 转化
+
+• 最后调用 convert\_qprog\_to\_originir()
+接口，把量子程序转为OriginIR，通过比较输入和生成的OriginIR
+是否相同，判断OriginIR是否正确转换成量子程序，并且用
+destroy\_quantum\_machine释放系统资源
+
+运行结果如下：
+
+::
+
+    QINIT 4
+    CREG 4
+    DAGGER
+    X q[1]
+    X q[2]
+    CONTROL q[1],q[2]
+    RY q[0],(1.047198)
+    ENCONTROL
+    ENDDAGGER
+    MEASURE q[0],c[0]
+    QIF c[0]
+    H q[1]
+    ELSE
+    H q[2]
+    RZ q[2],(2.356194)
+    CU q[2],q[3],(3.141593,4.712389,1.570796,-1.570796)
+    CNOT q[2],q[1]
+    ENDQIF
+
+*注解：*
+
+对于暂不支持的操作类型，可能会在OriginIR转化成量子程序的过程中发生错误。
+
+*警告：*
+
+新增接口 convert\_originir\_to\_qprog() ，与老版本接口
+transformOriginIRToQProg() 功能相同。
+
+**4.7 量子程序转化OriginIR**
+----------------------------
+
+通过该功能模块，你可以解析通过pyqpanda构建的量子程序，将其中包含的量子比特信息以及量子逻辑门操作信息提取出来，得到按固定格式存储的OriginIR。
+
+4.7.1 OriginIR介绍
+~~~~~~~~~~~~~~~~~~
+
+OriginIR是基于QPanda的量子程序中间表示，对QPanda各种特性的支持有非常重要的作用。OriginIR不仅可以表示绝大部分量子逻辑门类型，表示针对量子线路的dagger操作，为量子线路添加控制比特，还可以支持QPanda独有的Qif、QWhile，可以实现量子程序内嵌经典程序。
+
+OriginIR
+主要内容有量子比特、经典寄存器、量子逻辑门、转置共轭操作、添加控制比特操作、QIf、QWhile、经典表达式。
+
+4.7.1.1 量子比特
+^^^^^^^^^^^^^^^^
+
+OriginIR使用QINIT申请量子比特，其格式为QINIT后跟空格+量子比特总数。示例：QINIT6。需要注意的是除注释外QINIT必须出现在OriginIR程序的第一行。
+在使用量子比特时，OriginIR使用q[i]表示某个具体的量子比特，此处i为量子比特的编号，i可为无符号数字型常量，也可为变量，同时也可使用c[i]组成的表达式代替，示例：q[1],q[c[0]],q[c[1]+c[2]+c[3]]。
+
+4.7.1.2 经典寄存器
+^^^^^^^^^^^^^^^^^^
+
+OriginIR使用CREG申请经典寄存器，其格式为CREG后跟空格+经典寄存器总数。示例：CREG
+6；
+在使用经典寄存器时，OriginIR使用c[i]表示某个具体的经典寄存器，i为经典寄存器编号,此处i必须为无符号数字型常量；示例：c[1]。
+
+4.7.1.3 量子逻辑门
+^^^^^^^^^^^^^^^^^^
+
+OriginIR把量子逻辑门分为以下几个种类：单门无参数型关键字；单门一个参数型；单门两个参数；单门三个参数；单门四个参数；双门无参数；双门一个参数；双门四个参数；三门无参数。
+需要注意的是所有单门操作，目标量子比特可以是整个量子比特数组或者单个量子比特。如果是整个量子比特数组时例如：
+
+::
+
+    H q
+
+当量子比特数组大小为3时则等效为：
+
+::
+
+    H q[0]
+    H q[1]
+    H q[2]
+
+1、单门无参数型关键字：H、T、S、X、Y、Z、X1、Y1、Z1、I；表示无参数类型的单量子逻辑门；格式为量子逻辑门关键字+空格+目标量子比特。示例
+
+::
+
+    H q[0]
+
+2、单门一个参数型关键字：RX、RY、RZ、U1；表示有一个参数的单量子逻辑门；格式为量子逻辑门关键字+空格+目标量子比特+逗号+(偏转角度)。示例：
+
+::
+
+    RX q[0],(1.570796)
+
+3、
+单门两个参数型关键字：U2、RPhi；表示有两个参数的单量子逻辑门；格式为量子逻辑门关键字+空格+目标量子比特+逗号+（两个偏转角度）。示例：
+
+::
+
+    U2 q[0],(1.570796,-3.141593)
+
+4、
+单门三个参数型关键字：U3；表示有三个参数的单量子逻辑门；格式为量子逻辑门关键字+空格+目标量子比特+逗号+（三个偏转角度）。示例：
+
+::
+
+    U3 q[0],(1.570796,4.712389,1.570796)
+
+5、单门四个参数关键字：U4；表示有四个参数的单量子逻辑门；格式为量子逻辑门关键字+空格+目标量子比特+逗号+（四个偏转角度）。示例：
+
+::
+
+    U4 q[1],(3.141593,4.712389,1.570796,-3.141593)
+
+6、双门无参数型关键字：CNOT、CZ、ISWAP、SQISWAP、SWAP；表示无参数的双量子逻辑门；格式为量子逻辑门关键字+空格+控制比特+逗号+目标比特。示例：
+
+::
+
+    CNOT q[0],q[1]
+
+7、双门一个参数型关键字：ISWAPTHETA、CR；表示有一个参数的单量子逻辑门；格式为量子逻辑门关键字+空格+控制比特+逗号+目标比特+逗号+(偏转角度)。示例：
+
+::
+
+    CR q[0],q[1],(1.570796)
+
+8、双门四个参数型关键字：CU；表示有四个参数的单量子逻辑门；格式为量子逻辑门关键字+空格+控制比特+逗号+目标比特+逗号+（四个偏转角度）。示例：
+
+::
+
+    CU q[1],q[3],(3.141593,4.712389,1.570796,-3.141593)
+
+9、
+三门无参数型关键字：TOFFOLI；表示无参数的三量子逻辑门；格式为量子逻辑门关键字+空格+控制比特1+逗号+控制比特2+逗号+目标比特。示例：
+
+::
+
+    TOFFOLI  q[0],q[1],q[2]
+
+4.7.1.4 转置共轭操作
+^^^^^^^^^^^^^^^^^^^^
+
+OriginIR中可以对一个或多个量子逻辑门进行转置共轭操作，OriginIR使用DAGGER和
+ENDDAGGER关键字定义转置共轭操作的范围，一个DAGGER必须有一个ENDDAGGER匹配，示例：
+
+::
+
+    DAGGER
+    H q[0]
+    CNOT q[0],q[1]
+    ENDDAGGER
+
+4.7.1.5 添加控制比特操作
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+OriginIR中可以对一个或多个量子逻辑门添加控制比特，OriginIR使用CONTROL 和
+ENDCONTROL关键字定义添加控制比特的范围，CONTROL后跟空格+控制比特列表；示例：
+
+::
+
+    CONTROL q[2],q[3]
+    H q[0]
+    CNOT q[0],q[1]
+    ENDCONTROL
+
+4.7.1.6 QIF
+^^^^^^^^^^^
+
+OriginIR中可以表示量子条件判断程序，它通过QIF、ELSE、ENDIF框定量子条件判断程序的不同分支的范围。QIF必须匹配一个ENDIF，如果QIF有两个分支则需要有ELSE，如果QIF只有一个分支则不需要有ELSE；QIF后跟空格+判断表达式。示例：
+
+::
+
+    1、QIF只有一个条件分支
+    QIF c[0]==c[1]
+    H q[0]
+    CNOT q[0],q[1]
+    ENDIF
+
+    2、QIF有两个条件分支
+    QIF c[0]+c[1]<5
+    H q[0]
+    CNOT q[0],q[1]
+    ELSE
+    H q[0]
+    X q[1]
+    ENDIF
+
+4.7.1.7 QWHILE
+^^^^^^^^^^^^^^
+
+OriginIR中可以表示量子循环判断程序，它通过QWHILE和ENDQWHILE框定循环判断程序的范围，QWHILE必须匹配一个ENDQWHILE；QWHILE后跟空格+判断表达式。示例：
+
+::
+
+    QWHILE c[0]<5
+    H q[c[0]]
+    c[0]=c[0]+1
+    ENDQWHILE
+
+4.7.1.8 经典表达式
+^^^^^^^^^^^^^^^^^^
+
+OriginIR可以在量子程序中嵌入经典表达式，如c[0]==c[1]+c[2]；使用示例：
+
+::
+
+    QWHILE c[0]<5
+    H q[c[0]]
+    c[0]=c[0]+1
+    ENDQWHILE
+
+该示例表示对q[0]~q[4]比特做H门操作；经典表达式中必须是经典寄存器和常量组成的表达式；经典表达式的操作符有
+
+::
+
+    {PLUS , "+"},
+    {MINUS, "-"},
+    {MUL, "*"},
+    {DIV, "/"},
+    {EQUAL, "==" },
+    { NE, "!=" },
+    { GT, ">" },
+    { EGT, ">=" },
+    { LT, "<" },
+    { ELT, "<=" },
+    {AND, "&&"},
+    {OR, "||"},
+    {NOT, "!"},
+    {ASSIGN, "=" }
+
+4.7.1.9 MEASURE操作
+^^^^^^^^^^^^^^^^^^^
+
+MEASURE表示对指定的量子比特进行测量操作，并把结果保存到指定的经典寄存器中。MEASURE后跟空格+目标量子比特+‘，’+目标经典寄存器。示例：
+
+::
+
+    MEASURE q[0],c[0]
+
+如果申请的量子比特和经典寄存器数量相同。可以使用q表示所有量子比特，c表示所有经典比特。示例：
+
+::
+
+    MEAUSRE q,c
+
+如果量子比特和经典比特数量都为3，则等效为
+
+::
+
+    MEAUSRE q[0],c[0]
+    MEAUSRE q[1],c[1]
+    MEAUSRE q[2],c[2]
+
+4.7.1.10 RESET操作
+^^^^^^^^^^^^^^^^^^
+
+RESET操作是将操作的量子比特的量子态恢复到0态。格式为RESET+空格+目标量子比特。其中目标量子比特可以是整个量子比特数组或者单个量子比特。
+示例：
+
+::
+
+    RESET q
+
+    RESET q[1]
+
+4.7.1.11 BARRIER操作
+^^^^^^^^^^^^^^^^^^^^
+
+BARRIER操作是将操作的量子比特进行阻断，防止在线路优化和执行过程。
+格式为BARRIER+空格+目标量子比特。其中目标量子比特可以是整个量子比特数组或者单个、多个量子比特。示例：
+
+::
+
+    BARRIER q
+    BARRIER q[0]
+    BARRIER q[0],q[1],q[2]
+
+4.7.1.12 QGATE操作
+^^^^^^^^^^^^^^^^^^
+
+QGATE为自定义逻辑门操作，可以将多个逻辑门组合成一个新的逻辑门使用。
+它通过QGATE和ENDQGATE框定自定义逻辑门的范围。同时需要注意的是，自定义逻辑门的形参名不能与上述相关关键字冲突。
+
+用户自定义逻辑门的声明规则如下：
+
+::
+
+    QGATE UserDefinedeGateName BitParameter,(angle)
+    //UserDefinedeGateName,用户自定义逻辑门名称，string
+    //BitParameter,用户自定义逻辑门形参信息，string
+    //angle,角度信息，string
+    //其他的相关信息【","、"("等】必须按照定义的格式书写
+    //其中",”及以后的相关信息可空，即角度信息可空
+
+下面是一个简单的例子：
+
+::
+
+    QGATE new_H a
+    H a
+    X a
+    ENDQGATE
+
+
+    QGATE new_RX a,(b)
+    RX a,(PI/2+b)
+    CONTROL q[0]
+    RX a,(-3.141593)
+    DAGGER
+    H a
+    ENDDAGGER
+    ENDCONTROL
+    DAGGER
+    H a
+    DAGGER
+    H a
+    ENDDAGGER
+    ENDDAGGER
+    ENDQGATE
+
+用户可以在申请完量子比特和经典寄存器之后，调用自定义逻辑门，格式如下：
+
+::
+
+     UserDefinedeGateName  argue,(angle)
+    //UserDefinedeGateName,用户自定义逻辑门名称，string,与上述定义部分保持一致
+    //BitParameter,用户自定义逻辑门形参信息，string，必须是q[x],x需要小于申请的量子比特的数目
+    //angle,角度信息，string，可以是数字，或者与PI相关的表达式
+
+下面是一个简单的例子：
+
+::
+
+    new_H q[0]
+    new_RX q[1],(PI/4)
+
+4.7.1.13 OriginIR程序示例
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+OPE算法
+
+::
+
+    QINIT 3
+    CREG 2
+    H q[2]
+    H q[0]
+    H q[1]
+    CONTROL q[1]
+    RX q[2],(-3.141593)
+    ENCONTROL
+    CONTROL q[0]
+    RX q[2],(-3.141593)
+    RX q[2],(-3.141593)
+    ENCONTROL
+    DAGGER
+    H q[1]
+    CR q[0],q[1],(1.570796)
+    H q[0]
+    ENDDAGGER
+    MEASURE q[0],c[0]
+    MEASURE q[1],c[1]
+
+QPanda2提供了OriginIR转换工具接口 std::string
+convert\_qprog\_to\_originir)
+该接口使用非常简单，具体可参考下方示例程序。
+
+4.7.2 实例
+~~~~~~~~~~
+
+下面的例程通过简单的接口调用演示了量子程序转化OriginIR的过程
+
+::
+
+    from pyqpanda import *
+
+    if __name__ == "__main__":
+        machine = init_quantum_machine(QMachineType.CPU)
+        qlist = machine.qAlloc_many(4)
+        clist = machine.cAlloc_many(4)
+        prog = create_empty_qprog()
+        prog_cir = create_empty_circuit()
+
+        # 构建量子线路
+        prog_cir << Y(qlist[2]) << H(qlist[2]) << CNOT(qlist[0],qlist[1])
+
+        # 构建QWhile， 使用量子线路为循环分支
+        qwhile = create_while_prog(clist[1], prog_cir)
+
+        # 构建量子程序， 将QWhile插入到量子程序中
+        prog << H(qlist[2]) << Measure(qlist[1],clist[1]) << qwhile
+
+        # 量子程序转换QriginIR，并打印OriginIR
+        print(convert_qprog_to_originir(prog,machine))
+
+        destroy_quantum_machine(machine)
+
+具体步骤如下:
+
+• 首先在主程序中用init\_quantum\_machine
+初始化一个量子虚拟机对象，用于管理后续一系列行为
+
+• 接着用 qAlloc\_many 和 cAlloc\_many 初始化量子比特与经典寄存器数目
+
+• 然后调用 create\_empty\_qprog 构建量子程序
+
+• 最后调用接口 convert\_qprog\_to\_originir 输出OriginIR字符串，并用
+destroyQuantumMachine 释放系统资源
+
+运行结果如下：
+
+::
+
+    QINIT 4
+    CREG 4
+    H q[2]
+    MEASURE q[1],c[1]
+    QWHILE c[1]
+    Y q[2]
+    H q[2]
+    CNOT q[0],q[1]
+    ENDQWHILE
+
+*注解：*
+
+对于暂不支持的操作类型，OriginIR会显示UnSupported
+XXXNode，其中XXX为具体的节点类型。
+
+*警告：*
+
+新增接口 convert\_qprog\_to\_originir() ，与老版本接口
+transformQProgToOriginIR() 功能相同。
+
+**4.8 量子程序匹配拓扑结构**
+----------------------------
+
+量子计算设备存在量子比特之间的有限连接，使得只能在有限的量子位对上应用两个量子位门。量子程序应用到目标设备时，必须转换原始的量子程序以适应硬件限制，让双量子比特门中的两个量子比特能够满足物理拓扑结构，从而让双量子位门正常作用；
+当前解决方案中多数需要在无法相互作用的两个量子比特间插入额外的SWAP操作，以便将逻辑量子位“移动”到它们可以相互作用的位置。我们称这种解决方法为量子程序匹配拓扑结构。
+
+4.8.1 接口说明
+~~~~~~~~~~~~~~
+
+当前版本中存在两种思路的匹配拓扑方法：
+
+接口 topology\_match:
+
+通过采用线路分层以及A\*搜索算法，在匹配过程中，让插入的SWAP操作个数近似达到最少，使得算法的整体近似消耗达到最少。
+该接口需要传入5个参数，其中分别为
+构建的量子程序、使用的量子比特位集合、初始化的虚拟机指针、使用的SWAP操作的方式、拓扑结构的类型；并且返回映射后的量子程序。
+
+4.8.2 实例
+~~~~~~~~~~
+
+topology\_match 实例
+
+::
+
+    from pyqpanda import *
+
+    if __name__=="__main__":
+        qvm = CPUQVM()
+        qvm.init_qvm()
+
+        qv = qvm.qAlloc_many(16)
+        c = qvm.cAlloc_many(16)
+        src_prog = QProg()
+
+        # 构建量子程序
+        src_prog << CNOT(qv[0], qv[3]) \
+                << CNOT(qv[0], qv[2]) \
+                << CNOT(qv[1], qv[3]) \
+                << CZ(qv[1], qv[2]) \
+                << CZ(qv[0], qv[2]) \
+                << T(qv[1])  \
+                << S(qv[2])  \
+                << H(qv[3])
+
+        # 对src_prog进行概率测量，得到结果results_1
+        qvm.directly_run(src_prog)
+        results_1 = qvm.pmeasure_no_index(qv)
+
+        # 对src_prog进行拓扑匹配，得到匹配IBM_QX5_ARCH拓扑结构的量子程序out_prog
+        out_prog, out_qv = topology_match(src_prog, qv, qvm, CNOT_GATE_METHOD, IBM_QX5_ARCH)
+
+        # 对out_prog进行概率测量，得到结果results_2
+        qvm.directly_run(out_prog)
+        results_2 = qvm.pmeasure_no_index(out_qv)
+
+        # 对比概率测量结果results_1和results_2, 打印相同结果
+        len = min(len(results_1), len(results_2))
+        for index in range(len):
+            if abs(results_1[index] - results_2[index]) < 1.0e-6 :
+                print(results_1[index])
+            else:
+                print("The results are different")
+
+        destroy_quantum_machine(qvm)
+
+具体步骤如下:
+
+• 首先创建量子虚拟机、量子寄存器、经典寄存器
+
+• 编写量子程序 src\_prog ，对该量子程序进行概率测量得到结果 result\_1
+
+• 接着调用 topology\_match() 对 src\_prog
+进行符合特定物理结构的线路映射，得到适配特定物理结构的量子程序 out\_prog
+
+• 对量子程序 out\_prog 进行概率测量得到结果 result\_2
+
+• 由于量子程序映射只是对原线路增加额外的 SWAP
+操作，以适配物理拓扑结构，并不影响线路的结构。所以对比结果 result\_1 和
+result\_2 ，如果结果一致，则线路映射正确。
+
+运行结果如下：
+
+::
+
+    0.4999999701976776
+    0.0
+    0.0
+    0.0
+    0.0
+    0.0
+    0.0
+    0.0
+    0.4999999701976776
+    0.0
+    0.0
+    0.0
+    0.0
+    0.0
+    0.0
+    0.0

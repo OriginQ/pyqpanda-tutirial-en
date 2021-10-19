@@ -1,0 +1,1629 @@
+
+<!DOCTYPE html>
+
+<html lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>8 量子算法基础 &#8212; pyQPanda 1.0.0 文档</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/translations.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="prev" title="7777777" href="../07/test.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="id1">
+<h1><strong>8 量子算法基础</strong><a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h1>
+<section id="id2">
+<h2><strong>8.1 基础概念回顾</strong><a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
+<section id="id3">
+<h3>8.1.1 基础定义<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h3>
+<p>在物理学中，量子是物理量的最小的不可分的基本单位。比特是计算机术语，指信息量最小单位。不同于经典比特，量子比特不再只能取值0或1，还可以处于0和1的任意比例叠加的中间态。</p>
+<p>对量子比特进行的基本运算操作叫做量子门。</p>
+<p>量子门分为单比特门和多比特门。单比特门有Hadamard门、Pauli-X/Y/Z门和旋转X/Y/Z门等。二比特门既有受控的单比特门（例如CNOT门等）也有交换门。
+通过受控等扩展方式，可以将单比特门和二比特门进一步扩展为多比特门。
+注意，测量是一种特殊的量子门，它是不可逆的，会改变量子比特的状态。</p>
+<p>任何量子算法，都是由这些基本的量子门组合得到的。</p>
+<p>普适量子门的定义参见 常见量子逻辑门矩阵形式。</p>
+</section>
+<section id="pyqpanda">
+<h3>8.1.2 pyQPanda接口函数<a class="headerlink" href="#pyqpanda" title="永久链接至标题">¶</a></h3>
+<p>在pyQPanda中，量子门的定义函数形式如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gate</span> <span class="o">=</span> <span class="n">H</span><span class="p">(</span><span class="n">qubit</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><em>注解：</em></p>
+<p>输入参数为量子比特Qubit及其他参数，返回值为可以插入量子线路的量子门QGate。</p>
+<p>在pyQPanda中定义的量子门种类非常丰富。特别地，pyQPanda中支持完全自定义的量子门U4门，它的接口函数同时有以下几种重载：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">U4</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">gamma</span><span class="p">,</span> <span class="n">delta</span><span class="p">,</span> <span class="n">qubit</span><span class="p">)</span>
+<span class="n">U4</span><span class="p">(</span><span class="n">qubit</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">gamma</span><span class="p">,</span> <span class="n">delta</span><span class="p">)</span>
+<span class="n">U4</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">qubit</span><span class="p">)</span>
+<span class="n">U4</span><span class="p">(</span><span class="n">qubit</span><span class="p">,</span> <span class="n">matrix</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>如前文所述，量子门的接口函数有两种拓展操作：转置共轭和受控。两种操作都各有两种实现方式。</p>
+<p>转置共轭操作的两种接口函数定义如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gate</span> <span class="o">=</span> <span class="n">H</span><span class="p">(</span><span class="n">qubit</span><span class="p">)</span>
+<span class="n">gate1</span> <span class="o">=</span> <span class="n">gate</span><span class="o">.</span><span class="n">dagger</span><span class="p">()</span>
+<span class="n">gate</span><span class="o">.</span><span class="n">setDagger</span><span class="p">(</span><span class="n">true</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><em>注解：</em></p>
+<p>dagger函数返回的是一个基于目标量子门的新量子门，setDagger返回的则是进行转置共轭后的目标量子门。</p>
+<p>受控操作的两种接口函数定义如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gate</span> <span class="o">=</span> <span class="n">H</span><span class="p">(</span><span class="n">qubit</span><span class="p">)</span>
+<span class="n">gate1</span> <span class="o">=</span> <span class="n">gate</span><span class="o">.</span><span class="n">control</span><span class="p">(</span><span class="n">QVec</span><span class="p">)</span>
+<span class="n">gate</span><span class="o">.</span><span class="n">setControl</span><span class="p">(</span><span class="n">QVec</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><em>注解：</em></p>
+<p>区别与转置共轭操作类似，但受控函数入参是Qvec（qubit的list）而非单个qubit。</p>
+</section>
+<section id="id4">
+<h3>8.1.3 实例<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h3>
+<p>下面以一个程序实例，来展示基本的量子比特和量子门操作的代码实现。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">pyqpanda</span> <span class="k">as</span> <span class="nn">pq</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">machine</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">)</span>
+    <span class="n">qubits</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">control_qubits</span> <span class="o">=</span> <span class="p">[</span><span class="n">qubits</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">qubits</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+    <span class="n">prog</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">create_empty_qprog</span><span class="p">()</span>
+
+    <span class="c1"># 构建量子程序</span>
+    <span class="n">prog</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> \
+        <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span> \
+        <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">dagger</span><span class="p">())</span> \
+        <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">X</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span><span class="o">.</span><span class="n">control</span><span class="p">(</span><span class="n">control_qubits</span><span class="p">))</span>
+
+    <span class="c1"># 对量子程序进行概率测量</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">prob_run_dict</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">qubits</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">pq</span><span class="o">.</span><span class="n">destroy_quantum_machine</span><span class="p">(</span><span class="n">machine</span><span class="p">)</span>
+
+    <span class="c1"># 打印测量结果</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">key</span><span class="o">+</span><span class="s2">&quot;:&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>
+</pre></div>
+</div>
+<p>输出结果应如下所示，分别以0.5的概率得到 |0⟩和 |2⟩：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">000</span><span class="p">:</span><span class="mf">0.5</span>
+<span class="mi">010</span><span class="p">:</span><span class="mf">0.5</span>
+</pre></div>
+</div>
+<p>以上就是量子比特和量子门的基本定义和在pyQPanda中的调用介绍。</p>
+</section>
+</section>
+<section id="id5">
+<h2><strong>8.2 试验态制备与量子纠缠</strong><a class="headerlink" href="#id5" title="永久链接至标题">¶</a></h2>
+<section id="id6">
+<h3>8.2.1 试验态制备<a class="headerlink" href="#id6" title="永久链接至标题">¶</a></h3>
+<p>试验态制备，指的是量子计算中任意算法的初始量子态的构造，是量子计算的初始步骤。</p>
+<p>以单比特的两态空间为例，在实际量子运算中，我们可以直接得到的默认量子态是基态
+|0⟩，通过非门可以间接得到基态 |1⟩。</p>
+<p>对于任给的目标叠加量子态，我们则需要构造相应的量子门组合来得到。从基态
+|0⟩ 出发制备任给目标叠加态的过程称为初态制备。</p>
+<section id="id7">
+<h4>8.2.1.1 最大叠加态<a class="headerlink" href="#id7" title="永久链接至标题">¶</a></h4>
+<p>以二比特态空间为例，从<span class="math notranslate nohighlight">\(|0\rangle^{\otimes 2}\)</span>出发，对每个量子比特进行Hadamard门操作可以得到二比特空间中所有基态的均匀叠加。</p>
+<p>类似地，在任意维态空间中，均可以借助Hadamard门从多维的 |0⟩
+基态出发，得到所有基态均匀线性组合的量子态。</p>
+<p>这种量子态称为最大叠加态，很多量子计算中量子比特的初始状态要求为最大叠加态，量子计算的并行性也有赖于此。</p>
+<p>通过试验态制备，我们就可以得到任意的基础量子态，从而完成量子计算中运算对象的构造。但是在执行运算操作之前，我们需要对量子计算所使用的量子比特给出明确的约束——纠缠关联。</p>
+<p>在介绍量子纠缠之前，我们需要介绍一下纯态和混态。</p>
+<p>非基态的量子态都为叠加态。叠加态又可以分为相干叠加和非相干叠加，分别称为纯态和混态。</p>
+<p>纯态与混态的区分方式有多种，典型的有布洛赫球（Bloch
+Sphere），将态空间与Bloch球关联，球面上量子态为纯态，球体内的量子态为混态。</p>
+<p>另一种重要的区分方式为密度矩阵，混态的密度矩阵非对角元均为0。</p>
+</section>
+</section>
+<section id="id8">
+<h3>8.2.2 量子纠缠<a class="headerlink" href="#id8" title="永久链接至标题">¶</a></h3>
+<p>如果一个量子系统的量子态
+<span class="math notranslate nohighlight">\(|\psi\rangle\)</span>可以表示成形如<span class="math notranslate nohighlight">\(|\psi\rangle=\left|\psi_{0}\right\rangle \otimes\left|\psi_{1}\right\rangle\)</span>的两个量子系统的直积形式，我们就将此量子态称为直积态。</p>
+<p><em>注解：</em></p>
+<p>不能进行这种直积分解的量子态就是纠缠态。</p>
+<p>例如对二比特的Bell态<span class="math notranslate nohighlight">\(\frac{1}{\sqrt{2}}|00\rangle+\frac{1}{\sqrt{2}}|11\rangle\)</span>，它不能写成两个单比特量子态的直积形式。</p>
+<p>量子纠缠态有超越经典关联的量子关联。为了发挥量子计算的并行性和高效性，量子计算使用的量子比特之间应当有着纠缠关联。</p>
+</section>
+<section id="id9">
+<h3>8.2.3 最大叠加态制备<a class="headerlink" href="#id9" title="永久链接至标题">¶</a></h3>
+<p>下面是基于pyQPanda的最大叠加态制备的代码实现，调用的量子比特之间有着纠缠关联。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">pyqpanda</span> <span class="k">as</span> <span class="nn">pq</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">machine</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">)</span>
+    <span class="n">qubits</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">prog</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">create_empty_qprog</span><span class="p">()</span>
+
+    <span class="c1"># 构建量子程序</span>
+    <span class="n">prog</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> \
+        <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span> \
+        <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">qubits</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+
+    <span class="c1"># 对量子程序进行概率测量</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">prob_run_dict</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">qubits</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">pq</span><span class="o">.</span><span class="n">destroy_quantum_machine</span><span class="p">(</span><span class="n">machine</span><span class="p">)</span>
+
+    <span class="c1"># 打印测量结果</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">key</span><span class="o">+</span><span class="s2">&quot;:&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>
+</pre></div>
+</div>
+<p>运行结果应当是以均匀概率1/8得到3比特空间中所有量子态：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">000</span><span class="p">,</span> <span class="mf">0.125</span>
+<span class="mi">001</span><span class="p">,</span> <span class="mf">0.125</span>
+<span class="mi">010</span><span class="p">,</span> <span class="mf">0.125</span>
+<span class="mi">011</span><span class="p">,</span> <span class="mf">0.125</span>
+<span class="mi">100</span><span class="p">,</span> <span class="mf">0.125</span>
+<span class="mi">101</span><span class="p">,</span> <span class="mf">0.125</span>
+<span class="mi">110</span><span class="p">,</span> <span class="mf">0.125</span>
+<span class="mi">111</span><span class="p">,</span> <span class="mf">0.125</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="hadamard-testswap-test">
+<h2><strong>8.3 Hadamard Test与SWAP Test</strong><a class="headerlink" href="#hadamard-testswap-test" title="永久链接至标题">¶</a></h2>
+<p>量子线路是一系列量子门操作的组合。众多量子线路中有一部分量子线路是在构造量子算法时会被反复使用，这些被高频调用的量子线路组件我们称之为量子算法基本线路，下面将介绍几种常用基本线路。</p>
+<section id="hadamard-test">
+<h3>8.3.1 Hadamard Test<a class="headerlink" href="#hadamard-test" title="永久链接至标题">¶</a></h3>
+<p>Hadamard Test量子线路的主要作用是对任给的幺正算符 <span class="math notranslate nohighlight">\(U\)</span> 和量子态
+<span class="math notranslate nohighlight">\(\psi\)</span> ，可以给出该幺正算符在量子态上的投影期望
+<span class="math notranslate nohighlight">\(\langle\psi|U| \psi\rangle\)</span> 。</p>
+<p>Hadamard Test的量子线路图结构简单，如下所示。</p>
+<figure class="align-default" id="id119">
+<img alt="\_images/Hadamard.png" src="https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/Hadamard.png" />
+<figcaption>
+<p><span class="caption-text">_images/Hadamard.png</span><a class="headerlink" href="#id119" title="永久链接至图片">¶</a></p>
+</figcaption>
+</figure>
+<p>整个量子线路可以视为对两个寄存器中量子比特组成的一个n+1维量子态<span class="math notranslate nohighlight">\(| 0\rangle\)</span><span class="math notranslate nohighlight">\(| \psi\rangle\)</span>进行量子门操作组合<span class="math notranslate nohighlight">\(Q=\left(H \otimes I^{\otimes n}\right)(C-U)\left(H \otimes I^{\otimes n}\right)\)</span>，其中
+<span class="math notranslate nohighlight">\(C−U\)</span> 表示基于幺正算符 <span class="math notranslate nohighlight">\(U\)</span> 的受控门。</p>
+<section id="id10">
+<h4>8.3.1.1 输出结果及推广<a class="headerlink" href="#id10" title="永久链接至标题">¶</a></h4>
+<p>对Hadamard Test量子线路的输出结果进行推导，有如下结论：</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned} Q|0\rangle &amp;|\psi\rangle=\frac{|0\rangle+|1\rangle}{2}|\psi\rangle+\frac{|0\rangle-|1\rangle}{2} U|\psi\rangle \\ &amp;=|0\rangle \frac{|\psi\rangle+U|\psi\rangle}{2}+|1\rangle \frac{|\psi\rangle-U|\psi\rangle}{2}  \end{aligned}\end{split}\]</div>
+<p>对输出的结果量子态进行测量得到<span class="math notranslate nohighlight">\(| 0\rangle\)</span> ,
+<span class="math notranslate nohighlight">\(| 1\rangle\)</span>的概率为：</p>
+<div class="math notranslate nohighlight">
+\[P_{0}=\frac{1}{4} \|(I+U)(Q|0\rangle|\psi\rangle) \mid \|^{2}=\frac{1+\operatorname{Re}(\langle\psi|U| \psi\rangle)}{2}, P_{1}=1-P_{0}\]</div>
+<p>由公式推导可知，Hadamard Test的结果相应的测量概率均与
+:math:<a href="#id11"><span class="problematic" id="id12">`</span></a>Re(⟨ψ|U|ψ⟩) <a href="#id13"><span class="problematic" id="id14">`</span></a>即幺正算符$ U :math:<a href="#id15"><span class="problematic" id="id16">`</span></a>在量子态 <a href="#id17"><span class="problematic" id="id18">`</span></a>ψ$
+上投影期望的实部相关。</p>
+<p>将图中测量之前的
+<span class="math notranslate nohighlight">\(H \)</span>门，则可以得到概率与投影期望虚部相关的结果量子态。</p>
+</section>
+<section id="id19">
+<h4>8.3.1.2 代码实例<a class="headerlink" href="#id19" title="永久链接至标题">¶</a></h4>
+<p>取<span class="math notranslate nohighlight">\(|\psi\rangle=\frac{|0\rangle+|1\rangle}{\sqrt{2}}\)</span>,
+<span class="math notranslate nohighlight">\(U=H\)</span>, Hadamard Test的一个代码实例如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">pyqpanda</span> <span class="k">as</span> <span class="nn">pq</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+        <span class="n">machine</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">)</span>
+        <span class="n">cqv</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">tqv</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">prog</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">create_empty_qprog</span><span class="p">()</span>
+
+        <span class="c1"># 构建量子程序</span>
+        <span class="n">prog</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">cqv</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> \
+                <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">tqv</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> \
+                <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">tqv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">control</span><span class="p">([</span><span class="n">cqv</span><span class="p">[</span><span class="mi">0</span><span class="p">]]))</span>\
+                <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">cqv</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+        <span class="c1"># 对量子程序进行概率测量</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">prob_run_dict</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">cqv</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">pq</span><span class="o">.</span><span class="n">destroy_quantum_machine</span><span class="p">(</span><span class="n">machine</span><span class="p">)</span>
+
+        <span class="c1"># 打印测量结果</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">key</span><span class="o">+</span><span class="s2">&quot;:&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>
+</pre></div>
+</div>
+<p>输出结果应如下所示，分别以<span class="math notranslate nohighlight">\(\frac{1+\sqrt{2} / 2}{2}\)</span>和<span class="math notranslate nohighlight">\(1-\frac{1+\sqrt{2} / 2}{2}\)</span>的概率得到
+<span class="math notranslate nohighlight">\(|0⟩\)</span>和 <span class="math notranslate nohighlight">\(|1⟩\)</span>：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">0</span><span class="p">:</span><span class="mf">0.853553</span>
+<span class="mi">1</span><span class="p">:</span><span class="mf">0.146447</span>
+</pre></div>
+</div>
+<p>Hadamard Test有着多种形式和广泛用途，其中一种特殊形式是基本量子线路SWAP
+Test。</p>
+</section>
+</section>
+<section id="swap-test">
+<h3>8.3.2 SWAP Test<a class="headerlink" href="#swap-test" title="永久链接至标题">¶</a></h3>
+<p>任给两个维数相同的量子态，通过SWAP
+Test线路，可以得到两个量子态的保真度，反应了它们的重叠情况。</p>
+<p>两个量子态$ |ϕ⟩<span class="math notranslate nohighlight">\(,\)</span>|ψ⟩
+<span class="math notranslate nohighlight">\(的保真度是指量子态内积范数的平方\)</span>||^{2}$。</p>
+<p>SWAP Test的量子线路图如下所示。</p>
+<figure class="align-default" id="id120">
+<img alt="\_images/SWAP.png" src="https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/SWAP.png" />
+<figcaption>
+<p><span class="caption-text">_images/SWAP.png</span><a class="headerlink" href="#id120" title="永久链接至图片">¶</a></p>
+</figcaption>
+</figure>
+<p>对SWAP Test的公式推导验证过程完全类似于Hadamard
+Test，结果量子态的第一个寄存器测量得到<span class="math notranslate nohighlight">\(|0⟩\)</span>,<span class="math notranslate nohighlight">\(|1⟩\)</span>
+的概率均与给定的两个量子态的保真度相关。</p>
+<div class="math notranslate nohighlight">
+\[P_{0}=\frac{1+|\langle\psi \mid \phi\rangle|^{2}}{2}, P_{1}=1-P_{0}\]</div>
+<p>SWAP
+Test作为Hadamard的一种特殊形式，它对两个给定量子态给出了其保真度相关的测量结果，具有重要应用意义。在量子态的内积相关研究中有着重要作用。</p>
+<p>如果将受控SWAP门替换为一般的受控门F那么可以还原得到一般形式的Hadamard
+Test的结果量子态</p>
+<div class="math notranslate nohighlight">
+\[\frac{|0\rangle}{2}(I+F)|\phi\rangle|\psi\rangle+\frac{|1\rangle}{2}(I-F)|\phi\rangle|\psi\rangle\]</div>
+<section id="id20">
+<h4>8.3.2.1 代码实例<a class="headerlink" href="#id20" title="永久链接至标题">¶</a></h4>
+<p>SWAP Test的代码实例与Hadamard Test有细微区别。</p>
+<p>取<span class="math notranslate nohighlight">\(|\phi\rangle=\frac{|0\rangle+|1\rangle}{\sqrt{2}},|\psi\rangle=|1\rangle\)</span>,
+SWAP Test的一个代码实例如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">pyqpanda</span> <span class="k">as</span> <span class="nn">pq</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">machine</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">)</span>
+    <span class="n">cqv</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">tqv</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">qvec</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">prog</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">create_empty_qprog</span><span class="p">()</span>
+
+    <span class="c1"># 构建量子程序</span>
+    <span class="n">prog</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">cqv</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> \
+        <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">tqv</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> \
+        <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">X</span><span class="p">(</span><span class="n">qvec</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> \
+        <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">SWAP</span><span class="p">(</span><span class="n">tqv</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">qvec</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">control</span><span class="p">([</span><span class="n">cqv</span><span class="p">[</span><span class="mi">0</span><span class="p">]]))</span>\
+        <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">cqv</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+    <span class="c1"># 对量子程序进行概率测量</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">prob_run_dict</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">cqv</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">pq</span><span class="o">.</span><span class="n">destroy_quantum_machine</span><span class="p">(</span><span class="n">machine</span><span class="p">)</span>
+
+    <span class="c1"># 打印测量结果</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">key</span><span class="o">+</span><span class="s2">&quot;:&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>
+</pre></div>
+</div>
+<p>输出结果应如下所示，分别以 0.75 和 0.25 的概率得到$ |0⟩<span class="math notranslate nohighlight">\(和\)</span>
+|1⟩$ ：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">0</span><span class="p">:</span><span class="mf">0.75</span>
+<span class="mi">1</span><span class="p">:</span><span class="mf">0.25</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="id21">
+<h2><strong>8.4 振幅放大</strong><a class="headerlink" href="#id21" title="永久链接至标题">¶</a></h2>
+<p>振幅放大（Amplitude
+Amplification）线路的主要作用为对于给定纯态的振幅进行放大，从而调整其测量结果概率分布。</p>
+<section id="id22">
+<h3>8.4.1 算法背景<a class="headerlink" href="#id22" title="永久链接至标题">¶</a></h3>
+<p>对于某个已知大小的可二元分类且标准<span class="math notranslate nohighlight">\(f\)</span>确定的有限集合$
+Ω<span class="math notranslate nohighlight">\(，基于\)</span> f <span class="math notranslate nohighlight">\(可以将集合中的任一元素\)</span>|ψ⟩
+<span class="math notranslate nohighlight">\(表示为两个正交基态\)</span>|<em>{0}:math:`,`|</em>{1}$的线性组合。</p>
+<div class="math notranslate nohighlight">
+\[|\psi\rangle=\sin \theta\left|\varphi_{1}\right\rangle+\cos \theta\left|\varphi_{0}\right\rangle,\left|\varphi_{0}\right\rangle=\left|\varphi_{1}^{\perp}\right\rangle\]</div>
+<p>振幅放大量子线路可以将叠加态<span class="math notranslate nohighlight">\(|ψ⟩ \)</span>left|psi_{1}rightrangle`的振幅放大，从而得到一个结果量子态，能够以大概率测量得到目标量子态<span class="math notranslate nohighlight">\(\left|\psi_{1}\right\rangle\)</span>。</p>
+<p>假设我们可以构造出某种量子门操作的组合，记该组合为振幅放大算子 Q ，将 Q
+作用 k 次于量子态:math:<a href="#id23"><span class="problematic" id="id24">`</span></a><a href="#id25"><span class="problematic" id="id26">|</span></a>ψ⟩ <a href="#id27"><span class="problematic" id="id28">`</span></a>上得到形如下式的量子态</p>
+<div class="math notranslate nohighlight">
+\[\left|\psi_{k}\right\rangle=\sin k \theta\left|\varphi_{1}\right\rangle+\cos k \theta\left|\varphi_{0}\right\rangle, k \theta \approx \frac{\pi}{2}\]</div>
+<p>那么就完成了所需的振幅放大量子线路构建。</p>
+<p>相应的量子线路图如下：</p>
+<figure class="align-default" id="id121">
+<img alt="\_images/AmplitudeAmplification.png" src="https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/AmplitudeAmplification.png" />
+<figcaption>
+<p><span class="caption-text">_images/AmplitudeAmplification.png</span><a class="headerlink" href="#id121" title="永久链接至图片">¶</a></p>
+</figcaption>
+</figure>
+<p>假设基于集合$ Ω <span class="math notranslate nohighlight">\(和分类标准\)</span> f <span class="math notranslate nohighlight">\(的量子态\)</span>
+|ψ⟩:math:<a href="#id29"><span class="problematic" id="id30">`</span></a>已经完成制备，关键在于构造振幅放大算子 <a href="#id31"><span class="problematic" id="id32">`</span></a>Q $。</p>
+<p>定义振幅放大算子如下</p>
+<div class="math notranslate nohighlight">
+\[P_{1}=I-2\left|\psi_{1}\right\rangle\left\langle\psi_{1}|, P=I-2| \psi\right\rangle\langle\psi|, Q=-P P_{1}\]</div>
+<p><em>注解：</em></p>
+<p>如何通过集合$ Ω <span class="math notranslate nohighlight">\(和分类标准\)</span> f
+<span class="math notranslate nohighlight">\(来制备量子态？\)</span>P_{1}<span class="math notranslate nohighlight">\(,\)</span>P
+$又是怎样通过量子线路实现的？</p>
+<p>简单验证可知在<span class="math notranslate nohighlight">\(\left\{\left|\varphi_{1}\right\rangle,\left|\varphi_{0}\right\rangle\right\}\)</span>张成的空间中算子$
+Q $可以表示为</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}Q=\left[\begin{array}{cc}\cos (2 \theta) &amp; -\sin (2 \theta) \\ \sin (2 \theta) &amp; \cos (2 \theta)\end{array}\right]\end{split}\]</div>
+<p>实质上可以视为一个角度为 2θ 的旋转量子门操作。因此有</p>
+<div class="math notranslate nohighlight">
+\[Q^{n}|\psi\rangle=\sin (2 n+1) \theta\left|\varphi_{1}\right\rangle+\cos (2 n+1) \theta\left|\varphi_{0}\right\rangle\]</div>
+<p>选取合适的旋转次数 n 使得 <img alt="img" src="file:///C:UsersORIGIN~1AppDataLocalTempksohtmlwps11FA.tmp.jpg" /> 最接近 1 即可完成振幅放大量子线路。</p>
+<p>相比经典的遍历分类方法，振幅放大量子线路可以充分体现量子计算的优势。</p>
+</section>
+<section id="id33">
+<h3>8.4.2 代码实例<a class="headerlink" href="#id33" title="永久链接至标题">¶</a></h3>
+<p>取<span class="math notranslate nohighlight">\(\Omega=\{0,1\},|\psi\rangle=\frac{|0\rangle+|1\rangle}{2}, P_{1}=I-2|1\rangle\langle 1|=Z\)</span>
+,振幅放大量子线路的相应代码实例如下</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">pyqpanda</span> <span class="k">as</span> <span class="nn">pq</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">pi</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">machine</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">)</span>
+    <span class="n">qvec</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">prog</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">create_empty_qprog</span><span class="p">()</span>
+
+    <span class="c1"># 构建量子程序</span>
+    <span class="n">prog</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">qvec</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">7</span><span class="p">):</span>
+         <span class="n">prog</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">RY</span><span class="p">(</span><span class="n">qvec</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span>
+
+    <span class="c1"># 对量子程序进行概率测量</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">prob_run_dict</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">qvec</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">pq</span><span class="o">.</span><span class="n">destroy_quantum_machine</span><span class="p">(</span><span class="n">machine</span><span class="p">)</span>
+
+    <span class="c1"># 打印测量结果</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+         <span class="nb">print</span><span class="p">(</span><span class="n">key</span><span class="o">+</span><span class="s2">&quot;:&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>
+</pre></div>
+</div>
+<p>输出结果应如下所示，分别以 1 和 0 的概率得到$ |0⟩:math:<a href="#id34"><span class="problematic" id="id35">`</span></a>和 <a href="#id36"><span class="problematic" id="id37">`</span></a>|1⟩$
+：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span>
+<span class="mi">1</span><span class="p">:</span><span class="mi">0</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id38">
+<h2><strong>8.5 量子傅里叶变换</strong><a class="headerlink" href="#id38" title="永久链接至标题">¶</a></h2>
+<p>量子傅里叶变换（QFT）实质上是经典的逆离散傅里叶变换（IDFT）的量子版本。</p>
+<p>量子傅里叶变换可以将存在于基向量中的数据与振幅中的数据在一定条件下相互转换。</p>
+<section id="id39">
+<h3>8.5.1 基本定义<a class="headerlink" href="#id39" title="永久链接至标题">¶</a></h3>
+<p>QFT可以简单地通过对IDFT进行替换得到，QFT和DFT本质上都是同一个向量在两个等价空间中的不同表示形式，即基向量的更换。</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned} y_{k} &amp; \rightarrow \frac{1}{\sqrt{N}} \Sigma_{j=0}^{N-1} x_{j} e^{\frac{2 \pi i}{N} j k} \\|x\rangle &amp; \rightarrow \frac{1}{2^{\frac{n}{2}}} \Sigma_{k=0}^{2^{n}-1} e^{\frac{2 \pi i}{2^{n}} x k}|k\rangle \end{aligned}\end{split}\]</div>
+<p>由定义可知，空间
+<span class="math notranslate nohighlight">\(span{|x⟩} \)</span>Sigma_{x} alpha_{x}|xrangle`通过傅里叶变换可以表示为另一个等价空间
+<span class="math notranslate nohighlight">\(span{|k⟩} \)</span>Sigma_{k} alpha_{k}|krangle`,
+且线性组合的系数<span class="math notranslate nohighlight">\(\beta_{k}\)</span>由<span class="math notranslate nohighlight">\(|x⟩\)</span>
+和<span class="math notranslate nohighlight">\(\alpha_{k}\)</span> 决定。</p>
+<p><em>注解</em>：</p>
+<p>量子傅里叶变换/逆变换，实质上可以视为一种振幅和基向量的相互转化。</p>
+</section>
+<section id="id40">
+<h3>8.5.2 量子线路构造<a class="headerlink" href="#id40" title="永久链接至标题">¶</a></h3>
+<p>对QFT的量子线路实现需要对其表达式进行变形，得到可以用现有普适量子门组合实现的变换过程。</p>
+<section id="qft">
+<h4>8.5.2.1 QFT的求和形式与张量积形式<a class="headerlink" href="#qft" title="永久链接至标题">¶</a></h4>
+<p>对任给整数$ x <span class="math notranslate nohighlight">\(，由二进制展开\)</span>k=<em>{i=1}^{n} k</em>{i}
+2^{n-i}<span class="math notranslate nohighlight">\(，对\)</span>|x⟩$进行量子傅里叶变换的结果可表示为</p>
+<p><span class="math notranslate nohighlight">\(Q F T(|x\rangle)=\frac{1}{2^{\frac{n}{2}}} \Sigma_{k=0}^{2^{n}-1} e^{\frac{2 \pi i x k}{2^{n}}}|k\rangle=\frac{1}{2^{\frac{n}{2}}} \Sigma_{k_{1}=0}^{1} \cdots \Sigma_{k_{n}=0}^{1} e^{2 \pi i x k\left(\Sigma_{l=1}^{n} k l 2^{-l}\right)}\left|k_{1} \cdots k_{n}\right\rangle\)</span>
+<span class="math notranslate nohighlight">\(=\frac{1}{2^{\frac{n}{2}}} \Sigma_{k_{1}=0}^{1} \cdots \Sigma_{k_{n}=0}^{1} \otimes_{l=1}^{n} e^{2 \pi i x k l 2^{-l}}\left|k_{l}\right\rangle=\frac{1}{2^{\frac{n}{2}}} \otimes_{l=1}^{n}\left(|0\rangle+e^{2 \pi i x 2^{-l}}|1\rangle\right)\)</span></p>
+<p>由上式可知，QFT可以将特定量子态$ |x⟩$
+表示为另一组基的线性组合，而这个线性组合还能表示为多个单比特量子态<span class="math notranslate nohighlight">\(\frac{1}{\sqrt{2}}\left(|0\rangle+e^{2 \pi i x 2^{-l}}|1\rangle\right)\)</span>的张量积。</p>
+<p>因此对任给整数$
+x<span class="math notranslate nohighlight">\(，如果可以由二进制展开位\)</span>|x_{n+1-l}<span class="math notranslate nohighlight">\(快速构造量子态\)</span>(|0+e^{2
+i x
+2^{-l}}|1)$，那么就可以通过张量积形式的QFT表达式完成相应QFT量子线路的构造。</p>
+</section>
+<section id="id41">
+<h4>8.5.2.2 二进制展开与量子态制备<a class="headerlink" href="#id41" title="永久链接至标题">¶</a></h4>
+<p>任给整数 <span class="math notranslate nohighlight">\(x\)</span> 进行二进制展开近似：</p>
+<div class="math notranslate nohighlight">
+\[x / 2^{m} \approx\left[x_{1} \cdots x_{m}\right] / 2^{m}=\left[0 . x_{1} \cdots x_{m}\right]=\Sigma_{k=1}^{m} x_{k} 2^{-k}\]</div>
+<p>而</p>
+<div class="math notranslate nohighlight">
+\[2 \pi i x 2^{-l}=2 \pi i\left[x_{1} \cdots x_{n}\right] 2^{-l}=2 \pi i\left[0 . x_{n-l} \cdots x_{n}\right]\]</div>
+<p>于是制备<span class="math notranslate nohighlight">\(\frac{1}{\sqrt{2}}\left(|0\rangle+e^{2 \pi i x 2^{-l}}|1\rangle\right)\)</span>转化为制备<span class="math notranslate nohighlight">\(\frac{1}{\sqrt{2}}\left(|0\rangle+e^{2 \pi i\left[0 . x_{n-l} \cdot x_{n}\right]}|1\rangle\right)\)</span>。</p>
+<p>注意到<span class="math notranslate nohighlight">\(H|0\rangle=\frac{1}{\sqrt{2}}(|0\rangle+|1\rangle)=\frac{1}{\sqrt{2}}\left(|0\rangle+e^{2 \pi i\left[0 . x_{n}\right]}|1\rangle\right)\)</span>，而</p>
+<p><span class="math notranslate nohighlight">\(\frac{1}{\sqrt{2}}\left(|0\rangle+e^{2 \pi i\left[0 . x_{n-1} -{x}_{n}\right]}|1\rangle\right)=\frac{1}{\sqrt{2}}\left(|0\rangle+e^{2 \pi i\left[0 . x_{n-1}\right.} e^{2 \pi i\left[0.0 x_{n}\right]}|1\rangle\right)\)</span>
+<span class="math notranslate nohighlight">\(R_{m}|0\rangle=|0\rangle, R_{m}|1\rangle=e^{2 \pi i \frac{1}{2^{m}}}|1\rangle\)</span></p>
+<p>定义受控旋转量子门<span class="math notranslate nohighlight">\((C-R)_{j-k+1}\)</span>满足</p>
+<p><span class="math notranslate nohighlight">\((C-R)_{j-k+1} \frac{1}{\sqrt{2}}\left(|0\rangle+e^{2 \pi i\left[0 . x_{n-j}\right.}|1\rangle\right)\left|x_{n-k}\right\rangle=\frac{1}{\sqrt{2}}\left(|0\rangle+e^{2 \pi i\left[0 . x_{n-j} \theta \cdots 0 x_{n-k}\right.]}|1\rangle .\right.\)</span></p>
+<p>于是利用量子门$ H <span class="math notranslate nohighlight">\(和就可以完成对量子态\)</span>(|0+e^{2 i x
+2^{-l}}|1)$的制备，进而完成QFT的量子线路。</p>
+<p>QFT的量子线路图如下所示</p>
+<figure class="align-default" id="id122">
+<img alt="\_images/QFT.png" src="https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/QFT.png" />
+<figcaption>
+<p><span class="caption-text">_images/QFT.png</span><a class="headerlink" href="#id122" title="永久链接至图片">¶</a></p>
+</figcaption>
+</figure>
+<p>特别地，注意到上图中初始量子态为的量子比特对应的结果量子态<span class="math notranslate nohighlight">\(\frac{1}{\sqrt{2}}\left(|0\rangle+e^{2 \pi i x 2^{n+1-l}}|1\rangle\right)\)</span>为而非<span class="math notranslate nohighlight">\(\frac{1}{\sqrt{2}}\left(|0\rangle+e^{2 \pi i x 2^{-l}}|1\rangle\right)\)</span>，因此实际使用时还需要追加相应的多组
+SWAP 门。</p>
+</section>
+</section>
+<section id="id42">
+<h3>8.5.3 代码实现<a class="headerlink" href="#id42" title="永久链接至标题">¶</a></h3>
+<p>QFT在一维情况就是Hadamard量子门。 基于pyQPanda的QFT接口函数如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">QFT</span><span class="p">(</span><span class="n">qlist</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>选取$ |x⟩=|000⟩ $验证QFT的代码实例如下</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">pyqpanda</span> <span class="k">as</span> <span class="nn">pq</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">pi</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">machine</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">)</span>
+    <span class="n">qvec</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">prog</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">create_empty_qprog</span><span class="p">()</span>
+
+    <span class="c1"># 构建量子程序</span>
+    <span class="n">prog</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">QFT</span><span class="p">(</span><span class="n">qvec</span><span class="p">))</span>
+
+    <span class="c1"># 对量子程序进行概率测量</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">prob_run_dict</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">qvec</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">pq</span><span class="o">.</span><span class="n">destroy_quantum_machine</span><span class="p">(</span><span class="n">machine</span><span class="p">)</span>
+
+    <span class="c1"># 打印测量结果</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+         <span class="nb">print</span><span class="p">(</span><span class="n">key</span><span class="o">+</span><span class="s2">&quot;:&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>
+</pre></div>
+</div>
+<p>由前文中QFT的定义及$ |x⟩=|000⟩
+$可知输出结果应当以均匀概率1/8得到所有量子态，即</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">000</span><span class="p">,</span> <span class="mf">0.125</span>
+<span class="mi">001</span><span class="p">,</span> <span class="mf">0.125</span>
+<span class="mi">010</span><span class="p">,</span> <span class="mf">0.125</span>
+<span class="mi">011</span><span class="p">,</span> <span class="mf">0.125</span>
+<span class="mi">100</span><span class="p">,</span> <span class="mf">0.125</span>
+<span class="mi">101</span><span class="p">,</span> <span class="mf">0.125</span>
+<span class="mi">110</span><span class="p">,</span> <span class="mf">0.125</span>
+<span class="mi">111</span><span class="p">,</span> <span class="mf">0.125</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id43">
+<h2><strong>8.6 量子相位估计</strong><a class="headerlink" href="#id43" title="永久链接至标题">¶</a></h2>
+<p>量子相位估计（QPE）可以计算给定幺正算符<span class="math notranslate nohighlight">\(U\)</span>的特征值的相位，即求解</p>
+<p><span class="math notranslate nohighlight">\(U|\psi\rangle=e^{2 \pi i \varphi}|\psi\rangle\)</span>中的$
+φ<span class="math notranslate nohighlight">\(，此处为\)</span>U$的特征向量。</p>
+<p>经典形式的QPE是在QFT的基础上构造的。</p>
+<section id="id44">
+<h3>8.6.1 量子线路结构概览<a class="headerlink" href="#id44" title="永久链接至标题">¶</a></h3>
+<p>假设已经构造好特征向量<span class="math notranslate nohighlight">\(|\psi\rangle\)</span>
+，量子相位估计包含如下步骤：</p>
+<p>1.通过一系列特殊旋转量子门操作将U的特征值相位分解转移到辅助量子比特的振幅上；</p>
+<p>2.对辅助量子比特执行IQFT，将振幅上的特征值相位转移到基向量上；</p>
+<p>3.对辅助量子比特的基向量分别进行测量后综合可得到特征值的相位信息。</p>
+<p>4.对于幺正算符 U 的一个特征量子态
+<span class="math notranslate nohighlight">\(|\psi\rangle\)</span>，可以通过特定的量子门组合将该量子态对应的特征值相位提取到振幅，但量子态的振幅难以有效准确地测量。</p>
+<p>必须借助其他量子门组合将特征值相位数据进行整合，最终通过IQFT可以由振幅到基向量进行数据转化的功能将特征值转移到基向量中。</p>
+<p><em>注解：</em></p>
+<p>量子相位估计本质上是为了提取幺正算符的特征值相位，并以便于测量的形式输出。</p>
+</section>
+<section id="id45">
+<h3>8.6.2 量子线路构建<a class="headerlink" href="#id45" title="永久链接至标题">¶</a></h3>
+<section id="id46">
+<h4>8.6.2.1 特征量子态与特征值相位提取<a class="headerlink" href="#id46" title="永久链接至标题">¶</a></h4>
+<p>由特征量子态的定义有<span class="math notranslate nohighlight">\(U|\psi\rangle=e^{2 \pi i \varphi}|\psi\rangle\)</span></p>
+<p>于是由幺正算符<span class="math notranslate nohighlight">\(U\)</span>可以定义受控量子门<span class="math notranslate nohighlight">\((C-U)\)</span>使得</p>
+<p><span class="math notranslate nohighlight">\(\left(C-U^{2^{t}}\right)(a|0\rangle+b|1\rangle) \otimes|\psi\rangle=\left(a|0\rangle+e^{2 \pi i \varphi 2^{t}} b|1\rangle\right) \otimes|\psi\rangle\)</span></p>
+<p>特征值相位<span class="math notranslate nohighlight">\(φ\)</span> 通过这种受控变换可以提取到振幅中。</p>
+</section>
+<section id="id47">
+<h4>8.6.2.2 特征值相位由振幅转移到基向量<a class="headerlink" href="#id47" title="永久链接至标题">¶</a></h4>
+<p>选取一组初始化为最大叠加态的辅助比特，通过受控量子门可以将特征值相位提取到振幅中：</p>
+<div class="math notranslate nohighlight">
+\[\left(C-U^{2^{0}}\right) \cdots\left(C-U^{2^{n}}\right) \frac{1}{2^{\frac{n}{2}}} \otimes_{t=1}^{n}(|0\rangle+|1\rangle)=\left(|0\rangle+e^{2 \pi i \varphi 2^{1-1}}|1\rangle\right) \cdots\left(|0\rangle+e^{2 \pi i \varphi 2^{n-1}}|1\rangle\right)\]</div>
+<p>此时辅助比特中的量子态形式与QFT的结果量子态相近，借助IQFT有如下结果：</p>
+<div class="math notranslate nohighlight">
+\[Q F T^{-1} \frac{1}{2^{\frac{n}{2}}} \otimes_{t=1}^{n}\left(|0\rangle+e^{2 \pi i \varphi 2^{t-1}}|1\rangle\right)\]</div>
+<div class="math notranslate nohighlight">
+\[=Q F T^{-1} \frac{1}{2^{\frac{n}{2}}} \Sigma_{k=0}^{2^{n}-1} e^{2 \pi i \varphi k}|k\rangle\]</div>
+<div class="math notranslate nohighlight">
+\[=\frac{1}{2^{n}} \Sigma_{k=0}^{2^{n}-1} \Sigma_{x=0}^{2^{n}-1} e^{-\frac{2 \pi i k}{2^{n}}\left(x-2^{n} \varphi\right)}|x\rangle\]</div>
+</section>
+<section id="id48">
+<h4>8.6.2.3 含特征值相位的基向量测量<a class="headerlink" href="#id48" title="永久链接至标题">¶</a></h4>
+<p>对得到的结果量子态进行测量，结果可以分为两类：</p>
+<p>1.如果存在正整数 <span class="math notranslate nohighlight">\(2^{n} \varphi \in \mathbb{Z}\)</span>，则可以以概率 1
+测量得到<span class="math notranslate nohighlight">\(|x\rangle=\left|2^{n} \varphi\right\rangle\)</span></p>
+<p>2.否则以至少概率<span class="math notranslate nohighlight">\(\frac{4}{\pi^{2}}\)</span>得到最接近
+<span class="math notranslate nohighlight">\(2^{n} \varphi\)</span>的整数，进而得到近似解</p>
+<p><em>注解：</em></p>
+<p>如何从最接近<span class="math notranslate nohighlight">\(2^{n} \varphi\)</span>的整数反推得到 <span class="math notranslate nohighlight">\(\varphi\)</span>
+？（提示：连续分数展开)</p>
+<p>测量结果得到的是相位<span class="math notranslate nohighlight">\(\varphi\)</span>的近似解，近似解的精度与辅助比特的数目<span class="math notranslate nohighlight">\(n\)</span>相关。</p>
+<p><span class="math notranslate nohighlight">\(2^{n} \varphi \in \mathbb{Z}\)</span>的情况代表辅助比特的数目已经大于
+<span class="math notranslate nohighlight">\(\varphi\)</span> 的二进制展开小数位数，因此才能得到精确解。</p>
+</section>
+</section>
+<section id="id49">
+<h3>8.6.3量子线路图与代码实现<a class="headerlink" href="#id49" title="永久链接至标题">¶</a></h3>
+<p>QPE的量子线路图如下所示</p>
+<figure class="align-default" id="id123">
+<img alt="\_images/QPE.png" src="https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/QPE.png" />
+<figcaption>
+<p><span class="caption-text">_images/QPE.png</span><a class="headerlink" href="#id123" title="永久链接至图片">¶</a></p>
+</figcaption>
+</figure>
+<p>由上文中的定义，我们可以基于pyQPanda直接给出QPE的函数实现。</p>
+<p>量子线路总共可以分为三个部分，特征量子态制备与辅助比特量子态初始化、特征值相位提取、逆量子傅里叶变换。程序实现的核心内容如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">pyqpanda</span> <span class="k">as</span> <span class="nn">pq</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">pi</span>
+
+<span class="k">def</span> <span class="nf">QPE</span><span class="p">(</span><span class="n">controlqlist</span><span class="p">,</span> <span class="n">targetqlist</span><span class="p">,</span> <span class="n">matrix</span><span class="p">):</span>
+   <span class="n">circ</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QCircuit</span><span class="p">()</span>
+   <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">controlqlist</span><span class="p">)):</span>
+          <span class="n">circ</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">controlqlist</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+
+   <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">controlqlist</span><span class="p">)):</span>
+          <span class="n">circ</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">controlUnitaryPower</span><span class="p">(</span><span class="n">targetqlist</span><span class="p">,</span> <span class="n">controlqlist</span><span class="p">[</span><span class="n">controlqlist</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> \
+           <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">i</span><span class="p">],</span> <span class="n">i</span><span class="p">,</span> <span class="n">matrix</span><span class="p">))</span>
+
+   <span class="n">circ</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">QFT</span><span class="p">(</span><span class="n">controlqlist</span><span class="p">)</span><span class="o">.</span><span class="n">dagger</span><span class="p">())</span>
+   <span class="k">return</span> <span class="n">circ</span>
+</pre></div>
+</div>
+<p>图中的参数matrix是指需要估计特征值的幺正算符 <span class="math notranslate nohighlight">\(U\)</span> 对应的矩阵。</p>
+<p>选取<span class="math notranslate nohighlight">\(U=R Y\left(\frac{\pi}{4}\right),|\psi\rangle=|0\rangle+i|1\rangle\)</span>，对应的特征值为<span class="math notranslate nohighlight">\(e^{-i \frac{\pi}{8}}\)</span>，验证QPE的代码实例如下</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">pyqpanda</span> <span class="k">as</span> <span class="nn">pq</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">pi</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+   <span class="n">machine</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">)</span>
+   <span class="n">qvec</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+   <span class="n">cqv</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+   <span class="n">prog</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">create_empty_qprog</span><span class="p">()</span>
+
+   <span class="c1"># 构建量子程序</span>
+   <span class="n">prog</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">cqv</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>\
+         <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">cqv</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>\
+         <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">S</span><span class="p">(</span><span class="n">qvec</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>\
+         <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">RY</span><span class="p">(</span><span class="n">qvec</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pi</span><span class="o">/</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">control</span><span class="p">(</span><span class="n">cqv</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>\
+         <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">RY</span><span class="p">(</span><span class="n">qvec</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pi</span><span class="o">/</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">control</span><span class="p">(</span><span class="n">cqv</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>\
+         <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">RY</span><span class="p">(</span><span class="n">qvec</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pi</span><span class="o">/</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">control</span><span class="p">(</span><span class="n">cqv</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>\
+         <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">QFT</span><span class="p">(</span><span class="n">cqv</span><span class="p">)</span><span class="o">.</span><span class="n">dagger</span><span class="p">())</span>
+
+   <span class="c1"># 对量子程序进行概率测量</span>
+   <span class="n">result</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">prob_run_dict</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">cqv</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+   <span class="n">pq</span><span class="o">.</span><span class="n">destroy_quantum_machine</span><span class="p">(</span><span class="n">machine</span><span class="p">)</span>
+
+   <span class="c1"># 打印测量结果</span>
+   <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+         <span class="nb">print</span><span class="p">(</span><span class="n">key</span><span class="o">+</span><span class="s2">&quot;:&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>
+</pre></div>
+</div>
+<p>由前文可知输出结果应当以较大概率得到量子态$ |0⟩$</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">000</span><span class="p">,</span> <span class="mf">0.821067</span>
+<span class="mi">001</span><span class="p">,</span> <span class="mf">0.0732233</span>
+<span class="mi">010</span><span class="p">,</span> <span class="mf">0.0324864</span>
+<span class="mi">011</span><span class="p">,</span> <span class="mf">0.0732233</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id50">
+<h2><strong>8.7 量子四则运算</strong><a class="headerlink" href="#id50" title="永久链接至标题">¶</a></h2>
+<p>在特定情况下，量子计算机中需要实现基本的四则运算。量子加法器及衍生出来的量子四则运算可以满足这些计算需求。</p>
+<section id="id51">
+<h3>8.7.1 加法器算法背景<a class="headerlink" href="#id51" title="永久链接至标题">¶</a></h3>
+<p>除了测量之外的所有量子门操作都是酉变换，因而不含测量的量子线路整体是可逆的。</p>
+<p>量子加法器的量子线路也应当可逆，因而输入输出是数量相等的量子比特，量子线路图如下所示。</p>
+<figure class="align-default" id="id124">
+<img alt="\_images/QADD.png" src="https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/QADD.png" />
+<figcaption>
+<p><span class="caption-text">_images/QADD.png</span><a class="headerlink" href="#id124" title="永久链接至图片">¶</a></p>
+</figcaption>
+</figure>
+<p>图中包含了两种子量子线路模块MAJ和UMA，作用分别是获得当前二进制位的进位数值和当前二进制位的结果数值。</p>
+<section id="maj">
+<h4>8.7.1.1 MAJ量子线路组件<a class="headerlink" href="#maj" title="永久链接至标题">¶</a></h4>
+<p>MAJ的量子线路如下所示。</p>
+<figure class="align-default" id="id125">
+<img alt="\_images/MAJ.png" src="https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/MAJ.png" />
+<figcaption>
+<p><span class="caption-text">_images/MAJ.png</span><a class="headerlink" href="#id125" title="永久链接至图片">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id126">
+<img alt="*images/MAJ*\ detail.png" src="https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/MAJ_detail.png" />
+<figcaption>
+<p><span class="caption-text"><em>images/MAJ</em>detail.png</span><a class="headerlink" href="#id126" title="永久链接至图片">¶</a></p>
+</figcaption>
+</figure>
+<p>下面对MAJ量子线路的具体功能进行解读。</p>
+<p>MAJ量子线路的输入分别为前一位的进位值<span class="math notranslate nohighlight">\(c_{i}\)</span>、当前位的两个待加值<span class="math notranslate nohighlight">\(a_{i}\)</span>,<span class="math notranslate nohighlight">\(b_{i}\)</span>,输出为<span class="math notranslate nohighlight">\(a_{i}+c_{i} \bmod 2, \quad a_{i}+b_{i} \bmod 2\)</span>和当前位进位值<span class="math notranslate nohighlight">\(c_{i+1}\)</span>
+。</p>
+<p>MAJ模块是为了实现获得进位，我们想要得到进位<span class="math notranslate nohighlight">\(c_{i+1}\)</span>
+,也就是要从<span class="math notranslate nohighlight">\(a_{i}+b_{i}+c_{i}\)</span>出发，判断<span class="math notranslate nohighlight">\((a_{i}+b_{i}+c_{i})/2\)</span>
+。</p>
+<p>在待加值中任选一个数<span class="math notranslate nohighlight">\(a_{i}\)</span>对进位情况进行如下枚举，</p>
+<p>1.<span class="math notranslate nohighlight">\(a_{i}=0, \quad c_{i}=\left[\left(a_{i}+b_{i}\right) \% 2\right] *\left[\left(a_{i}+c_{i}\right) \% 2\right] ;\)</span></p>
+<p>2.<span class="math notranslate nohighlight">\(a_{i}=1, \quad c_{i}=\left(\left\lfloor\left(a_{i}+b_{i}\right) \% 2\right] *\left[\left(a_{i}+c_{i}\right) \% 2\right]+1\right) \% 2\)</span></p>
+<p>因此，只需要考察
+<span class="math notranslate nohighlight">\(a_{i},\left[\left(a_{i}+b_{i}\right) \% 2\right] *\left[\left(a_{i}+c_{i}\right) \% 2\right]\)</span>就可以判断进位情况。</p>
+<p>从现有的量子逻辑门出发，制备量子态
+<span class="math notranslate nohighlight">\(a_{i},\left(a_{i}+b_{i}\right) \% 2,\left(a_{i}+c_{i}\right) \% 2\)</span>，即可以准确判断出进位的情况。此处选取的考察对象并不唯一，其他方案会衍生出相应的量子线路。</p>
+<p>制备三个量子态的方案如上图中所示，使用CNOT门来完成模2加法得到<span class="math notranslate nohighlight">\(\left(a_{i}+b_{i}\right) \% 2,\left(a_{i}+c_{i}\right) \% 2\)</span>
+使用Toffoli门完成<span class="math notranslate nohighlight">\(a\)</span>与
+的<span class="math notranslate nohighlight">\(\left[\left[\left(a_{i}+b_{i}\right) \% 2\right] *\left[\left(a_{i}+c_{i}\right) \% 2\right]\right.\)</span>异或运算。</p>
+</section>
+<section id="uma">
+<h4>8.7.1.2 UMA量子线路组件<a class="headerlink" href="#uma" title="永久链接至标题">¶</a></h4>
+<p>UMA的量子线路如下所示。</p>
+<figure class="align-default" id="id127">
+<img alt="\_images/UMA.png" src="https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/UMA.png" />
+<figcaption>
+<p><span class="caption-text">_images/UMA.png</span><a class="headerlink" href="#id127" title="永久链接至图片">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id128">
+<img alt="*images/UMA*\ detail.png" src="https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/UMA_detail.png" />
+<figcaption>
+<p><span class="caption-text"><em>images/UMA</em>detail.png</span><a class="headerlink" href="#id128" title="永久链接至图片">¶</a></p>
+</figcaption>
+</figure>
+<p>下面对UMA量子线路的具体功能进行解读。</p>
+<p>UMA量子线路的输入分别为<span class="math notranslate nohighlight">\(a_{i}+c_{i} \bmod 2, a_{i}+b_{i} \bmod 2\)</span>和当前位进位值
+<span class="math notranslate nohighlight">\(c_{i+1}\)</span>，输出为<span class="math notranslate nohighlight">\(c_{i}\)</span>，<span class="math notranslate nohighlight">\(a_{i}+b_{i}+c_{i} \bmod 2:=s_{i}\)</span>和<span class="math notranslate nohighlight">\(a_{i}\)</span>。</p>
+<p>UMA模块是为了实现获得当前位结果，我们想要得到当前位<span class="math notranslate nohighlight">\(s_{i}\)</span>
+,也就是要得到 <span class="math notranslate nohighlight">\(\left(a_{i}+b_{i}+c_{i}\right) \% 2\)</span>。</p>
+<p>参考MAJ模块，首先通过与MAJ所用的完全相反的TOffoli门由<span class="math notranslate nohighlight">\(c_{i+1}\)</span>得到<span class="math notranslate nohighlight">\(a_{i}\)</span>，然后利用与MAJ所用的相反的CNOT变换得到
+<span class="math notranslate nohighlight">\(c_{i}\)</span>
+，综合已有的<span class="math notranslate nohighlight">\(a_{i}+b_{i} \bmod 2\)</span>，于是可以通过简单的CNOT门得到
+<span class="math notranslate nohighlight">\(\left(a_{i}+b_{i}+c_{i}\right) \% 2\)</span>。</p>
+<p>整个过程的前两步都可以视为MAJ相应量子门的逆变换。</p>
+<p><em>注解：</em></p>
+<p>MAJ的实现量子线路是不唯一的，那么UMA也是不唯一的吗？</p>
+</section>
+</section>
+<section id="id52">
+<h3>8.7.2 量子四则运算<a class="headerlink" href="#id52" title="永久链接至标题">¶</a></h3>
+<section id="id53">
+<h4>8.7.2.1 量子加法器<a class="headerlink" href="#id53" title="永久链接至标题">¶</a></h4>
+<p>量子加法器的原理如前文所示。</p>
+</section>
+<section id="id54">
+<h4>8.7.2.2 量子减法器<a class="headerlink" href="#id54" title="永久链接至标题">¶</a></h4>
+<p>基础的加法器只支持非负整数的加法。对于小数要求输入的被加数a和b必须小数点位置相同，小数点对齐后整体长度相同。</p>
+<p>对于带符号变换的量子加法，则需要追加辅助比特用于记录符号位。任给两个目标量子态
+<span class="math notranslate nohighlight">\(A,B\)</span>，对第二个量子态$ B
+<span class="math notranslate nohighlight">\(进行特定的补码操作，然后转换为\)</span>A−B=A+(−B):math:<a href="#id55"><span class="problematic" id="id56">`</span></a>，此处的 <a href="#id57"><span class="problematic" id="id58">`</span></a>−B
+$并不以符号位取反的方式实现。</p>
+<p>该特定的补码操作为：符号位为正则不变，符号位为负需要按位取反后再加1。因此需要一个额外的辅助比特来控制是否进行求补码的操作。</p>
+<p>量子减法器实质上就是量子加法器的带符号版本。</p>
+</section>
+<section id="id59">
+<h4>8.7.2.3 量子乘法器<a class="headerlink" href="#id59" title="永久链接至标题">¶</a></h4>
+<p>量子乘法器是基于加法器完成的。选择乘数$ A <span class="math notranslate nohighlight">\(作为受控比特，选择乘数\)</span>
+B$
+以二进制展开逐位作为控制比特，将受控加法器的运算结果累加到辅助比特中。每完成一次
+:math:<a href="#id60"><span class="problematic" id="id61">`</span></a>B <a href="#id62"><span class="problematic" id="id63">`</span></a>控制的受控加法就将乘数$ A$ 左移一位并在末位补零。</p>
+<p>于是把通过受控加法输出的数值在辅助比特中累加起来，得到乘法结果。</p>
+</section>
+<section id="id64">
+<h4>8.7.2.4 量子除法器<a class="headerlink" href="#id64" title="永久链接至标题">¶</a></h4>
+<p>量子除法器是基于量子减法器完成的，通过执行减法后被除数的符号位是否改变来完成大小比较，并决定除法是否终止。</p>
+<p>除数减去被除数时，商结果加1。每完成一次减法后，重新进行被除数与除数的大小比较，直至除尽或者达到预设精度。</p>
+<p>因此还需要额外追加一个存储精度参数的辅助比特。</p>
+</section>
+</section>
+<section id="id65">
+<h3>8.7.3 代码实现及使用说明<a class="headerlink" href="#id65" title="永久链接至标题">¶</a></h3>
+<section id="id66">
+<h4>8.7.3.1 量子加法器<a class="headerlink" href="#id66" title="永久链接至标题">¶</a></h4>
+<p>在pyQPanda中加法器的接口函数如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">QAdder</span><span class="p">(</span><span class="n">adder1</span><span class="p">,</span><span class="n">adder2</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">is_carry</span><span class="p">)</span>
+
+<span class="n">QAdderIgnoreCarry</span><span class="p">(</span><span class="n">adder1</span><span class="p">,</span><span class="n">adder2</span><span class="p">,</span><span class="n">c</span><span class="p">)</span>
+
+<span class="n">QAdd</span><span class="p">(</span><span class="n">adder1</span><span class="p">,</span><span class="n">adder2</span><span class="p">,</span><span class="n">k</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>前两种接口函数的区别是是否保留进位is_carry，但都只支持正数加法。参数中adder1与adder2为执行加法的比特且格式完全一致，<span class="math notranslate nohighlight">\(c\)</span>为辅助比特。</p>
+<p>第三种加法器接口函数是带符号的加法器，是基于量子减法器实现的。待加数添加了符号位，相应的辅助比特也从1-2个单比特变为一个<span class="math notranslate nohighlight">\(adder1.size()+2\)</span>比特。</p>
+<p>加法的输出比特都是adder1，其他非进位比特不变。</p>
+</section>
+<section id="id67">
+<h4>8.7.3.2 量子减法器<a class="headerlink" href="#id67" title="永久链接至标题">¶</a></h4>
+<p>量子减法器基于基本加法器完成，同时也是带符号的加法器的基础。</p>
+<p>在pyQPanda中减法器（带符号的加法器）的接口函数如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">QSub</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">k</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>与带符号的加法器相同，两个待减数的量子比特最高位为符号位，辅助比特k.size
+():math:<cite>=a</cite> a.size ():math:<cite>+2</cite>。</p>
+<p>减法的输出比特是<span class="math notranslate nohighlight">\(a\)</span>，其他比特不变。</p>
+</section>
+<section id="id68">
+<h4>8.7.3.3 量子乘法器<a class="headerlink" href="#id68" title="永久链接至标题">¶</a></h4>
+<p>在pyQPanda中乘法器的接口函数如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">QMultiplier</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">d</span><span class="p">)</span>
+
+<span class="n">QMul</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">d</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>两个接口函数的输入待乘量子比特都包含符号位，但只有QMul支持带符号的乘法运算。</p>
+<p>相应的，QMultiplier中，辅助比特<span class="math notranslate nohighlight">\(k \cdot \operatorname{size}()=\)</span>
+a.size ():math:<cite>+1</cite>，结果比特d.size ():math:<cite>=2^{*}</cite> a.size ()。</p>
+<p>QMul中，辅助比特<span class="math notranslate nohighlight">\(k.size()=a.size()\)</span>，结果比特<span class="math notranslate nohighlight">\(d.size()=2*a.size()-1\)</span>。</p>
+<p>乘法的输出比特都是<span class="math notranslate nohighlight">\(d\)</span>，其他比特不变。</p>
+<p>如果等长的输入比特<span class="math notranslate nohighlight">\(a\)</span>和<span class="math notranslate nohighlight">\(b\)</span>存在小数点，那么在输出比特<span class="math notranslate nohighlight">\(d\)</span>中的小数点位置坐标为输入比特中的2倍。</p>
+</section>
+<section id="id69">
+<h4>8.7.3.4量子除法器<a class="headerlink" href="#id69" title="永久链接至标题">¶</a></h4>
+<p>在pyQPanda中除法法器的接口函数如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">QDivider</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">t</span><span class="p">)</span>
+
+<span class="n">QDivider</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">f</span><span class="p">,</span><span class="n">s</span><span class="p">)</span>
+
+<span class="n">QDiv</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">t</span><span class="p">)</span>
+
+<span class="n">QDiv</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">f</span><span class="p">,</span><span class="n">s</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>与乘法器类似，除法器也是分为两类，尽管输入的待运算比特都带有符号位，但接口分为带符号运算和仅限正数两类。</p>
+<p><span class="math notranslate nohighlight">\(k\)</span>为辅助比特，<span class="math notranslate nohighlight">\(t\)</span>或<span class="math notranslate nohighlight">\(s\)</span>为限制QWhile循环次数的经典比特。</p>
+<p>此外，除法器有除不尽的问题，因此可以接口函数有如上四种，对应的输入和输出参数分别有如下性质：</p>
+<ol class="arabic simple">
+<li><p>QDivider返还余数和商（分别存储在<span class="math notranslate nohighlight">\(a和c\)</span>中）时，<span class="math notranslate nohighlight">\(c.size()=a.size()\)</span>，但<span class="math notranslate nohighlight">\(k.size()=a*size()*2+2\)</span>;</p></li>
+<li><p>QDivider返还精度和商（分别存储在<span class="math notranslate nohighlight">\(f和c\)</span>中）时，<span class="math notranslate nohighlight">\(c.size()=a.size()\)</span>，但<span class="math notranslate nohighlight">\(k.size()=3*size()*2+5\)</span>；</p></li>
+<li><p>QDiv返还余数和商（分别存储在<span class="math notranslate nohighlight">\(a和c\)</span>中）时，<span class="math notranslate nohighlight">\(c.size()=a.size()\)</span>，但<span class="math notranslate nohighlight">\(k.size()=a*size()*2+4\)</span>;</p></li>
+<li><p>QDivider返还精度和商（分别存储在<span class="math notranslate nohighlight">\(f和c\)</span>中）时，<span class="math notranslate nohighlight">\(c.size()=a.size()\)</span>，但<span class="math notranslate nohighlight">\(k.size()=a*size()*3+7\)</span>；</p></li>
+</ol>
+<p>如果参数不能满足量子四则运算所需的比特数目，那么计算依然会进行但结果会溢出。</p>
+<p>除法的输出比特是<span class="math notranslate nohighlight">\(c\)</span>，带精度的除法中<span class="math notranslate nohighlight">\(a,b,k\)</span>都不会变，否则<span class="math notranslate nohighlight">\(b,k\)</span>不变，但<span class="math notranslate nohighlight">\(a\)</span>中存储余数。</p>
+</section>
+</section>
+<section id="id70">
+<h3>8.7.4 示例<a class="headerlink" href="#id70" title="永久链接至标题">¶</a></h3>
+<p>下面是一个简单的基于pyQPanda调用量子四则运算的代码示例</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">pyqpanda</span> <span class="k">as</span> <span class="nn">pq</span>
+<span class="c1"># from numpy import pi</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1"># 为了节约比特数，辅助比特将会互相借用</span>
+    <span class="n">qvm</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">)</span>
+
+    <span class="n">qdivvec</span> <span class="o">=</span> <span class="n">qvm</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">qmulvec</span> <span class="o">=</span> <span class="n">qdivvec</span><span class="p">[:</span><span class="mi">7</span><span class="p">]</span>
+    <span class="n">qsubvec</span> <span class="o">=</span> <span class="n">qmulvec</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">qvec1</span> <span class="o">=</span> <span class="n">qvm</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+    <span class="n">qvec2</span> <span class="o">=</span> <span class="n">qvm</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+    <span class="n">qvec3</span> <span class="o">=</span> <span class="n">qvm</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+    <span class="n">cbit</span> <span class="o">=</span> <span class="n">qvm</span><span class="o">.</span><span class="n">cAlloc</span><span class="p">()</span>
+    <span class="n">prog</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">create_empty_qprog</span><span class="p">()</span>
+
+    <span class="c1"># (4/1+1-3)*5=10</span>
+    <span class="n">prog</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">bind_data</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="n">qvec3</span><span class="p">))</span> \
+       <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">bind_data</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">qvec2</span><span class="p">))</span> \
+       <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">QDivider</span><span class="p">(</span><span class="n">qvec3</span><span class="p">,</span> <span class="n">qvec2</span><span class="p">,</span> <span class="n">qvec1</span><span class="p">,</span> <span class="n">qdivvec</span><span class="p">,</span> <span class="n">cbit</span><span class="p">))</span> \
+       <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">bind_data</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">qvec2</span><span class="p">))</span> \
+       <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">bind_data</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">qvec2</span><span class="p">))</span> \
+       <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">QAdd</span><span class="p">(</span><span class="n">qvec1</span><span class="p">,</span> <span class="n">qvec2</span><span class="p">,</span> <span class="n">qsubvec</span><span class="p">))</span> \
+       <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">bind_data</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">qvec2</span><span class="p">))</span> \
+       <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">bind_data</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="n">qvec2</span><span class="p">))</span> \
+       <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">QSub</span><span class="p">(</span><span class="n">qvec1</span><span class="p">,</span> <span class="n">qvec2</span><span class="p">,</span> <span class="n">qsubvec</span><span class="p">))</span> \
+       <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">bind_data</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="n">qvec2</span><span class="p">))</span> \
+       <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">bind_data</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="n">qvec2</span><span class="p">))</span> \
+       <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">QMul</span><span class="p">(</span><span class="n">qvec1</span><span class="p">,</span> <span class="n">qvec2</span><span class="p">,</span> <span class="n">qvec3</span><span class="p">,</span> <span class="n">qmulvec</span><span class="p">))</span> \
+       <span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">bind_data</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="n">qvec2</span><span class="p">))</span>
+
+    <span class="c1"># 对量子程序进行概率测量</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">prob_run_dict</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">qmulvec</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">pq</span><span class="o">.</span><span class="n">destroy_quantum_machine</span><span class="p">(</span><span class="n">qvm</span><span class="p">)</span>
+
+    <span class="c1"># 打印测量结果</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+       <span class="nb">print</span><span class="p">(</span><span class="n">key</span><span class="o">+</span><span class="s2">&quot;:&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>
+</pre></div>
+</div>
+<p>执行的计算为$ (4/1+1−3)∗5=10:math:<cite>，因此结果应当以概率 1 得到</cite>
+|10⟩:math:<a href="#id71"><span class="problematic" id="id72">`</span></a>即 <a href="#id73"><span class="problematic" id="id74">`</span></a>|1010⟩$。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">1010</span><span class="p">:</span><span class="mi">1</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="hhl">
+<h2><strong>8.8 HHL算法</strong><a class="headerlink" href="#hhl" title="永久链接至标题">¶</a></h2>
+<p>HHL算法是一种求解线性方程组的量子算法，线性方程组在许多领域中都有着广泛的实际应用。</p>
+<section id="id75">
+<h3>8.8.1 问题背景概述<a class="headerlink" href="#id75" title="永久链接至标题">¶</a></h3>
+<p>线性方程组问题可定义为： 给定矩阵 <span class="math notranslate nohighlight">\(A \in C^{N \times N}\)</span>
+和向量<span class="math notranslate nohighlight">\(\vec{b} \in C^{N}\)</span> ，找到
+<span class="math notranslate nohighlight">\(\vec{x} \in C^{N}\)</span>满足<span class="math notranslate nohighlight">\(A \vec{x}=\vec{b}\)</span>。</p>
+<p>如果矩阵A每行或每列最多具有<span class="math notranslate nohighlight">\(s\)</span>个非零元，则将线性方程组称为s-稀疏线性方程组。用经典算法（共轭梯度法）来解决N维的s-稀疏线性方程组，需要的时间复杂度为<span class="math notranslate nohighlight">\(O\left(N s k \log \left(\frac{1}{\varepsilon}\right)\right)\)</span>
+，这里<span class="math notranslate nohighlight">\(k\)</span>表示系统的条件数，$ ε
+<span class="math notranslate nohighlight">\(表示近似的精度。HHL是一种量子算法，当A是自共轭矩阵时，用HHL算法解线性方程组的时间复杂度为\)</span>O((N)
+s^{2} )$</p>
+<p>HHL算法相对于经典算法有着指数级的加速，但经典算法可以返回精确解，而HHL算法只能返回近似解。</p>
+<p><em>注解：</em></p>
+<p>HHL算法是一种纯量子算法，它和它的改进版的出现对于证明量子算法的实用性有着重大意义。</p>
+</section>
+<section id="id76">
+<h3>8.8.2 算法原理<a class="headerlink" href="#id76" title="永久链接至标题">¶</a></h3>
+<p>在对线性方程组进行一定格式转换后可以以HHL算法进行求解，HHL算法主要包含了以下三大步骤，并需要使用右端项比特、存储比特和辅助比特总共三个寄存器。</p>
+<p>构造右端项量子态，对存储比特及右端项比特进行参数含左端项矩阵的相位估计，将左端项矩阵的整数形式特征值全部转移到存储比特的基向量中。</p>
+<p>进行一系列参数含特征值的受控旋转，过滤出所有的特征值相关量子态，将特征值从存储比特的基向量转移到振幅；</p>
+<p>对特征存储比特及右端项比特进行逆相位估计，将存储比特振幅上的特征值合并到右端项比特上，当辅助比特测量得到特定状态时，在右端项比特上可得到解的量子态。</p>
+<p>在进行算法具体步骤之前，需要对经典形式的线性方程组求解问题<span class="math notranslate nohighlight">\(A \vec{x}=\vec{b}\)</span>进行特定转换：</p>
+<p>不失一般性地假设矩阵$ A $为自共轭矩阵，否则取</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}C_{A}=\left[\begin{array}{cc}0 &amp; A \\ A^{H} &amp; 0\end{array}\right], C_{b}=\left[\begin{array}{l}b \\ 0\end{array}\right], C_{x}=\left[\begin{array}{l}0 \\ x\end{array}\right]\end{split}\]</div>
+<p>使得
+<span class="math notranslate nohighlight">\(C_{A} \overrightarrow{C_{x}}=\overrightarrow{C_{b}}\)</span>成立且满足
+<span class="math notranslate nohighlight">\(C_{A}\)</span>自共轭。</p>
+<p>以下内容中将默认<span class="math notranslate nohighlight">\(A\)</span>为自共轭矩阵。</p>
+<p>将向量<span class="math notranslate nohighlight">\(\vec{b}, \vec{x}\)</span>分别归一化后采用编码到振幅上的方式映射到量子态<span class="math notranslate nohighlight">\(|b\rangle,|x\rangle\)</span>，原问题转换为<span class="math notranslate nohighlight">\(A|x\rangle=|b\rangle\)</span>.</p>
+<p>对矩阵 A 进行谱分解有</p>
+<div class="math notranslate nohighlight">
+\[A=\sum_{j=0}^{N-1} \lambda_{j}\left|u_{j}\right\rangle\left\langle u_{j}\right|, \lambda_{j} \in R\]</div>
+<p>其中<span class="math notranslate nohighlight">\(\lambda_{j}, u_{j}\)</span>为矩阵<span class="math notranslate nohighlight">\(A\)</span>的特征对（特征值及相应的特征向量)。</p>
+<p>将 <span class="math notranslate nohighlight">\(|b\rangle\)</span> 以特征向量基展开，得到</p>
+<div class="math notranslate nohighlight">
+\[|b\rangle=\sum_{j=0}^{N-1} b_{j}\left|u_{j}\right\rangle, b_{j} \in C\]</div>
+<p>于是原方程组的解可表示为</p>
+<div class="math notranslate nohighlight">
+\[|x\rangle=A^{-1}|b\rangle=\sum_{j=0}^{N-1} \lambda_{j}^{-1} b_{j}\left|u_{j}\right\rangle\]</div>
+<p>显而易见算法的基本思路应当是从右端项量子态<span class="math notranslate nohighlight">\(|b\rangle\)</span>
+出发构造解量子态<span class="math notranslate nohighlight">\(|x\rangle\)</span></p>
+<section id="qpe">
+<h4>8.8.2.1 通过QPE提取特征值<a class="headerlink" href="#qpe" title="永久链接至标题">¶</a></h4>
+<p>为了将矩阵 A 的特征值提取到解量子态的振幅，首先需要完成特征值的提取。
+由前文可知，QPE量子线路可以用于特征值提取。</p>
+<p>对<span class="math notranslate nohighlight">\(|0\rangle^{\otimes n}|b\rangle\)</span>进行一次QPE操作，得到</p>
+<div class="math notranslate nohighlight">
+\[Q P E\left(|0\rangle^{\otimes n}|b\rangle\right)=\sum_{j=0}^{N-1} b_{j}\left|\widetilde{\lambda_{j}}\right\rangle\left|u_{j}\right\rangle\]</div>
+<p>其中
+<span class="math notranslate nohighlight">\(\widetilde{\lambda_{j}}\)</span>是对应特征值<span class="math notranslate nohighlight">\(\lambda_{j}\)</span>的近似整数，细节参见QPE部分介绍。
+于是矩阵A的特征值信息存入到了基向量
+<span class="math notranslate nohighlight">\(\widetilde{\lambda_{j}}\)</span>中。</p>
+</section>
+<section id="id77">
+<h4>8.8.2.2 通过受控旋转转移特征值<a class="headerlink" href="#id77" title="永久链接至标题">¶</a></h4>
+<p>构造如下受控旋转<span class="math notranslate nohighlight">\(C R(k)\)</span></p>
+<div class="math notranslate nohighlight">
+\[\begin{split}C R(k)(|a\rangle|j\rangle)=\left\{\begin{array}{c}R Y\left(\arccos \frac{C}{k}\right)|a\rangle|k\rangle, j=k \\ |a\rangle|j\rangle, j \neq k\end{array}\right.\end{split}\]</div>
+<p>式中 C
+为<span class="math notranslate nohighlight">\(\widetilde{\lambda_{j}}\)</span>的归一化系数，有<span class="math notranslate nohighlight">\(C \leq \min _{j}\left|\widetilde{\lambda_{j}}\right|\)</span>从而任意<span class="math notranslate nohighlight">\(\frac{C^{2}}{\widetilde{\lambda_{j}}^{2}} \leq 1\)</span>。对<span class="math notranslate nohighlight">\(\sum_{j=0}^{N-1} b_{j}|0\rangle\left|\widetilde{\lambda_{j}}\right\rangle\left|u_{j}\right\rangle\)</span>经过遍历式旋转量子门操作后可以得到</p>
+<p><span class="math notranslate nohighlight">\(\left(\prod(C R(k) \otimes I)\right) \sum_{N-1}^{j=0} b_{j}|0\rangle\left|\widetilde{\lambda_{j}}\right\rangle\left|u_{j}\right\rangle=\sum_{j=0}^{N-1}\left(\sqrt{1-\frac{C^{2}}{\widetilde{\lambda_{j}}^{2}}}|0\rangle+\frac{C}{\widetilde{\lambda}_{j}}|1\rangle\right) b_{j}\left|\widetilde{\lambda_{j}}\right\rangle\left|u_{j}\right\rangle\)</span></p>
+</section>
+<section id="id78">
+<h4>8.8.2.3 通过逆QPE输出结果量子态<a class="headerlink" href="#id78" title="永久链接至标题">¶</a></h4>
+<p>理论上，受控旋转后的量子态已经可以通过测量得到解量子态
+<span class="math notranslate nohighlight">\(|x\rangle\)</span>。</p>
+<p>但为了避免出现<span class="math notranslate nohighlight">\(|u_{j}\rangle\)</span>相同但<span class="math notranslate nohighlight">\(\left|\widetilde{\lambda_{j}}\right\rangle\)</span>不同的需要合并的量子态<span class="math notranslate nohighlight">\(\frac{C}{\tilde{\lambda}_{j}} b_{j}|1\rangle\left|\widetilde{\lambda_{j}}\right\rangle\left|u_{j}\right\rangle\)</span>，应当选择逆QPE操作来得到形如<span class="math notranslate nohighlight">\(\frac{C}{\widetilde{\lambda}_{j}} b_{j}|1\rangle|0\rangle\left|u_{j}\right\rangle\)</span>的结果量子态。</p>
+<p>对旋转结果进行逆QPE，有</p>
+<div class="math notranslate nohighlight">
+\[\left(I \otimes Q P E^{\dagger}\right) \sum_{j=0}^{N-1}\left(\sqrt{1-\frac{C^{2}}{\widetilde{\lambda_{j}}^{2}}}|0\rangle+\frac{C}{\widetilde{\lambda_{j}}}|1\rangle\right) b_{j}\left|\widetilde{\lambda_{j}}\right\rangle\left|u_{j}\right\rangle\]</div>
+<div class="math notranslate nohighlight">
+\[=\sum_{j=0}^{N-1}\left(b_{j} \sqrt{1-\frac{C^{2}}{\widetilde{\lambda_{j}}^{2}}}|0\rangle|0\rangle\left|u_{j}\right\rangle+b_{j} \frac{C}{\widetilde{\lambda_{j}}}|1\rangle|0\rangle\left|u_{j}\right\rangle\right)\]</div>
+<p>事实上即使是这种形式的结果量子态，由于误差的存在，依然无法在第一个和第二个量子寄存器分别为$
+|1⟩,|0⟩$
+的情况下以概率1得到解量子态<span class="math notranslate nohighlight">\(|x\rangle=\sum_{j=0}^{N-1} \lambda_{j}^{-1} b_{j}\left|u_{j}\right\rangle\)</span></p>
+<p><em>注解：</em></p>
+<p>HHL算法充分利用了量子相位估计提取特征值信息的功能，巧妙构造了受控旋转门从存储比特的基向量中抓取特征值存入振幅，最后利用逆相位估计还原存储量子比特，从而得到了振幅含特征值的方程解。</p>
+</section>
+</section>
+<section id="id79">
+<h3>8.8.3 量子线路图与参考代码<a class="headerlink" href="#id79" title="永久链接至标题">¶</a></h3>
+<p>HHL算法的量子线路图如下所示</p>
+<figure class="align-default" id="id129">
+<img alt="*images/HHL*\ Alg.png" src="https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/HHL_Alg.png" />
+<figcaption>
+<p><span class="caption-text"><em>images/HHL</em>Alg.png</span><a class="headerlink" href="#id129" title="永久链接至图片">¶</a></p>
+</figcaption>
+</figure>
+<p>基于pyQPanda的HHL算法实现代码较为冗长，此处不作详述，具体参见pyQPanda下HHL算法程序源码
+，此处仅介绍pyQPanda中提供的几个HHL算法调用接口。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">HHL</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">QuantumMachine</span><span class="p">)</span>
+
+<span class="n">HHL_solve_linear_equations</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>第一个函数接口用于得到HHL算法对应的量子线路，第二个函数接口则可以输入QStat格式的矩阵和右端项，返还解向量。</p>
+<p>选择一个最简单的二维左端项单位矩阵例子来验证HHL接口函数的可用性，代码实例如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">pyqpanda</span> <span class="k">as</span> <span class="nn">pq</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">machine</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">)</span>
+    <span class="n">prog</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">create_empty_qprog</span><span class="p">()</span>
+
+    <span class="c1"># 构建量子程序</span>
+    <span class="n">prog</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">build_HHL_circuit</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mf">0.6</span><span class="p">,</span><span class="mf">0.8</span><span class="p">],</span><span class="n">machine</span><span class="p">))</span>
+
+    <span class="n">pq</span><span class="o">.</span><span class="n">directly_run</span><span class="p">(</span><span class="n">prog</span><span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">machine</span><span class="o">.</span><span class="n">get_qstate</span><span class="p">())[:</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">pq</span><span class="o">.</span><span class="n">destroy_quantum_machine</span><span class="p">(</span><span class="n">machine</span><span class="p">)</span>
+
+    <span class="c1">#打印测量结果</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+         <span class="nb">print</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>输出结果应该和右端项向量一样是 [0.6,0.8]，因为误差会出现较小的扰动：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="mf">0.5988269448280334</span><span class="o">-</span><span class="mf">3.930189507173054e-14</span><span class="n">i</span><span class="p">)</span>
+<span class="p">(</span><span class="mf">0.7984358668327332</span><span class="o">-</span><span class="mf">8.08242361927114e-14</span><span class="n">i</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="grover">
+<h2><strong>8.9 Grover算法和量子计数算法</strong><a class="headerlink" href="#grover" title="永久链接至标题">¶</a></h2>
+<p>量子计数算法（Quantum
+Counting）与Grover算法都是基于集合元素二类划分问题衍生的算法。量子计数算法可以求得集合中两种类型元素的个数，Grover算法则可以求得指定类型的一个元素。</p>
+<section id="id80">
+<h3>8.9.1 问题背景概述<a class="headerlink" href="#id80" title="永久链接至标题">¶</a></h3>
+<p>前文中介绍了振幅放大量子线路的问题背景集合元素二类划分问题，即对于给定的有限集合和划分标准$
+Ω,f，$我们可以用如下量子态表示集合元素</p>
+<p><span class="math notranslate nohighlight">\(|\psi\rangle=\sin \theta\left|\varphi_{1}\right\rangle+\cos \theta\left|\varphi_{0}\right\rangle,\left|\varphi_{0}\right\rangle=\left|\varphi_{1}^{\perp}\right\rangle\)</span></p>
+<p>现在对此问题进行两种扩展。</p>
+<section id="id81">
+<h4>8.9.1.1 量子计数问题<a class="headerlink" href="#id81" title="永久链接至标题">¶</a></h4>
+<p>记<span class="math notranslate nohighlight">\(|\Omega|=N=2^{n}, \Omega \supseteq B,|B|=M \leq N\)</span>
+，且判别函数满足</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\left\{\begin{array}{c}f: \Omega \rightarrow\{0,1\} \\ f(x)=\left\{\begin{array}{l}1, x \in B \\ 0, x \notin B\end{array}\right.\end{array}\right.\end{split}\]</div>
+<p>求 M。</p>
+<p>传统算法是简单地通过 <span class="math notranslate nohighlight">\(O(N)\)</span>
+次的运算进行遍历计数，从而求得解的集合基数
+<span class="math notranslate nohighlight">\(M\)</span>。量子计数算法的时间复杂度与QPE过程完全一致，均为<span class="math notranslate nohighlight">\(O\left(\left(\log _{2} N\right)^{2}\right)\)</span>
+。</p>
+<p><em>注解：</em></p>
+<p>将振幅放大算子应用到QPE线路中，可以起到类似于由特征量子态提取特征值的过滤提取作用。</p>
+</section>
+<section id="id82">
+<h4>8.9.1.2 解元素的搜索问题<a class="headerlink" href="#id82" title="永久链接至标题">¶</a></h4>
+<p>集合<span class="math notranslate nohighlight">\(\Omega\)</span>中存在某个元素<span class="math notranslate nohighlight">\(\omega \in \Omega\)</span>为特定问题的解，判别函数的定义如下：</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\left\{\begin{array}{c}f: \Omega \rightarrow\{0,1\} \\ f(x)=\left\{\begin{array}{l}1, x=\omega \\ 0, x \neq \omega\end{array}\right.\end{array}\right.\end{split}\]</div>
+<p>求<span class="math notranslate nohighlight">\(\omega \in \Omega\)</span>。</p>
+<p>Grover算法的过程与振幅放大量子线路的过程完全一致。Grover算法的时间复杂度为<span class="math notranslate nohighlight">\(O(\sqrt{N})\)</span>，相对于经典算法的<span class="math notranslate nohighlight">\(O(N)\)</span>有着极大加速。</p>
+<p><em>注解</em>：</p>
+<p>事实上，振幅放大得到振幅和基向量的近似求解的思想不局限于集合元素二类划分问题。</p>
+</section>
+</section>
+<section id="id83">
+<h3>8.9.2 算法原理<a class="headerlink" href="#id83" title="永久链接至标题">¶</a></h3>
+<p>两种算法需要预制备的集合元素量子态有着相似的如下形式</p>
+<div class="math notranslate nohighlight">
+\[|\psi\rangle=\sin \theta\left|\varphi_{1}\right\rangle+\cos \theta\left|\varphi_{0}\right\rangle,\left|\varphi_{0}\right\rangle=\left|\varphi_{1}^{\perp}\right\rangle\]</div>
+<p>但具体定义和需要求解的目标不同，因此基于振幅放大量子线路衍生出的算法原理也有所不同</p>
+<section id="id84">
+<h4>8.9.2.1 基于振幅放大算子的QPE过程<a class="headerlink" href="#id84" title="永久链接至标题">¶</a></h4>
+<p>量子计数算法中的两个基量子态是基于集合和判别函数定义的，即</p>
+<div class="math notranslate nohighlight">
+\[\left|\varphi_{0}\right\rangle=\frac{1}{\sqrt{N-M}} \sum_{x \notin B}|x\rangle,\left|\varphi_{1}\right\rangle=\frac{1}{\sqrt{M}} \sum_{x \in B}|x\rangle\]</div>
+<p>将问题转化到空间<span class="math notranslate nohighlight">\(\left\{\left|\varphi_{0}\right\rangle,\left|\varphi_{1}\right\rangle\right\}\)</span>上，则需要求解$
+θ $。</p>
+<p>直接在空间<span class="math notranslate nohighlight">\(\left\{\left|\varphi_{0}\right\rangle,\left|\varphi_{1}\right\rangle\right\}\)</span><span class="math notranslate nohighlight">\(\left\{\left|\varphi_{0}\right\rangle,\left|\varphi_{1}\right\rangle\right\}\)</span>上定义振幅放大算子<span class="math notranslate nohighlight">\(G=\left[\begin{array}{cc}\cos 2 \theta &amp; -\sin 2 \theta \\ \sin 2 \theta &amp; \cos 2 \theta\end{array}\right]\)</span>，满足</p>
+<div class="math notranslate nohighlight">
+\[G\left(\cos \theta\left|\varphi_{0}\right\rangle+\sin \theta\left|\varphi_{1}\right\rangle\right)=\cos 3 \theta\left|\varphi_{0}\right\rangle+\sin 3 \theta\left|\varphi_{1}\right\rangle\]</div>
+<p>振幅放大算子 G
+的特征向量可以构成空间<span class="math notranslate nohighlight">\(\left\{\left|\varphi_{0}\right\rangle,\left|\varphi_{1}\right\rangle\right\}\)</span>的一组基向量，因此<span class="math notranslate nohighlight">\(ψ\)</span>可以拆解为
+G 的特征向量的线性组合。</p>
+<p><span class="math notranslate nohighlight">\(G \)</span>，借助在制备<span class="math notranslate nohighlight">\(ψ\)</span>的过程中使用的索引比特，可以准确区分出以$
+G <span class="math notranslate nohighlight">\(构造的QPE过程结果对应的特征子相位是\)</span> 2θ$ 或$ 2π−2θ$。</p>
+<p>于是就可以通过基于$ G <span class="math notranslate nohighlight">\(的QPE过程完成对\)</span> θ <span class="math notranslate nohighlight">\(的求解，而 \)</span> M $的求解。</p>
+<p><em>注解：</em></p>
+<p>为什么可以判定振幅放大算子 G
+的特征向量可以构成空间<span class="math notranslate nohighlight">\(\left\{\left|\varphi_{0}\right\rangle,\left|\varphi_{1}\right\rangle\right\}\)</span>的一组基向量？</p>
+</section>
+<section id="id85">
+<h4>8.9.2.2 基于镜像变换的振幅放大量子线路<a class="headerlink" href="#id85" title="永久链接至标题">¶</a></h4>
+<p>对于给定的量子态<span class="math notranslate nohighlight">\(|\psi\rangle=\sin \theta\left|\varphi_{1}\right\rangle+\cos \theta\left|\varphi_{0}\right\rangle\)</span>，
+可以直接参考振幅放大量子线路，给出Grover算子，从而得到</p>
+<div class="math notranslate nohighlight">
+\[\left|\psi_{k}\right\rangle=\sin (2 k+1) \theta\left|\varphi_{1}\right\rangle+\cos (2 k+1) \theta\left|\varphi_{0}\right\rangle,(2 k+1) \theta \approx \frac{\pi}{2}\]</div>
+<p>但直接通过镜像变换构造的Grover算子<span class="math notranslate nohighlight">\(G=-(I-2|\omega\rangle\langle\omega|)(I-2|\psi\rangle\langle\psi|)\)</span>在实际的编程实现和运算过程中计算量过大，因此需要考虑如何将其利用基础的普适量子门简单实现累乘。</p>
+<p>将原问题转换到空间<span class="math notranslate nohighlight">\(\{|\omega\rangle,|\psi\rangle\}\)</span> left |
+Omegaright |
+<span class="math notranslate nohighlight">\(=\mathrm{N}\)</span>，由<span class="math notranslate nohighlight">\(\langle\varphi \mid \omega\rangle=\frac{1}{\sqrt{N}},\langle\varphi \mid \varphi\rangle=1\)</span>可知</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}U_{\omega}=(I-2|\omega\rangle\langle\omega|)=\left[\begin{array}{cc}-1 &amp; -\frac{2}{\sqrt{N}} \\ 0 &amp; 1\end{array}\right], U_{s}=2|\varphi\rangle\langle\varphi|-I=\left[\begin{array}{cc}-1 &amp; 0 \\ \frac{2}{\sqrt{N}} &amp; 1\end{array}\right]\end{split}\]</div>
+<p>记<span class="math notranslate nohighlight">\(\sin \theta=\frac{1}{\sqrt{N}}, a=e^{i \theta}, \quad \frac{1}{\sqrt{N}}=\frac{a-a^{-1}}{2 i}\)</span>，于是有</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}U_{\omega} U_{s}=\frac{1}{a^{2}+1}\left[\begin{array}{cc}-i &amp; i \\ a &amp; a^{-1}\end{array}\right]\left[\begin{array}{cc}a^{2} &amp; 0 \\ 0 &amp; a^{-2}\end{array}\right]\left[\begin{array}{cc}i &amp; a \\ -a^{2} i &amp; a\end{array}\right]\end{split}\]</div>
+<p>记<span class="math notranslate nohighlight">\(Q=U_{s} U_{\omega}\)</span>
+，有<span class="math notranslate nohighlight">\(Q|\varphi\rangle=\frac{N-4}{N}|\varphi\rangle+\frac{2}{\sqrt{N}}|\omega\rangle\)</span>
+，且</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}Q^{k}=\frac{1}{a^{2}+1}\left[\begin{array}{cc}-i &amp; i \\ a &amp; a^{-1}\end{array}\right]\left[\begin{array}{cc}a^{2 k} &amp; 0 \\ 0 &amp; a^{-2 k}\end{array}\right]\left[\begin{array}{cc}i &amp; a \\ -a^{2} i &amp; a\end{array}\right]\end{split}\]</div>
+<p>对执行量子门后，测量第一个寄存器得到解量子态 的概率为</p>
+<p>解<span class="math notranslate nohighlight">\((2 k+1) \theta=\frac{\pi}{2}\)</span>可知经过<span class="math notranslate nohighlight">\(k=\left[\frac{\pi}{4} \arcsin ^{-1} \frac{1}{\sqrt{N}}-\frac{1}{2}\right] \approx O(N)\)</span>次<span class="math notranslate nohighlight">\(Q\)</span>量子门操作后可以通过测量以逼近1的概率得到解<span class="math notranslate nohighlight">\(|ω⟩\)</span>。</p>
+</section>
+</section>
+<section id="id86">
+<h3>8.9.3 量子线路图与参考代码<a class="headerlink" href="#id86" title="永久链接至标题">¶</a></h3>
+<p>量子计数算法和Grover算法的核心内容都是振幅放大算子，算法结构分别与QPE和振幅放大量子线路基本一致。</p>
+<p>Quantum Counting算法的量子线路图如下所示</p>
+<figure class="align-default" id="id130">
+<img alt="\_images/QuantumCounting.png" src="https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/QuantumCounting.png" />
+<figcaption>
+<p><span class="caption-text">_images/QuantumCounting.png</span><a class="headerlink" href="#id130" title="永久链接至图片">¶</a></p>
+</figcaption>
+</figure>
+<p>Grover算法的量子线路图如下所示</p>
+<figure class="align-default" id="id131">
+<img alt="\_images/Grover.png" src="https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/Grover.png" />
+<figcaption>
+<p><span class="caption-text">_images/Grover.png</span><a class="headerlink" href="#id131" title="永久链接至图片">¶</a></p>
+</figcaption>
+</figure>
+<p>基于pyQPanda的实现量子计数算法的过程与QPE过程几乎没有区别，因此源码与Grover算法合并在一起，两种算法的程序实现可以参考
+pyQPanda下Quantum Counting和Grover算法程序源码 。</p>
+<p>下面对Grover算法介绍基于pyQPanda的一个接口函数和一个样例代码实现。Quantum
+Counting算法的程序实例不再赘述，与QPE的代码实现没有本质区别。</p>
+<p><em>注解：</em></p>
+<p>基于集合 Ω 和判别函数 f
+的试验态制备是两种算法共同的重要前置工作，与振幅放大算子一起构成了算法的核心组件。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Grover</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">Classical_condition</span><span class="p">,</span> <span class="n">QuantumMachine</span><span class="p">,</span> <span class="n">qlist</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>输入参数分别为算法搜索空间、搜索条件、量子模拟机、输出结果存储比特以及迭代次数，返还一个可执行的Grover量子线路。
+Grover算法还有其他的接口函数，此处不作赘述。</p>
+<p>下面是一个一维Grover示例程序代码</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">pyqpanda</span> <span class="k">as</span> <span class="nn">pq</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+   <span class="n">machine</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">)</span>
+   <span class="n">x</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">cAlloc</span><span class="p">()</span>
+   <span class="n">prog</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">create_empty_qprog</span><span class="p">()</span>
+
+   <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
+   <span class="n">grover_result</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">Grover_search</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">x</span><span class="o">==</span><span class="mi">6</span><span class="p">,</span> <span class="n">machine</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+   <span class="nb">print</span><span class="p">(</span><span class="n">grover_result</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>输出结果是查找列表中数值6所在的坐标，应当如下</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">7</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="shor">
+<h2><strong>8.10 Shor算法</strong><a class="headerlink" href="#shor" title="永久链接至标题">¶</a></h2>
+<p>Shor算法，又叫质因数分解算法，在破解RSA加密方面有着重要意义。</p>
+<section id="id87">
+<h3>8.10.1 问题背景<a class="headerlink" href="#id87" title="永久链接至标题">¶</a></h3>
+<p>已知一个大整数$ N=pq:math:<a href="#id88"><span class="problematic" id="id89">`</span></a>，其中 <a href="#id90"><span class="problematic" id="id91">`</span></a>p,q
+:math:<a href="#id92"><span class="problematic" id="id93">`</span></a>均为未知的质数，求解 <a href="#id94"><span class="problematic" id="id95">`</span></a>p,q$。
+Shor算法分为经典算法实现的公约数求解、将质因数分解转化为函数周期求解等部分，以及借助量子傅里叶变换等量子算法实现的函数周期求解共三个部分。</p>
+<p>相对经典算法，Shor算法在计算资源耗费和计算时间复杂度两方面均有极大的降低，使经典算法无法求解的超大型质因子分解问题出现了量子算法求解的可能。</p>
+<p><em>注解：</em></p>
+<p>Shor算法试图解决的极大比特数RSA问题使用经典算法在理论上所需的计算时间和空间资源是近乎无法满足的，它不再只体现了量子计算的相对优势，而是揭示了特定问题上量子计算的不可取代性和绝对优势。</p>
+</section>
+<section id="id96">
+<h3>8.10.2 算法原理<a class="headerlink" href="#id96" title="永久链接至标题">¶</a></h3>
+<p>Shor分解算法的具体步骤如下：</p>
+<ol class="arabic simple">
+<li><p><span class="math notranslate nohighlight">\(\forall 1&lt;x&lt;N, x \in \mathbb{Z}\)</span>;</p></li>
+<li><p><span class="math notranslate nohighlight">\(g c d(x, N) \neq 1\)</span>, 结束;</p></li>
+<li><p>求 <span class="math notranslate nohighlight">\(r\)</span> 使得 <span class="math notranslate nohighlight">\(x^{r} \bmod N \equiv 1\)</span>;</p></li>
+<li><p><span class="math notranslate nohighlight">\(r \bmod 2 \equiv 1\)</span>, 回到1取 <span class="math notranslate nohighlight">\(\dot{x} \neq x\)</span>;</p></li>
+<li><p><span class="math notranslate nohighlight">\(x^{\frac{r}{2}} \bmod N \equiv-1\)</span>, 回到1取
+<span class="math notranslate nohighlight">\(\dot{x} \neq x\)</span>;</p></li>
+<li><p><span class="math notranslate nohighlight">\(g c d\left(x^{\frac{r}{2}}-1, N\right) g c d\left(x^{\frac{r}{2}}+1, N\right)=N\)</span>
+。</p></li>
+</ol>
+<p>式中 :math:<a href="#id97"><span class="problematic" id="id98">`</span></a>gcd <a href="#id99"><span class="problematic" id="id100">`</span></a>表示最大公约数（Greatest Common Divisor）。</p>
+<p>以上步骤中，难点集中在第三步指定余数1的模指逆元求解。
+将第三步转化为如下问题，并采用量子算法求解：</p>
+<p>记<span class="math notranslate nohighlight">\(f(x)=x^{a} \bmod \mathrm{N}, f(a+r)=f(a)\)</span>，求最小的 r 。</p>
+<p>下面介绍模指逆元求解的量子算法的核心内容，主要有三个部分。</p>
+<ol class="arabic simple">
+<li><p>公式变形所需的前置引理。</p></li>
+<li><p>构造出可用的模乘量子门操作以迭代完成模指逆元量子态构建。</p></li>
+<li><p>参考QPE对构造出的模乘求和形式的结果以逆量子傅里叶变换得到模指逆元。</p></li>
+</ol>
+<p>限于篇幅，第一部分中的前置引理将只作介绍而不加以证明。</p>
+<section id="id101">
+<h4>8.10.2.1 前置引理<a class="headerlink" href="#id101" title="永久链接至标题">¶</a></h4>
+<p>定义：</p>
+<div class="math notranslate nohighlight">
+\[\left|u_{s}\right\rangle \equiv \frac{1}{\sqrt{r}} \Sigma_{k=0}^{r-1} e^{-\frac{2 \pi i k s}{r}}\left|x^{k} \bmod N\right\rangle, x^{r} \bmod N \equiv 1\]</div>
+<p>引理1：</p>
+<div class="math notranslate nohighlight">
+\[\frac{1}{\sqrt{r}} \Sigma_{s=0}^{r-1} e^{\frac{2 \pi i k s}{r}}\left|u_{s}\right\rangle=\left|x^{k} \bmod N\right\rangle\]</div>
+<p>引理2：</p>
+<div class="math notranslate nohighlight">
+\[\exists U, U|y\rangle=|x y \bmod N\rangle, s . t . U\left|u_{s}\right\rangle=e^{\frac{2 \pi i s}{r}}\left|u_{s}\right\rangle\]</div>
+<p>引理3：</p>
+<div class="math notranslate nohighlight">
+\[\frac{1}{\sqrt{r}} \Sigma_{s=0}^{r-1}\left|u_{s}\right\rangle=|1\rangle\]</div>
+<p>有了引理1、2和3，我们就可以将模指量子态、定义的特殊量子态
+<span class="math notranslate nohighlight">\(|u_{s}\rangle\)</span>、基态<span class="math notranslate nohighlight">\(|1\rangle\)</span>以及模指逆元 r
+通过量子傅里叶变换/逆变换、<span class="math notranslate nohighlight">\(|u_{s}\rangle\)</span>
+的定义变换/逆变换全部关联起来。</p>
+</section>
+<section id="id102">
+<h4>8.10.2.2 构造模乘量子门<a class="headerlink" href="#id102" title="永久链接至标题">¶</a></h4>
+<p>定义量子门操作<span class="math notranslate nohighlight">\(U^{j}|y\rangle=\left|y x^{j} \bmod N\right\rangle\)</span>。</p>
+<p>对任给整数 <span class="math notranslate nohighlight">\(Z\)</span>，对其进行$ t$ 位数二进制展开可知</p>
+<div class="math notranslate nohighlight">
+\[U^{2^{t-1} / t-1} U^{2^{t-2}_{t-2}} \cdots U^{2^{0} z_{0}}|1\rangle \approx\left|1 * x^{z} \bmod N\right\rangle\]</div>
+<p>由上式可以利用模乘量子门来实现模指操作。</p>
+</section>
+<section id="id103">
+<h4>8.10.2.3 求解模指逆元<a class="headerlink" href="#id103" title="永久链接至标题">¶</a></h4>
+<p>考察两个寄存器组成的量子态<span class="math notranslate nohighlight">\(|0\rangle^{\otimes t}\left(|0\rangle^{\otimes L-1}|1\rangle\right)=|0\rangle^{\otimes t}|1\rangle_{L}\)</span>将第一个寄存器初始化为最大叠加态，有</p>
+<div class="math notranslate nohighlight">
+\[\left(H^{\otimes t} \otimes I^{\otimes L}\right)\left(|0\rangle^{\otimes t}|1\rangle_{L}\right)=|+\rangle^{\otimes t} \otimes|1\rangle_{L}\]</div>
+<p>基于量子门操作 <span class="math notranslate nohighlight">\(U^{j}\)</span> 可以定义受控模乘量子门 <span class="math notranslate nohighlight">\(C-U^{j}\)</span> 。取
+<span class="math notranslate nohighlight">\(|+\rangle^{\otimes t}\)</span> 的第项作为控制比 特对
+<span class="math notranslate nohighlight">\(|+\rangle^{\otimes t} \otimes|1\rangle_{L}\)</span> 执行 <span class="math notranslate nohighlight">\(t\)</span> 次
+<span class="math notranslate nohighlight">\(C-U^{2^{j-1}}\)</span> 完成受控模指量子门操作，有</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\begin{split}  \begin{aligned}
+  &amp;\prod_{j=1}^{t}\left(C-U^{2^{j-1}}\right)\left(|+\rangle^{\otimes t} \otimes|1\rangle_{L}\right) \\
+  &amp;=\frac{1}{\sqrt{2}^{t}} \sum_{j=0}^{2^{t-1}}|j\rangle\left|x^{j} \bmod N\right\rangle \\
+  &amp;=\frac{1}{\sqrt{r 2^{t}}} \Sigma_{j=0}^{2^{t}-1} \Sigma_{s=0}^{r-1} e^{\frac{2 \pi i j s}{r}}|j\rangle\left|u_{s}\right\rangle=:|\psi\rangle
+  \end{aligned}\end{split}\\对第一个寄存器进行IQFT，有\end{aligned}\end{align} \]</div>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}  \left(\mathrm{QFT}^{-1} \otimes I^{\otimes L}\right)|\psi\rangle=\frac{1}{\sqrt{r}} \Sigma_{s=0}^{r-1}\left|\frac{2^{t} s}{r}\right\rangle\left|u_{s}\right\rangle\\测量第一个寄存器得到任意一个非 :math:`|0\rangle` 量子态,\end{aligned}\end{align} \]</div>
+<p>进而有最逼近实数 <span class="math notranslate nohighlight">\(\frac{2^{t_{s}}}{r}\)</span> 的整数
+<span class="math notranslate nohighlight">\(\left[\frac{2^{t}{r}}{r}\right]\)</span>, 对 实数
+<span class="math notranslate nohighlight">\(\frac{\left[\frac{2 t_{s}}{r}\right]}{2^{t}}\)</span>
+进行连续分数展开得到 <span class="math notranslate nohighlight">\(\frac{s}{r}\)</span>, 自然可以获得分母 <span class="math notranslate nohighlight">\(r\)</span> 。
+此处 <span class="math notranslate nohighlight">\(L=n=\left[\log _{2} N\right]\)</span>, 如果取
+<span class="math notranslate nohighlight">\(t=2 n+1+\left[\log \left(2+\frac{1}{2 \varepsilon}\right)\right]\)</span>,
+那么可以得到二进制 展开精度为 <span class="math notranslate nohighlight">\(2 n+1\)</span>
+位的相位估计结果，且测量得到该结果的概率至少为
+<span class="math notranslate nohighlight">\(\frac{1-\varepsilon}{r}\)</span> 。一般取 <span class="math notranslate nohighlight">\(t=2 n\)</span> 。</p>
+</section>
+</section>
+<section id="id104">
+<h3>8.10.3 量子线路图与参考代码<a class="headerlink" href="#id104" title="永久链接至标题">¶</a></h3>
+<p>Shor算法的量子线路图如下所示</p>
+<figure class="align-default" id="id132">
+<img alt="\_images/Shor.png" src="https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/Shor.png" />
+<figcaption>
+<p><span class="caption-text">_images/Shor.png</span><a class="headerlink" href="#id132" title="永久链接至图片">¶</a></p>
+</figcaption>
+</figure>
+<p>基于pyQPanda的Shor算法源码参见pyQPanda下Shor算法程序源码，</p>
+<p>下面是pyQPanda中提供的Shor算法调用接口。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Shor_factorization</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>输入参数为被质因数分解的大数，返还一个2维list，内容为计算过程是否成功和分解后的质因子对list。</p>
+<p>选取 <span class="math notranslate nohighlight">\(N=15\)</span> ， 验证Shor的代码实例如下</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">pyqpanda</span> <span class="k">as</span> <span class="nn">pq</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">N</span><span class="o">=</span><span class="mi">15</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">Shor_factorization</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>对 15 的质因子分解结果应该是 15=3∗5
+，所以应当返还算法成功标志和两个质因子 3 和 5 。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id105">
+<h2><strong>8.11 量子虚时演化算法</strong><a class="headerlink" href="#id105" title="永久链接至标题">¶</a></h2>
+<p>虚时演化（Imaginary time
+evolution）是研究量子系统的一个有力工具。虚时演化算法作为一种量子经典混合算法对于任意一个给定哈密顿量H的系统均可以近似求解得到其基态向量，即哈密顿量
+:math:<code class="docutils literal notranslate"><span class="pre">H</span></code>的最小特征值对应的特征向量。此算法的量子线路浅易于实现，应用范围广泛，可以求解一些经典算法难以解决的问题。</p>
+<section id="id106">
+<h3>8.11.1 问题背景概述<a class="headerlink" href="#id106" title="永久链接至标题">¶</a></h3>
+<p>对于给定哈密顿量$ H
+<span class="math notranslate nohighlight">\(的系统，随着时间 \)</span>，系统根据传播变换（propagator）`e^{-i
+H t}<span class="math notranslate nohighlight">\(演化。对应的虚时\)</span>(=i t)$
+传播变换为<span class="math notranslate nohighlight">\(e^{-H t}\)</span>，是一个非幺正算符。</p>
+<p>给定哈密顿量$ H :math:<a href="#id107"><span class="problematic" id="id108">`</span></a>和初态 <a href="#id109"><span class="problematic" id="id110">`</span></a>|ψ⟩$ ,归一化的虚时演化被定义为</p>
+<div class="math notranslate nohighlight">
+\[|\psi(\tau)\rangle=A(\tau) e^{-H t}|\psi(0)\rangle, A(\tau)=\left(\left\langle\psi(0)\left|e^{-2 H t}\right| \psi(0)\right\rangle\right)^{\frac{1}{2}}\]</div>
+<p><span class="math notranslate nohighlight">\(A(τ)\)</span>
+为归一化因子，通常多体系统的哈密顿量<span class="math notranslate nohighlight">\(H=\sum_{i} \lambda_{i} h_{i}\)</span>，
+其中<span class="math notranslate nohighlight">\(\lambda_{i}\)</span>为实系数,$
+h_{i}$为可观测量（observables)并且可以表示为Pauli矩阵的直积。</p>
+<p>于是有如下的等价薛定谔方程：</p>
+<div class="math notranslate nohighlight">
+\[\frac{\partial|\psi(\tau)\rangle}{\partial \tau}=-\left(H-\frac{A^{\prime}(\tau)}{A(\tau)}\right)|\psi(\tau)\rangle=-\left(H-E_{\tau}\right)|\psi(\tau)\rangle\]</div>
+<p><em>注解：</em></p>
+<p>实际应用中，QITE的真正难点在于如何将原问题转化为哈密顿系统求基态问题，以及如何对哈密顿系统给出其哈密顿量。</p>
+</section>
+<section id="id111">
+<h3>8.11.2 算法原理<a class="headerlink" href="#id111" title="永久链接至标题">¶</a></h3>
+<p>量子虚时演化算法由2个部分：</p>
+<ol class="arabic simple">
+<li><p>通过给定的问题系统哈密顿量，构造相应的薛定谔方程，将薛定谔方程求解问题转化为一个线性方程组求解问题；</p></li>
+<li><p>求解线性方程组，得到关键变量的时间演化函数，利用虚时演化的特性求得系统最低能量情况下对应的基态，完成对问题的求解。</p></li>
+</ol>
+<p>量子虚时演化算法可用于在任意已知哈密顿量的哈密顿系统由初态求解任意时刻状态及最终稳态。</p>
+<section id="id112">
+<h4>8.11.2.1 从薛定谔方程到微分方程近似解<a class="headerlink" href="#id112" title="永久链接至标题">¶</a></h4>
+<p>考虑给定的哈密顿量$ H $所满足的Wick旋转薛定谔方程</p>
+<div class="math notranslate nohighlight">
+\[\left(\frac{\partial}{\partial \tau}-\left(H-E_{\tau}\right)\right)|\psi(\tau)\rangle=0, E_{\tau}=\langle\psi(\tau)|H| \psi(\tau)\rangle\]</div>
+<p>应用McLachlan变分原理，有</p>
+<div class="math notranslate nohighlight">
+\[\delta \|\left(\frac{\partial}{\partial \tau}-\left(H-E_{\tau}\right)\right)|\psi(\tau)\rangle \|=0\]</div>
+<p>以测试态<span class="math notranslate nohighlight">\(|\phi(\vec{\theta}(\tau))\rangle, \vec{\theta}(\tau)=\left(\theta_{1}(\tau), \theta_{2}(\tau), \cdots, \theta_{N}(\tau)\right)\)</span>
+逼近解 <span class="math notranslate nohighlight">\(|\psi(\tau)\rangle\)</span>。</p>
+<p>记
+<span class="math notranslate nohighlight">\(\dot{\theta}_{j}=\frac{\partial \theta_{j}}{\partial \tau}, S=\left(\frac{\partial}{\partial \tau}-\left(H-E_{\tau}\right)\right)\)</span>,
+同时考虑到归一化条件 <span class="math notranslate nohighlight">\(\langle\phi \mid \phi\rangle=1\)</span>, 有</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+&amp;\frac{\partial \| S|\phi(\tau)\rangle \|}{\partial \dot{\theta}_{i}} \\
+&amp;=\sum_{i, j} \frac{\partial\langle\phi|}{\partial \theta_{i}} \frac{\partial|\phi\rangle}{\partial \theta_{j}} \dot{\theta}_{j}+\sum_{i}\left(\frac{\partial\langle\phi|}{\partial \theta_{i}} H|\phi\rangle+\langle\phi| H \frac{\partial|\phi\rangle}{\partial \theta_{i}}\right) \\
+&amp;=\sum_{j} A_{i j} \dot{\theta}_{j}-C_{j}=0
+\end{aligned}\end{split}\]</div>
+<p>其中</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+&amp;A_{i j}=\operatorname{Re}\left(\frac{\partial\langle\phi|}{\partial \theta_{i}} \frac{\partial|\phi\rangle}{\partial \theta_{i}}\right) \\
+&amp;C_{i}=-\operatorname{Re}\left(\frac{\partial\langle\phi|}{\partial \theta_{i}} H|\phi\rangle\right)
+\end{aligned}\end{split}\]</div>
+<p>于是原薛定谔方程转化为解为的线性方程组。</p>
+</section>
+<section id="id113">
+<h4>8.11.2.2 虚时演化逼近基态<a class="headerlink" href="#id113" title="永久链接至标题">¶</a></h4>
+<p>由 <span class="math notranslate nohighlight">\(x^{\dagger} A x&gt;0\)</span> 可知 <span class="math notranslate nohighlight">\(A\)</span> 是正定的，其广义逆
+<span class="math notranslate nohighlight">\(A^{-1}\)</span> 也是正定的。 于是对系统的平均能量 <span class="math notranslate nohighlight">\(E_{\tau}\)</span> 有</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+&amp;\frac{d E_{\tau}}{d \tau}=\frac{d\langle\psi(\tau)|H| \psi(\tau)\rangle}{d \tau} \\
+&amp;=\sum_{i} \operatorname{Re}\left(\frac{\partial\langle\phi|}{\partial \theta_{i}} H|\phi\rangle \dot{\theta}_{i}\right)=-\sum_{i} C_{i} \dot{\theta}_{i}=-\sum_{i, j} C_{i} A_{i, j}^{-1} C_{j} \leq 0
+\end{aligned}\end{split}\]</div>
+<p>可知运用此量子虚时演化算法会使整个系统的平均能量不断减小。 记测试态$
+|()=V()|=U_{N}(<em>{N}) U</em>{2}(<em>{2})
+U</em>{1}(<em>{1})|:math:`, 其中` U</em>{i} <span class="math notranslate nohighlight">\(为么正算符, \)</span>U<span class="math notranslate nohighlight">\(均仅依赖于一个参数theta_i（否则可以进行量子门操作分解），不妨假设每个U{i} 均为旋转或受控旋转门，于是其导数可以表示为\)</span>=<em>{k}
+f</em>{k, i} U_{i}(<a href="#id114"><span class="problematic" id="id115">*</span></a>{i}) <a href="#id116"><span class="problematic" id="id117">*</span></a>{k, i}$ ,其中<span class="math notranslate nohighlight">\(δ_{k,i} \)</span>frac{partial phi(tau)}{partial theta_{i}}=sum_{k} f_{k, i} widetilde{V}_{k, i}|overline{0}rangle`
+,其中</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}  \widetilde{V}_{k, i}=U_{N}\left(\theta_{N}\right) \cdots U_{i+1}\left(\theta_{i+1}\right) U_{i}\left(\theta_{i}\right) \sigma_{k, i} \cdots U_{2}\left(\theta_{2}\right) U_{1}\left(\theta_{1}\right)\\于是对于微分方程组 :math:`\sum_{j} A_{i j} \dot{\theta}_{j}=C_{j}` 有\end{aligned}\end{align} \]</div>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\begin{split}  \begin{aligned}
+  &amp;A_{i j}=R e\left(\sum_{k, l} f_{k, i}^{*} f_{l, i}\left\langle\overline{0}\left|\tilde{V}_{k, i}^{\dagger} \tilde{V}_{l, j}\right| \overline{0}\right\rangle\right) \\
+  &amp;C_{i}=-R e\left(\sum_{k, l} f_{k, i}^{*} \lambda_{l}\left\langle\overline{0}\left|\tilde{V}_{k, i}^{\dagger} h_{l} V\right| \overline{0}\right\rangle\right)
+  \end{aligned}\end{split}\\以上两个表达式均符合一般形式\end{aligned}\end{align} \]</div>
+<p><span class="math notranslate nohighlight">\(a \operatorname{Re}\left(e^{i \theta}\langle 0|U| \overline{0}\rangle\right)\)</span>
+，因而可以使用量子线路对其进行 构造， <span class="math notranslate nohighlight">\(A_{i j}\)</span> 的构造方式如下:</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}  \left\langle\overline{0}\left|\widetilde{V}_{k, i}^{\dagger} \widetilde{V}_{l, j}\right| \overline{0}\right\rangle=\left\langle\overline{0}\left|\mathrm{U}_{1}^{\dagger} \cdots \mathrm{U}_{i-1}^{\dagger} \sigma_{k, i}^{\dagger} \mathrm{U}_{i}^{\dagger} \cdots \mathrm{U}_{j-1}^{\dagger} \sigma_{i, j} \mathrm{U}_{j}^{\dagger} \cdots U_{1}\right| \overline{0}\right\rangle\\对 :math:`C_{i j}` 有类似结果，于是可以用量子线路构造\end{aligned}\end{align} \]</div>
+<p><span class="math notranslate nohighlight">\(A_{i j}, C_{i j}\)</span> 。
+因此可以引入线性方程组的量子算法，完成求解后得到
+<span class="math notranslate nohighlight">\(\dot{\theta}_{j}=\frac{\partial \theta_{j}}{\partial \tau}\)</span>,
+进而将 <span class="math notranslate nohighlight">\(\phi(\vec{\theta})\)</span> 进行
+虚时演化，可以得到系统稳定状态下的基态 <span class="math notranslate nohighlight">\(\theta\)</span> 。</p>
+<p>于是完成了对于任意给定的哈密顿量<span class="math notranslate nohighlight">\(H\)</span>对应的系统基态的近似求解。</p>
+</section>
+</section>
+<section id="id118">
+<h3>8.11.3 量子线路图与参考代码<a class="headerlink" href="#id118" title="永久链接至标题">¶</a></h3>
+<p>QITE算法中构造线性方程组的左端项矩阵和右端项的量子线路图如下所示</p>
+<figure class="align-default" id="id133">
+<img alt="\_images/QITE.png" src="https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/QITE.png" />
+<figcaption>
+<p><span class="caption-text">_images/QITE.png</span><a class="headerlink" href="#id133" title="永久链接至图片">¶</a></p>
+</figcaption>
+</figure>
+<p>基于pyQPanda的QITE算法实现代码参见pyQPanda下QITE算法程序源码
+，pyQPanda中QITE算法相关代码是一个类，因而下面将介绍所有相关的输入输出接口函数。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">qite</span><span class="o">=</span><span class="n">QITE</span><span class="p">()</span>
+<span class="n">qite</span><span class="o">.</span><span class="n">set_Hamiltonian</span><span class="p">(</span><span class="n">Hamiltonian</span><span class="p">)</span>
+<span class="n">qite</span><span class="o">.</span><span class="n">set_ansatz_gate</span><span class="p">(</span><span class="n">ansatz</span><span class="p">)</span>
+<span class="n">qite</span><span class="o">.</span><span class="n">set_iter_num</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="n">qite</span><span class="o">.</span><span class="n">set_delta_tau</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="n">qite</span><span class="o">.</span><span class="n">set_upthrow_num</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="n">qite</span><span class="o">.</span><span class="n">set_para_update_mode</span><span class="p">(</span><span class="n">GD_VALUE</span><span class="o">/</span><span class="n">GD_DIRECTION</span><span class="p">)</span>
+<span class="n">qite</span><span class="o">.</span><span class="n">exec</span><span class="p">()</span>
+<span class="n">qite</span><span class="o">.</span><span class="n">get_result</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>以上函数中，第一个函数为类的构造函数，后续6个函数作用分别为设置哈密顿量，拟设、迭代数、τ
+的变化率、重置迭代次数、收敛模式参考梯度值或梯度方向、执行虚时演化和获得列表格式的概率结果。</p>
+<p>我们可以将量子变分虚时演化算法应用到网络节点重要性排序问题上，综合已有结论快速求解得到节点的重要性权重。选择如下图所示的网络节点重要性排序问题进行代码实现。</p>
+<figure class="align-default" id="id134">
+<img alt="*images/QITE*\ ex1.png" src="https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/QITE_ex1.png" />
+<figcaption>
+<p><span class="caption-text"><em>images/QITE</em>ex1.png</span><a class="headerlink" href="#id134" title="永久链接至图片">¶</a></p>
+</figcaption>
+</figure>
+<p>此问题的QITE求解代码实例如下</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">pyqpanda</span> <span class="k">as</span> <span class="nn">pq</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">node7graph</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span> <span class="p">,</span><span class="mi">0</span> <span class="p">,</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                 <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span> <span class="p">,</span><span class="mi">1</span> <span class="p">,</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                 <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span> <span class="p">,</span><span class="mi">0</span> <span class="p">,</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                 <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span> <span class="p">,</span><span class="mi">1</span> <span class="p">,</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                 <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span> <span class="p">,</span><span class="mi">1</span> <span class="p">,</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                 <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span> <span class="p">,</span><span class="mi">1</span> <span class="p">,</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                 <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span> <span class="p">,</span><span class="mi">0</span> <span class="p">,</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],]</span>
+
+    <span class="n">problem</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">NodeSortProblemGenerator</span><span class="p">()</span>
+    <span class="n">problem</span><span class="o">.</span><span class="n">set_problem_graph</span><span class="p">(</span><span class="n">node7graph</span><span class="p">)</span>
+    <span class="n">problem</span><span class="o">.</span><span class="n">exec</span><span class="p">()</span>
+    <span class="n">ansatz_vec</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">get_ansatz</span><span class="p">()</span>
+
+    <span class="n">cnt_num</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">iter_num</span> <span class="o">=</span> <span class="mi">100</span>
+    <span class="n">upthrow_num</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">delta_tau</span> <span class="o">=</span> <span class="mf">2.6</span>
+    <span class="n">update_mode</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">UpdateMode</span><span class="o">.</span><span class="n">GD_DIRECTION</span>
+
+    <span class="k">for</span> <span class="n">cnt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cnt_num</span><span class="p">):</span>
+        <span class="n">qite</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QITE</span><span class="p">()</span>
+        <span class="n">qite</span><span class="o">.</span><span class="n">set_Hamiltonian</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">get_Hamiltonian</span><span class="p">())</span>
+        <span class="n">qite</span><span class="o">.</span><span class="n">set_ansatz_gate</span><span class="p">(</span><span class="n">ansatz_vec</span><span class="p">)</span>
+        <span class="n">qite</span><span class="o">.</span><span class="n">set_iter_num</span><span class="p">(</span><span class="n">iter_num</span><span class="p">)</span>
+        <span class="n">qite</span><span class="o">.</span><span class="n">set_delta_tau</span><span class="p">(</span><span class="n">delta_tau</span><span class="p">)</span>
+        <span class="n">qite</span><span class="o">.</span><span class="n">set_upthrow_num</span><span class="p">(</span><span class="n">upthrow_num</span><span class="p">)</span>
+        <span class="n">qite</span><span class="o">.</span><span class="n">set_para_update_mode</span><span class="p">(</span><span class="n">update_mode</span><span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">qite</span><span class="o">.</span><span class="n">exec</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">ret</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
+        <span class="n">qite</span><span class="o">.</span><span class="n">get_result</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>可以直接推导得知此7点网络图的节点重要性最大的节点应当为3号，因此结果应当抛出最重要节点3，写法为
+00000100:1.00，如下所示的输出结果符合预期。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">4</span> <span class="mf">0.999967</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">pyQPanda</a></h1>
+
+
+
+
+
+
+
+
+<h3>导航</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html"><strong>5 Utility tool</strong></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../database/index.html"><strong>2 深入学习</strong></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tool/index.html"><strong>3 量子程序信息</strong></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../04/test.html"><strong>4 编译量子程序</strong></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../05/test.html">5555555555</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../05/test.html#aszdgvfsadgeg">aszdgvfsadgeg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../06/test.html">66666666</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../07/test.html">7777777</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#"><strong>8 量子算法基础</strong></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id2"><strong>8.1 基础概念回顾</strong></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id3">8.1.1 基础定义</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyqpanda">8.1.2 pyQPanda接口函数</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">8.1.3 实例</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id5"><strong>8.2 试验态制备与量子纠缠</strong></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id6">8.2.1 试验态制备</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id7">8.2.1.1 最大叠加态</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id8">8.2.2 量子纠缠</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id9">8.2.3 最大叠加态制备</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#hadamard-testswap-test"><strong>8.3 Hadamard Test与SWAP Test</strong></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#hadamard-test">8.3.1 Hadamard Test</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id10">8.3.1.1 输出结果及推广</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id19">8.3.1.2 代码实例</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#swap-test">8.3.2 SWAP Test</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id20">8.3.2.1 代码实例</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id21"><strong>8.4 振幅放大</strong></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id22">8.4.1 算法背景</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id33">8.4.2 代码实例</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id38"><strong>8.5 量子傅里叶变换</strong></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id39">8.5.1 基本定义</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id40">8.5.2 量子线路构造</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#qft">8.5.2.1 QFT的求和形式与张量积形式</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id41">8.5.2.2 二进制展开与量子态制备</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id42">8.5.3 代码实现</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id43"><strong>8.6 量子相位估计</strong></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id44">8.6.1 量子线路结构概览</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id45">8.6.2 量子线路构建</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id46">8.6.2.1 特征量子态与特征值相位提取</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id47">8.6.2.2 特征值相位由振幅转移到基向量</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id48">8.6.2.3 含特征值相位的基向量测量</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id49">8.6.3量子线路图与代码实现</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id50"><strong>8.7 量子四则运算</strong></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id51">8.7.1 加法器算法背景</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#maj">8.7.1.1 MAJ量子线路组件</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#uma">8.7.1.2 UMA量子线路组件</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id52">8.7.2 量子四则运算</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id53">8.7.2.1 量子加法器</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id54">8.7.2.2 量子减法器</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id59">8.7.2.3 量子乘法器</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id64">8.7.2.4 量子除法器</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id65">8.7.3 代码实现及使用说明</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id66">8.7.3.1 量子加法器</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id67">8.7.3.2 量子减法器</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id68">8.7.3.3 量子乘法器</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id69">8.7.3.4量子除法器</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id70">8.7.4 示例</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#hhl"><strong>8.8 HHL算法</strong></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id75">8.8.1 问题背景概述</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id76">8.8.2 算法原理</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#qpe">8.8.2.1 通过QPE提取特征值</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id77">8.8.2.2 通过受控旋转转移特征值</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id78">8.8.2.3 通过逆QPE输出结果量子态</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id79">8.8.3 量子线路图与参考代码</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#grover"><strong>8.9 Grover算法和量子计数算法</strong></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id80">8.9.1 问题背景概述</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id81">8.9.1.1 量子计数问题</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id82">8.9.1.2 解元素的搜索问题</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id83">8.9.2 算法原理</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id84">8.9.2.1 基于振幅放大算子的QPE过程</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id85">8.9.2.2 基于镜像变换的振幅放大量子线路</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id86">8.9.3 量子线路图与参考代码</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#shor"><strong>8.10 Shor算法</strong></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id87">8.10.1 问题背景</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id96">8.10.2 算法原理</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id101">8.10.2.1 前置引理</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id102">8.10.2.2 构造模乘量子门</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id103">8.10.2.3 求解模指逆元</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id104">8.10.3 量子线路图与参考代码</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id105"><strong>8.11 量子虚时演化算法</strong></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id106">8.11.1 问题背景概述</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id111">8.11.2 算法原理</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id112">8.11.2.1 从薛定谔方程到微分方程近似解</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id113">8.11.2.2 虚时演化逼近基态</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id118">8.11.3 量子线路图与参考代码</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="../07/test.html" title="上一章">7777777</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="转向" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, BYLZ.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/08/test.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

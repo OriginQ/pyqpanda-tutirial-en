@@ -1,0 +1,968 @@
+
+<!DOCTYPE html>
+
+<html lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>7 VQC &#8212; pyQPanda 1.0.0 文档</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="8 量子算法基础" href="../08/test.html" />
+    <link rel="prev" title="6 组件" href="../06/test.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="vqc">
+<h1><strong>7 VQC</strong><a class="headerlink" href="#vqc" title="永久链接至标题">¶</a></h1>
+<section id="id1">
+<h2><strong>7.1 变量</strong><a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
+<p>变量类是实现符号计算的用户类，用于存储特定混合量子经典网络的变量。
+通常任务是优化变量以最小化成本函数。 变量可以是标量，矢量或矩阵。</p>
+<p>变量具有树形结构，它可以包含子节点或父节点。
+如果变量没有子节点，那么我们称之为叶子节点。
+我们可以将变量设置为特定值，另一方面，如果变量的所有叶子节点都已设置了值，我们也可以获得该变量的值。</p>
+<section id="id2">
+<h3>7.1.1 接口介绍<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h3>
+<p>我们可以通过传入一个浮点型的数据来构造一个标量变量，也可以通过传入numpy库生成的多维数组来构造一个矢量或矩阵变量。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">v1</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.</span><span class="p">],[</span><span class="mf">2.</span><span class="p">],[</span><span class="mf">3.</span><span class="p">],[</span><span class="mf">4.</span><span class="p">]])</span>
+<span class="n">v2</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.</span><span class="p">,</span><span class="mf">2.</span><span class="p">],[</span><span class="mf">3.</span><span class="p">,</span><span class="mf">4.</span><span class="p">]])</span>
+<span class="n">v3</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><em>注解：</em></p>
+<p>在定义变量的时候，可以定义变量的类型是否可以微分，默认情况下我们定义的变量的类型都是不可微分的，不可微分的变量相当于placeholder
+。 定义可微分的变量时，需要指定构造函数的第二个参数为True, 例如：v1 =
+var(1, True)。</p>
+<p>我们可以先定义计算对应的表达式，表达式由变量之间进行加减乘除操作或其它操作组成，表达式也是一个变量。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">v1</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">v2</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="n">add</span> <span class="o">=</span> <span class="n">v1</span> <span class="o">+</span> <span class="n">v2</span>
+<span class="n">minus</span> <span class="o">=</span> <span class="n">v1</span> <span class="o">-</span> <span class="n">v2</span>
+<span class="n">multiply</span> <span class="o">=</span> <span class="n">v1</span> <span class="o">*</span> <span class="n">v2</span>
+<span class="n">divide</span> <span class="o">=</span> <span class="n">v1</span> <span class="o">/</span> <span class="n">v2</span>
+</pre></div>
+</div>
+<p>我们可以在不改变表达式结构的情况下，通过 set_value
+接口改变某个变量的值，即可得到不同的计算结果。我们可以调用 eval
+接口，来计算该变量当前的值。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">v1</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">v2</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">add</span> <span class="o">=</span> <span class="n">v1</span> <span class="o">+</span> <span class="n">v2</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">eval</span><span class="p">(</span><span class="n">add</span><span class="p">))</span> <span class="c1"># 输出为[[3.]]</span>
+
+<span class="n">v1</span><span class="o">.</span><span class="n">set_value</span><span class="p">([[</span><span class="mf">3.</span><span class="p">]])</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">eval</span><span class="p">(</span><span class="n">add</span><span class="p">))</span> <span class="c1"># 输出为[[5.]]</span>
+</pre></div>
+</div>
+<p><em>注解：</em></p>
+<p>变量的 get_value
+接口返回的是变量当前的值，不会根据变量的叶子节点来计算当前变量的值。如果变量是个表达式需要根据叶子节点来计算其值，需要调用
+eval 接口进行前向求值。</p>
+</section>
+<section id="id3">
+<h3>7.1.2 实例<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h3>
+<p>下面我们将以更多的示例来展示变量类相关接口的使用。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyqpanda</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span><span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">m1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">],[</span><span class="mf">3.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">]])</span>
+    <span class="n">v1</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="n">m1</span><span class="p">)</span>
+
+    <span class="n">m2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">5.</span><span class="p">,</span> <span class="mf">6.</span><span class="p">],[</span><span class="mf">7.</span><span class="p">,</span> <span class="mf">8.</span><span class="p">]])</span>
+    <span class="n">v2</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="n">m2</span><span class="p">)</span>
+
+    <span class="nb">sum</span> <span class="o">=</span> <span class="n">v1</span> <span class="o">+</span> <span class="n">v2</span>
+    <span class="n">minus</span> <span class="o">=</span> <span class="n">v1</span> <span class="o">-</span> <span class="n">v2</span>
+    <span class="n">multiply</span> <span class="o">=</span> <span class="n">v1</span> <span class="o">*</span> <span class="n">v2</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;v1: &quot;</span><span class="p">,</span> <span class="n">v1</span><span class="o">.</span><span class="n">get_value</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;v2: &quot;</span><span class="p">,</span> <span class="n">v2</span><span class="o">.</span><span class="n">get_value</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;sum: &quot;</span> <span class="p">,</span> <span class="nb">eval</span><span class="p">(</span><span class="nb">sum</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;minus: &quot;</span> <span class="p">,</span> <span class="nb">eval</span><span class="p">(</span><span class="n">minus</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;multiply: &quot;</span> <span class="p">,</span> <span class="nb">eval</span><span class="p">(</span><span class="n">multiply</span><span class="p">))</span>
+
+    <span class="n">m3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">4.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">],[</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">]])</span>
+    <span class="n">v1</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">m3</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;sum: &quot;</span> <span class="p">,</span> <span class="nb">eval</span><span class="p">(</span><span class="nb">sum</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;minus: &quot;</span> <span class="p">,</span> <span class="nb">eval</span><span class="p">(</span><span class="n">minus</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;multiply: &quot;</span> <span class="p">,</span> <span class="nb">eval</span><span class="p">(</span><span class="n">multiply</span><span class="p">))</span>
+</pre></div>
+</div>
+<figure class="align-default" id="id28">
+<img alt="\_images/VarExample.png" src="https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/VarExample.png" />
+<figcaption>
+<p><span class="caption-text">_images/VarExample.png</span><a class="headerlink" href="#id28" title="永久链接至图片">¶</a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+<section id="id4">
+<h2><strong>7.2 运算符</strong><a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h2>
+<p>VQNet包含许多类型的运算符， 这些运算符可以操作变量或占位符。
+其中，一些运算符是经典运算符，例如加，减，乘，除，指数，对数和点乘等。
+VQNet还包含来自经典机器学习中所有常见操作符。</p>
+<p>VQNet还包含有量子运算符，它们是qop和qop pmeasure。 另外，qop和qop
+pmeasure与量子计算机芯片有关，使用它们需要量子环境。
+为此，我们需要在使用这两个运算符时需要添加额外的参数。
+一般来说，我们需要添加量子机器的引用和申请的量子比特来提供量子环境。</p>
+<p>VQNet定义了如下表所示运算符，所有运算符返回的都是类型为 var 的变量。</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 6%" />
+<col style="width: 94%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>The operator</p></th>
+<th class="head"><p>Describe</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>运算符</p></td>
+<td><p>描述</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">plus</span></code></p></td>
+<td><p>加。示例：a + b，其中a和b都是类型为 <code class="docutils literal notranslate"><span class="pre">var</span></code> 的变量。</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">minus</span></code></p></td>
+<td><p>减。示例：a - b。</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">multiply</span></code></p></td>
+<td><p>乘。示例：a * b。</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">divide</span></code></p></td>
+<td><p>除。示例：a / b。</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">exponent</span></code></p></td>
+<td><p>指数。示例：exp(a)。</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">log</span></code></p></td>
+<td><p>对数。示例：log(a)。</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">polynomial</span></code></p></td>
+<td><p>幂。示例：poly(a, 2)。</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">dot</span></code></p></td>
+<td><p>矩阵点乘。示例：dot(a, b)。</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">inverse</span></code></p></td>
+<td><p>求矩阵逆。示例：inverse(a)。</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">transpose</span></code></p></td>
+<td><p>矩阵转置。示例：transpose(a)。</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">sum</span></code></p></td>
+<td><p>矩阵求和。示例：sum(a)。</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">stack</span></code></p></td>
+<td><p>矩阵按列(axis = 0)或行(axis = 1)方向进行拼接。示例：stack(axis, a, b, c)。</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">subscript</span></code></p></td>
+<td><p>下标操作。示例：a[0]。</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">qop</span></code></p></td>
+<td><p>量子操作，它将 <code class="docutils literal notranslate"><span class="pre">VQC</span></code> 和几个哈密顿量作为输入，并输出输入哈密顿量的期望。示例：如果w表示 <code class="docutils literal notranslate"><span class="pre">VQC</span></code> 的变量，qop(VQC(w)，Hamiltonians，[量子环境])。</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">qop_pmeasure</span></code></p></td>
+<td><p>量子操作，它类似于qop。 qop_pmeasure的输入包括VQC，待测量的量子位和分量。它可以计算由待测量的量子比特构成的子空间中的所有投影状态的概率，并返回其中的一些。分量存储目标投影状态的标签。 很明显，任何投射状态的概率都可以看作哈密顿量的期望，所以qop_pmeasure是qop的一个特例。示例：qop_pmeasure(VQC(w), components, [量子环境])。</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sigmoid</span></code></p></td>
+<td><p>激活函数。示例：sigmoid(a)。</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">softmax</span></code></p></td>
+<td><p>激活函数。示例：softmax(a)。</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">cross_entropy</span></code></p></td>
+<td><p>交叉熵。示例：crossEntropy(a, b)。</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id5">
+<h2><strong>7.3 可变量子逻辑门</strong><a class="headerlink" href="#id5" title="永久链接至标题">¶</a></h2>
+<p>要在VQNet中使用量子操作 qop 或 qop_pmeasure
+，就必须要包含可变量子线路(VariationalQuantumCircuit，别名VQC)而可变量子逻辑门则是构成
+VariationalQuantumCircuit 的基本单位。
+可变量子逻辑门(VariationalQuantumGate，别名
+VQG)，内部维护着一组变量参数以及一组常量参数。 在构造 VQG
+的时候只能对其中一组参数进行赋值。若含有一组常量参数，则可以通过 VQG
+生成含确定参数的普通量子逻辑门,
+若含有变量参数，则可以动态修改参数值，并生成对应的参数的普通量子逻辑门。</p>
+<p>目前在pyQPanda中定义了如下可变量子逻辑门，它们都继承自
+VariationalQuantumGate 。</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 71%" />
+<col style="width: 29%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>VQG</p></th>
+<th class="head"><p>别名</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>VariationalQuantumGate_H</p></td>
+<td><p>VQG_H</p></td>
+</tr>
+<tr class="row-odd"><td><p>VariationalQuantumGate_RX</p></td>
+<td><p>VQG_RX</p></td>
+</tr>
+<tr class="row-even"><td><p>VariationalQuantumGate_RY</p></td>
+<td><p>VQG_RY</p></td>
+</tr>
+<tr class="row-odd"><td><p>VariationalQuantumGate_RZ</p></td>
+<td><p>VQG_RZ</p></td>
+</tr>
+<tr class="row-even"><td><p>VariationalQuantumGate_CZ</p></td>
+<td><p>VQG_CZ</p></td>
+</tr>
+<tr class="row-odd"><td><p>VariationalQuantumGate_CNOT</p></td>
+<td><p>VQG_CNOT</p></td>
+</tr>
+</tbody>
+</table>
+<section id="id6">
+<h3>7.3.1 接口介绍<a class="headerlink" href="#id6" title="永久链接至标题">¶</a></h3>
+<p>我们可以通过向可变量子线路中插入可变量子逻辑门，来使用可变量子逻辑门。我们可以向需要传入参数的可变量子逻辑门中传入变量参数，
+例如我们对可变量子逻辑门RX和RY传入变量参数x和y。也可以对可变量子逻辑门传入常量参数，例如RZ我们传入了一个常量参数0.12。
+我们可以通过修改变量的参数，从而来改变可变量子逻辑门中的参数。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">vqc</span> <span class="o">=</span> <span class="n">VariationalQuantumCircuit</span><span class="p">()</span>
+<span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">VariationalQuantumGate_H</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+<span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">VariationalQuantumGate_RX</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">))</span>
+<span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">VariationalQuantumGate_RY</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">y</span><span class="p">))</span>
+<span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">VariationalQuantumGate_RZ</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mf">0.12</span><span class="p">))</span>
+<span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">VariationalQuantumGate_CZ</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+<span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">VariationalQuantumGate_CNOT</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+
+<span class="n">circuit1</span> <span class="o">=</span> <span class="n">vqc</span><span class="o">.</span><span class="n">feed</span><span class="p">()</span>
+
+<span class="n">x</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">y</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+
+<span class="n">circuit2</span> <span class="o">=</span> <span class="n">vqc</span><span class="o">.</span><span class="n">feed</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="id7">
+<h3>7.3.2 实例<a class="headerlink" href="#id7" title="永久链接至标题">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyqpanda</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span><span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">machine</span> <span class="o">=</span> <span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">)</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+
+    <span class="n">vqc</span> <span class="o">=</span> <span class="n">VariationalQuantumCircuit</span><span class="p">()</span>
+    <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">VariationalQuantumGate_H</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">VariationalQuantumGate_RX</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">))</span>
+    <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">VariationalQuantumGate_RY</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">y</span><span class="p">))</span>
+    <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">VariationalQuantumGate_RZ</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mf">0.12</span><span class="p">))</span>
+    <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">VariationalQuantumGate_CZ</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">VariationalQuantumGate_CNOT</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+
+    <span class="n">circuit1</span> <span class="o">=</span> <span class="n">vqc</span><span class="o">.</span><span class="n">feed</span><span class="p">()</span>
+
+    <span class="n">prog</span> <span class="o">=</span> <span class="n">QProg</span><span class="p">()</span>
+    <span class="n">prog</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">circuit1</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">convert_qprog_to_originir</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">machine</span><span class="p">))</span>
+
+    <span class="n">x</span><span class="o">.</span><span class="n">set_value</span><span class="p">([[</span><span class="mf">3.</span><span class="p">]])</span>
+    <span class="n">y</span><span class="o">.</span><span class="n">set_value</span><span class="p">([[</span><span class="mf">4.</span><span class="p">]])</span>
+
+    <span class="n">circuit2</span> <span class="o">=</span> <span class="n">vqc</span><span class="o">.</span><span class="n">feed</span><span class="p">()</span>
+    <span class="n">prog2</span> <span class="o">=</span> <span class="n">QProg</span><span class="p">()</span>
+    <span class="n">prog2</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">circuit2</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">convert_qprog_to_originir</span><span class="p">(</span><span class="n">prog2</span><span class="p">,</span> <span class="n">machine</span><span class="p">))</span>
+</pre></div>
+</div>
+<figure class="align-default" id="id29">
+<img alt="*images/VQG*\ Example.png" src="https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/VQG_Example.png" />
+<figcaption>
+<p><span class="caption-text"><em>images/VQG</em>Example.png</span><a class="headerlink" href="#id29" title="永久链接至图片">¶</a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+<section id="vqg">
+<h2><strong>7.4 可变量子逻辑门（VQG）</strong><a class="headerlink" href="#vqg" title="永久链接至标题">¶</a></h2>
+<p>要在VQNet中使用量子操作 qop 或 qop_pmeasure
+,就必须要包含可变量子线路(VQC)，而可变量子逻辑门则是构成 VQC
+的基本单位。 可变量子逻辑门(VariationalQuantumGate，别名:
+VQG)，内部维护着一组变量参数以及一组常量参数。 在构造 VQG
+的时候只能对其中一组参数进行赋值。若含有一组常量参数，则可以通过 VQG
+生成含确定参数的普通量子逻辑门,
+若含有变量参数，则可以动态修改参数值，并生成对应的参数的普通量子逻辑门。</p>
+<p>目前在QPanda::Variational中定义了如下可变量子逻辑门，它们都继承自 VQG 。</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 69%" />
+<col style="width: 31%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>VQG</p></th>
+<th class="head"><p>别名</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>VariationalQuantumGate_I</p></td>
+<td><p>VQG_I</p></td>
+</tr>
+<tr class="row-odd"><td><p>VariationalQuantumGate_H</p></td>
+<td><p>VQG_H</p></td>
+</tr>
+<tr class="row-even"><td><p>VariationalQuantumGate_T</p></td>
+<td><p>VQG_T</p></td>
+</tr>
+<tr class="row-odd"><td><p>VariationalQuantumGate_S</p></td>
+<td><p>VQG_S</p></td>
+</tr>
+<tr class="row-even"><td><p>VariationalQuantumGate_X</p></td>
+<td><p>VQG_X</p></td>
+</tr>
+<tr class="row-odd"><td><p>VariationalQuantumGate_Y</p></td>
+<td><p>VQG_Y</p></td>
+</tr>
+<tr class="row-even"><td><p>VariationalQuantumGate_Z</p></td>
+<td><p>VQG_Z</p></td>
+</tr>
+<tr class="row-odd"><td><p>VariationalQuantumGate_X1</p></td>
+<td><p>VQG_X1</p></td>
+</tr>
+<tr class="row-even"><td><p>VariationalQuantumGate_Y1</p></td>
+<td><p>VQG_Y1</p></td>
+</tr>
+<tr class="row-odd"><td><p>VariationalQuantumGate_Z1</p></td>
+<td><p>VQG_Z1</p></td>
+</tr>
+<tr class="row-even"><td><p>VariationalQuantumGate_U1</p></td>
+<td><p>VQG_U1</p></td>
+</tr>
+<tr class="row-odd"><td><p>VariationalQuantumGate_U2</p></td>
+<td><p>VQG_U2</p></td>
+</tr>
+<tr class="row-even"><td><p>VariationalQuantumGate_U3</p></td>
+<td><p>VQG_U3</p></td>
+</tr>
+<tr class="row-odd"><td><p>VariationalQuantumGate_U4</p></td>
+<td><p>VQG_U4</p></td>
+</tr>
+<tr class="row-even"><td><p>VariationalQuantumGate_RX</p></td>
+<td><p>VQG_RX</p></td>
+</tr>
+<tr class="row-odd"><td><p>VariationalQuantumGate_RY</p></td>
+<td><p>VQG_RY</p></td>
+</tr>
+<tr class="row-even"><td><p>VariationalQuantumGate_RZ</p></td>
+<td><p>VQG_RZ</p></td>
+</tr>
+<tr class="row-odd"><td><p>VariationalQuantumGate_CRX</p></td>
+<td><p>VQG_CRX</p></td>
+</tr>
+<tr class="row-even"><td><p>VariationalQuantumGate_CRY</p></td>
+<td><p>VQG_CRY</p></td>
+</tr>
+<tr class="row-odd"><td><p>VariationalQuantumGate_CRZ</p></td>
+<td><p>VQG_CRZ</p></td>
+</tr>
+<tr class="row-even"><td><p>VariationalQuantumGate_CNOT</p></td>
+<td><p>VQG_CNOT</p></td>
+</tr>
+<tr class="row-odd"><td><p>VariationalQuantumGate_CZ</p></td>
+<td><p>VQG_CZ</p></td>
+</tr>
+<tr class="row-even"><td><p>VariationalQuantumGate_SWAP</p></td>
+<td><p>VQG_SWAP</p></td>
+</tr>
+<tr class="row-odd"><td><p>VariationalQuantumGate_iSWAP</p></td>
+<td><p>VQG_iSWAP</p></td>
+</tr>
+<tr class="row-even"><td><p>VariationalQuantumGate_SqiSWAP</p></td>
+<td><p>VQG_SqiSWAP</p></td>
+</tr>
+</tbody>
+</table>
+<section id="id8">
+<h3>7.4.1 接口介绍<a class="headerlink" href="#id8" title="永久链接至标题">¶</a></h3>
+<p><strong>class</strong> VariationalQuantumGate</p>
+<p>​ <em>VariationalQuantumGate()</em></p>
+<p>​ 功能</p>
+<p>​ 构造函数。</p>
+<p>​ 参数</p>
+<p>​ 无</p>
+<p>​ <em>size_t n_var()</em></p>
+<p>​ 功能</p>
+<p>​ 该可变量子逻辑门内部变量个数。</p>
+<p>​ 参数</p>
+<p>​ 无</p>
+<p>​ 返回值</p>
+<p>​ 变量个数。</p>
+<p>​ <em>std::vector&lt;`var &lt;#_CPPv43var&gt;`__&gt; &amp;get_vars()</em></p>
+<p>​ 功能</p>
+<p>​ 获取该可变量子逻辑门内部变量。</p>
+<p>​ 参数</p>
+<p>​ 无</p>
+<p>​ 返回值</p>
+<p>​ 该可变量子逻辑门内部变量。</p>
+<p>​ <em>std::vector &amp;get_constants()</em></p>
+<p>​ 功能</p>
+<p>​ 获取该可变量子逻辑门内部常量。</p>
+<p>​ 参数</p>
+<p>​ 无</p>
+<p>​ 返回值</p>
+<p>​ 该可变量子逻辑门内部常量。</p>
+<p>​ *int var_pos(<a class="reference external" href="#_CPPv43var">var</a>_var)*</p>
+<p>​ 功能</p>
+<p>​ 获取变量在该可变量子逻辑门内部索引。</p>
+<p>​ 参数</p>
+<p>​ • _var 变量</p>
+<p>​ 返回值</p>
+<p>​ 内部索引，如果不存在在返回-1。</p>
+<p>​ <em>virtual QGate feed()const = 0</em></p>
+<p>​ 功能</p>
+<p>​ 实例化 QGate 。</p>
+<p>​ 参数</p>
+<p>​ 无</p>
+<p>​ 返回值</p>
+<p>​ 普通量子逻辑门。</p>
+<p><em>virtual</em> QGate feed(std::map offset)const*</p>
+<p>​ 功能</p>
+<p>​ 通过指定偏移来实例化 QGate 。</p>
+<p>​ 参数</p>
+<p>​ • offset 变量对应的偏移映射</p>
+<p>​ 返回值</p>
+<p>​ 普通量子逻辑门。</p>
+<p>下面将简要介绍各个可变量子逻辑门的构造方式</p>
+<p><strong>class</strong> VariationalQuantumGate_H</p>
+<p>​ <a href="#id9"><span class="problematic" id="id10">*</span></a>VariationalQuantumGate_H(Qubit <a href="#id11"><span class="problematic" id="id12">*</span></a>q)</p>
+<p>​ 功能</p>
+<p>​ H门构造函数。</p>
+<p>​ 参数</p>
+<p>​ • q 目标比特</p>
+<p><strong>class</strong> <strong>VariationalQuantumGate_RX</strong></p>
+<p>​ VariationalQuantumGate_RX(Qubit *q, var_var)</p>
+<p>​ 功能</p>
+<p>​ RX门构造函数。</p>
+<p>​ 参数</p>
+<p>​ • q 目标比特</p>
+<p>​ • _var 参数变量</p>
+<p>​ VariationalQuantumGate_RX(Qubit *q, double angle)</p>
+<p>​ 功能</p>
+<p>​ RX门构造函数。</p>
+<p>​ 参数</p>
+<p>​ • q 目标比特</p>
+<p>​ • angle 参数</p>
+<p><strong>class</strong>VariationalQuantumGate_RY</p>
+<p>​ VariationalQuantumGate_RY(Qubit *q, var_var)</p>
+<p>​ 功能</p>
+<p>​ RY门构造函数。</p>
+<p>​ 参数</p>
+<p>​ • q 目标比特</p>
+<p>​ • _var 参数变量</p>
+<p>​ VariationalQuantumGate_RY(Qubit *q, double angle)</p>
+<p>​ 功能</p>
+<p>​ RY门构造函数。</p>
+<p>​ 参数</p>
+<p>​ • q 目标比特</p>
+<p>​ • angle 参数</p>
+<p><strong>class</strong>VariationalQuantumGate_RZ</p>
+<p>​ VariationalQuantumGate_RZ(Qubit *q, var_var)</p>
+<p>​ 功能</p>
+<p>​ RZ门构造函数。</p>
+<p>​ 参数</p>
+<p>​ • q 目标比特</p>
+<p>​ • _var 参数变量</p>
+<p>​ VariationalQuantumGate_RZ(Qubit *q, double angle)</p>
+<p>​ 功能</p>
+<p>​ RZ门构造函数。</p>
+<p>​ 参数</p>
+<p>​ • q 目标比特</p>
+<p>​ • angle 参数</p>
+<p><strong>class</strong>VariationalQuantumGate_CZ</p>
+<p>​ VariationalQuantumGate_CZ(Qubit <a href="#id13"><span class="problematic" id="id14">*</span></a>q1, Qubit <a href="#id15"><span class="problematic" id="id16">*</span></a>q2)</p>
+<p>​ 功能</p>
+<p>​ CZ门构造函数。</p>
+<p>​ 参数</p>
+<p>​ • q1 控制比特</p>
+<p>​ • q2 目标比特</p>
+<p><strong>class</strong>VariationalQuantumGate_CNOT</p>
+<p>​ VariationalQuantumGate_CNOT(Qubit <a href="#id17"><span class="problematic" id="id18">*</span></a>q1, Qubit <a href="#id19"><span class="problematic" id="id20">*</span></a>q2)</p>
+<p>​ 功能</p>
+<p>​ CNOT门构造函数。</p>
+<p>​ 参数</p>
+<p>​ • q1 控制比特</p>
+<p>​ • q2 目标比特</p>
+<p>可变量子逻辑门的使用方法和量子逻辑门的使用方法类似，这里就不再一一赘述，有问题可以查看量子逻辑门相关内容。</p>
+</section>
+<section id="id21">
+<h3>7.4.2 动态修改参数方法<a class="headerlink" href="#id21" title="永久链接至标题">¶</a></h3>
+<p>若构造的VQC中含有变量参数，可以通过以下方法动态修改参数值，并生成对应的参数的普通量子逻辑门。</p>
+<p>（1）：setValue()，使用方法如下：</p>
+<blockquote>
+<div><p>object.setValue(newValue);</p>
+</div></blockquote>
+<p>（2）：”=”运算符重新赋值，使用方法如下：</p>
+<blockquote>
+<div><p>object = newValue;</p>
+</div></blockquote>
+</section>
+<section id="id22">
+<h3>7.4.3 更新可变量子线路<a class="headerlink" href="#id22" title="永久链接至标题">¶</a></h3>
+<p>通过以下方法可以向可变量子线路中插入VQG或VQC</p>
+<p>（1）：insert()，使用方法如下：</p>
+<blockquote>
+<div><p>object.insert(VQC);</p>
+<p>// or object.insert(VQG);</p>
+</div></blockquote>
+<p>（2）：”&lt;&lt;”运算符插入，使用方法如下：</p>
+<blockquote>
+<div><p>object &lt;&lt; VQC;</p>
+<p>//or object &lt;&lt; VQG;</p>
+</div></blockquote>
+</section>
+<section id="id23">
+<h3>7.4.4 实例<a class="headerlink" href="#id23" title="永久链接至标题">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pyqpanda</span> <span class="k">as</span> <span class="nn">pq</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span><span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">machine</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">CPU</span><span class="p">)</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">([</span><span class="mi">5</span><span class="p">])</span>
+    <span class="n">ss</span><span class="o">=</span><span class="n">pq</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
+
+
+    <span class="n">vqc</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">VariationalQuantumCircuit</span><span class="p">()</span>
+    <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">VariationalQuantumGate_H</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">VariationalQuantumGate_RX</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ss</span><span class="p">))</span>
+    <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">VariationalQuantumGate_RY</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">y</span><span class="p">))</span>
+    <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">VariationalQuantumGate_RZ</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mf">0.12</span><span class="p">))</span>
+    <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">VariationalQuantumGate_CZ</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">VariationalQuantumGate_CNOT</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">VariationalQuantumGate_U1</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">))</span>
+    <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">VariationalQuantumGate_U2</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span>
+    <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">VariationalQuantumGate_U3</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span>  <span class="n">y</span><span class="p">))</span>
+    <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">VariationalQuantumGate_U4</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span>  <span class="n">y</span><span class="p">,</span><span class="n">ss</span><span class="p">))</span>
+
+
+
+    <span class="n">circuit1</span> <span class="o">=</span> <span class="n">vqc</span><span class="o">.</span><span class="n">feed</span><span class="p">()</span>
+
+    <span class="n">prog</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QProg</span><span class="p">()</span>
+    <span class="n">prog</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">circuit1</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">convert_qprog_to_originir</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">machine</span><span class="p">))</span>
+
+    <span class="n">x</span><span class="o">.</span><span class="n">set_value</span><span class="p">([[</span><span class="mf">3.</span><span class="p">]])</span>
+    <span class="n">y</span><span class="o">.</span><span class="n">set_value</span><span class="p">([[</span><span class="mf">4.</span><span class="p">]])</span>
+
+    <span class="n">circuit2</span> <span class="o">=</span> <span class="n">vqc</span><span class="o">.</span><span class="n">feed</span><span class="p">()</span>
+    <span class="n">prog2</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">QProg</span><span class="p">()</span>
+    <span class="n">prog2</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">circuit2</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">pq</span><span class="o">.</span><span class="n">convert_qprog_to_originir</span><span class="p">(</span><span class="n">prog2</span><span class="p">,</span> <span class="n">machine</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>上述示例会得到以下结果：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">QINIT</span> <span class="mi">2</span>
+<span class="n">CREG</span> <span class="mi">0</span>
+<span class="n">H</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">RX</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],(</span><span class="mi">56</span><span class="p">)</span>
+<span class="n">RY</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">RZ</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],(</span><span class="mf">0.12</span><span class="p">)</span>
+<span class="n">CZ</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">CNOT</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">U1</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">U2</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],(</span><span class="mf">3.1415927</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">U3</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],(</span><span class="mf">3.1415927</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">U4</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],(</span><span class="mf">3.1415927</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="n">QINIT</span> <span class="mi">2</span>
+<span class="n">CREG</span> <span class="mi">0</span>
+<span class="n">H</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">RX</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],(</span><span class="mi">56</span><span class="p">)</span>
+<span class="n">RY</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],(</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">RZ</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],(</span><span class="mf">0.12</span><span class="p">)</span>
+<span class="n">CZ</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">CNOT</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">U1</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">U2</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],(</span><span class="mf">3.1415927</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">U3</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],(</span><span class="mf">3.1415927</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">U4</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],(</span><span class="mf">3.1415927</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id24">
+<h2><strong>7.5 优化算法(梯度下降法)</strong><a class="headerlink" href="#id24" title="永久链接至标题">¶</a></h2>
+<p>本章节将讲解VQNet中优化算法的使用，包括经典梯度下降算法和改进后的梯度下降算法，它们都是在求解机器学习算法的模型参数，即无约束优化问题时，最常采用的方法之一。
+我们在 pyQPanda 中实现了这些算法，VanillaGradientDescentOptimizer 、
+MomentumOptimizer 、 AdaGradOptimizer 、 RMSPropOptimizer 和
+AdamOptimizer，它们都继承自 Optimizer 。</p>
+<section id="id25">
+<h3>7.5.1接口介绍<a class="headerlink" href="#id25" title="永久链接至标题">¶</a></h3>
+<p>我们通过调用梯度下降优化器的 minimize
+接口来生成一个优化器。常见的梯度下降优化器构造方式如下所示，</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">VanillaGradientDescentOptimizer</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span>
+    <span class="n">loss</span><span class="p">,</span>  <span class="c1"># 损失函数</span>
+    <span class="mf">0.01</span><span class="p">,</span>  <span class="c1"># 学习率</span>
+    <span class="mf">1.e-6</span><span class="p">)</span> <span class="c1"># 结束条件</span>
+
+<span class="n">MomentumOptimizer</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span>
+    <span class="n">loss</span><span class="p">,</span>  <span class="c1"># 损失函数</span>
+    <span class="mf">0.01</span><span class="p">,</span>  <span class="c1"># 学习率</span>
+    <span class="mf">0.9</span><span class="p">)</span>   <span class="c1"># 动量系数</span>
+
+<span class="n">AdaGradOptimizer</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span>
+    <span class="n">loss</span><span class="p">,</span>  <span class="c1"># 损失函数</span>
+    <span class="mf">0.01</span><span class="p">,</span>  <span class="c1"># 学习率</span>
+    <span class="mf">0.0</span><span class="p">,</span>   <span class="c1"># 累加量起始值</span>
+    <span class="mf">1.e-10</span><span class="p">)</span><span class="c1"># 很小的数值以避免零分母</span>
+
+<span class="n">RMSOptimizer</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span>
+    <span class="n">loss</span><span class="p">,</span>  <span class="c1"># 损失函数</span>
+    <span class="mf">0.01</span><span class="p">,</span>  <span class="c1"># 学习率</span>
+    <span class="mf">0.9</span><span class="p">,</span>   <span class="c1"># 历史或即将到来的梯度的贴现因子</span>
+    <span class="mf">1.e-10</span><span class="p">)</span><span class="c1"># 很小的数值以避免零分母</span>
+
+<span class="n">AdamOptimizer</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span>
+    <span class="n">loss</span><span class="p">,</span>  <span class="c1"># 损失函数</span>
+    <span class="mf">0.01</span><span class="p">,</span>  <span class="c1"># 学习率</span>
+    <span class="mf">0.9</span><span class="p">,</span>   <span class="c1"># 一阶动量衰减系数</span>
+    <span class="mf">0.999</span><span class="p">,</span> <span class="c1"># 二阶动量衰减系数</span>
+    <span class="mf">1.e-10</span><span class="p">)</span><span class="c1"># 很小的数值以避免零分母</span>
+</pre></div>
+</div>
+</section>
+<section id="id26">
+<h3>7.5.2实例<a class="headerlink" href="#id26" title="永久链接至标题">¶</a></h3>
+<p>示例代码主要演示对离散点用直线进行拟合，我们定义训练数据X和Y，这两个变量表示离散点的坐标。定义两个可微分的变量w和b，其中w表示斜率b表示y轴截距。定义变量Y下划线表示斜率w乘上变量x加上截距。</p>
+<p>接着我们定义损失函数loss。计算变量Y和变量Y下划线之间的均方值。</p>
+<p>我们调用梯度下降优化器的 minimize
+接口以损失函数，学习率和结束条件作为参数构造生成一个经典梯度下降优化器。</p>
+<p>我们通过优化器的 get_variables 接口可以获得所有可微分的节点。</p>
+<p>我们定义迭代次数为1000。然后调用优化器的 run
+接口执行一次优化操作，其第二个参数表示当前的优化次数，目前只有
+AdamOptimizer 这个优化器使用到了这个参数，其它优化器我们直接给0值即可。</p>
+<p>我们可以通过优化器 get_loss
+接口获得当前优化后的损失值。我们通过eval接口可以求得可微分变量的当前值。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyqpanda</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">3.3</span><span class="p">,</span> <span class="mf">4.4</span><span class="p">,</span> <span class="mf">5.5</span><span class="p">,</span> <span class="mf">6.71</span><span class="p">,</span> <span class="mf">6.93</span><span class="p">,</span> <span class="mf">4.168</span><span class="p">,</span> <span class="mf">9.779</span><span class="p">,</span> <span class="mf">6.182</span><span class="p">,</span> <span class="mf">7.59</span><span class="p">,</span>
+             <span class="mf">2.167</span><span class="p">,</span> <span class="mf">7.042</span><span class="p">,</span> <span class="mf">10.791</span><span class="p">,</span> <span class="mf">5.313</span><span class="p">,</span> <span class="mf">7.997</span><span class="p">,</span> <span class="mf">5.654</span><span class="p">,</span> <span class="mf">9.27</span><span class="p">,</span><span class="mf">3.1</span><span class="p">])</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.7</span><span class="p">,</span> <span class="mf">2.76</span><span class="p">,</span> <span class="mf">2.09</span><span class="p">,</span> <span class="mf">3.19</span><span class="p">,</span> <span class="mf">1.694</span><span class="p">,</span> <span class="mf">1.573</span><span class="p">,</span> <span class="mf">3.366</span><span class="p">,</span> <span class="mf">2.596</span><span class="p">,</span> <span class="mf">2.53</span><span class="p">,</span>
+             <span class="mf">1.221</span><span class="p">,</span> <span class="mf">2.827</span><span class="p">,</span> <span class="mf">3.465</span><span class="p">,</span> <span class="mf">1.65</span><span class="p">,</span> <span class="mf">2.904</span><span class="p">,</span> <span class="mf">2.42</span><span class="p">,</span> <span class="mf">2.94</span><span class="p">,</span><span class="mf">1.3</span><span class="p">])</span>
+
+
+<span class="n">X</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">Y</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="mi">1</span><span class="p">))</span>
+
+<span class="n">W</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+<span class="n">Y_</span> <span class="o">=</span> <span class="n">W</span><span class="o">*</span><span class="n">X</span> <span class="o">+</span> <span class="n">B</span>
+
+<span class="n">loss</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">poly</span><span class="p">(</span><span class="n">Y_</span> <span class="o">-</span> <span class="n">Y</span><span class="p">,</span> <span class="n">var</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">VanillaGradientDescentOptimizer</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">1.e-6</span><span class="p">)</span>
+<span class="n">leaves</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">get_variables</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">):</span>
+    <span class="n">optimizer</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">leaves</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">loss_value</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">get_loss</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;i: &quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="s2">&quot; loss: &quot;</span><span class="p">,</span> <span class="n">loss_value</span><span class="p">,</span> <span class="s2">&quot; W: &quot;</span><span class="p">,</span> <span class="nb">eval</span><span class="p">(</span><span class="n">W</span><span class="p">,</span><span class="kc">True</span><span class="p">),</span> <span class="s2">&quot; b: &quot;</span><span class="p">,</span> <span class="nb">eval</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="kc">True</span><span class="p">))</span>
+</pre></div>
+</div>
+<figure class="align-default" id="id30">
+<img alt="\_images/GradientExample.png" src="https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/GradientExample.png" />
+<figcaption>
+<p><span class="caption-text">_images/GradientExample.png</span><a class="headerlink" href="#id30" title="永久链接至图片">¶</a></p>
+</figcaption>
+</figure>
+<p>我们将散列点和拟合的直线进行绘图</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="n">w2</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">get_value</span><span class="p">()[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">b2</span> <span class="o">=</span> <span class="n">B</span><span class="o">.</span><span class="n">get_value</span><span class="p">()[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;Training data&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">w2</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="n">b2</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;Fitted line&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<figure class="align-default" id="id31">
+<img alt="\_images/GradientExamplePlot.png" src="https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/GradientExamplePlot.png" />
+<figcaption>
+<p><span class="caption-text">_images/GradientExamplePlot.png</span><a class="headerlink" href="#id31" title="永久链接至图片">¶</a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+<section id="id27">
+<h2><strong>7.6 综合示例</strong><a class="headerlink" href="#id27" title="永久链接至标题">¶</a></h2>
+<section id="qaoa">
+<h3>7.6.1 QAOA<a class="headerlink" href="#qaoa" title="永久链接至标题">¶</a></h3>
+<p>QAOA 是众所周知的量子经典混合算法。
+对于n对象的MAX-CUT问题，需要n个量子位来对结果进行编码，其中测量结果（二进制串）表示问题的切割配置。</p>
+<p>我们通过 VQNet 可以有效地实现 MAX-CUT 问题的 QAOA 算法。
+VQNet中QAOA的流程图如下所示。</p>
+<figure class="align-default" id="id32">
+<img alt="\_images/VQNetQAOAFlow.png" src="https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/VQNetQAOAFlow.png" />
+<figcaption>
+<p><span class="caption-text">_images/VQNetQAOAFlow.png</span><a class="headerlink" href="#id32" title="永久链接至图片">¶</a></p>
+</figcaption>
+</figure>
+<p>我们给定一个MAX-CUT的问题如下</p>
+<figure class="align-default" id="id33">
+<img alt="*images/QAOA*\ 7bit\_Problem.png" src="https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/QAOA_7bit_Problem.png" />
+<figcaption>
+<p><span class="caption-text"><em>images/QAOA</em>7bit_Problem.png</span><a class="headerlink" href="#id33" title="永久链接至图片">¶</a></p>
+</figcaption>
+</figure>
+<p>首先，我们输入 MAX-CUT 问题的图形信息，以用来构造相应的问题哈密顿量。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">roblem</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Z0 Z4&#39;</span><span class="p">:</span><span class="mf">0.73</span><span class="p">,</span><span class="s1">&#39;Z0 Z5&#39;</span><span class="p">:</span><span class="mf">0.33</span><span class="p">,</span><span class="s1">&#39;Z0 Z6&#39;</span><span class="p">:</span><span class="mf">0.5</span><span class="p">,</span><span class="s1">&#39;Z1 Z4&#39;</span><span class="p">:</span><span class="mf">0.69</span><span class="p">,</span><span class="s1">&#39;Z1 Z5&#39;</span><span class="p">:</span><span class="mf">0.36</span><span class="p">,</span>
+       <span class="s1">&#39;Z2 Z5&#39;</span><span class="p">:</span><span class="mf">0.88</span><span class="p">,</span><span class="s1">&#39;Z2 Z6&#39;</span><span class="p">:</span><span class="mf">0.58</span><span class="p">,</span><span class="s1">&#39;Z3 Z5&#39;</span><span class="p">:</span><span class="mf">0.67</span><span class="p">,</span><span class="s1">&#39;Z3 Z6&#39;</span><span class="p">:</span><span class="mf">0.43</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>然后，使用哈密顿量和待优化的变量参数beta和gamma，构建 QAOA 的vqc。 QOP
+的输入参数是问题哈密顿量、VQC 、 一组量子比特和量子运行环境。QOP
+的输出是问题哈密顿量的期望。
+在这个问题中，损失函数是问题哈密顿量的期望，因此需要最小化 QOP 的输出。
+我们通过使用梯度下降优化器 MomentumOptimizer
+来优化vqc中的变量beta和gamma。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyqpanda</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="k">def</span> <span class="nf">oneCircuit</span><span class="p">(</span><span class="n">qlist</span><span class="p">,</span> <span class="n">Hamiltonian</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">gamma</span><span class="p">):</span>
+    <span class="n">vqc</span><span class="o">=</span><span class="n">VariationalQuantumCircuit</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Hamiltonian</span><span class="p">)):</span>
+        <span class="n">tmp_vec</span><span class="o">=</span><span class="p">[]</span>
+        <span class="n">item</span><span class="o">=</span><span class="n">Hamiltonian</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">dict_p</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="nb">iter</span> <span class="ow">in</span> <span class="n">dict_p</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;Z&#39;</span><span class="o">!=</span> <span class="n">dict_p</span><span class="p">[</span><span class="nb">iter</span><span class="p">]:</span>
+                <span class="k">pass</span>
+            <span class="n">tmp_vec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">qlist</span><span class="p">[</span><span class="nb">iter</span><span class="p">])</span>
+
+        <span class="n">coef</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="mi">2</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tmp_vec</span><span class="p">):</span>
+            <span class="k">pass</span>
+
+        <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">VariationalQuantumGate_CNOT</span><span class="p">(</span><span class="n">tmp_vec</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tmp_vec</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">VariationalQuantumGate_RZ</span><span class="p">(</span><span class="n">tmp_vec</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">2</span><span class="o">*</span><span class="n">gamma</span><span class="o">*</span><span class="n">coef</span><span class="p">))</span>
+        <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">VariationalQuantumGate_CNOT</span><span class="p">(</span><span class="n">tmp_vec</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tmp_vec</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">qlist</span><span class="p">:</span>
+        <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">VariationalQuantumGate_RX</span><span class="p">(</span><span class="n">j</span><span class="p">,</span><span class="mf">2.0</span><span class="o">*</span><span class="n">beta</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">vqc</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span><span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">problem</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Z0 Z4&#39;</span><span class="p">:</span><span class="mf">0.73</span><span class="p">,</span><span class="s1">&#39;Z0 Z5&#39;</span><span class="p">:</span><span class="mf">0.33</span><span class="p">,</span><span class="s1">&#39;Z0 Z6&#39;</span><span class="p">:</span><span class="mf">0.5</span><span class="p">,</span><span class="s1">&#39;Z1 Z4&#39;</span><span class="p">:</span><span class="mf">0.69</span><span class="p">,</span><span class="s1">&#39;Z1 Z5&#39;</span><span class="p">:</span><span class="mf">0.36</span><span class="p">,</span>
+           <span class="s1">&#39;Z2 Z5&#39;</span><span class="p">:</span><span class="mf">0.88</span><span class="p">,</span><span class="s1">&#39;Z2 Z6&#39;</span><span class="p">:</span><span class="mf">0.58</span><span class="p">,</span><span class="s1">&#39;Z3 Z5&#39;</span><span class="p">:</span><span class="mf">0.67</span><span class="p">,</span><span class="s1">&#39;Z3 Z6&#39;</span><span class="p">:</span><span class="mf">0.43</span><span class="p">}</span>
+    <span class="n">Hp</span> <span class="o">=</span> <span class="n">PauliOperator</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span>
+    <span class="n">qubit_num</span> <span class="o">=</span> <span class="n">Hp</span><span class="o">.</span><span class="n">getMaxIndex</span><span class="p">()</span>
+
+    <span class="n">machine</span><span class="o">=</span><span class="n">init_quantum_machine</span><span class="p">(</span><span class="n">QMachineType</span><span class="o">.</span><span class="n">CPU</span><span class="p">)</span>
+    <span class="n">qlist</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">qAlloc_many</span><span class="p">(</span><span class="n">qubit_num</span><span class="p">)</span>
+
+    <span class="n">step</span> <span class="o">=</span> <span class="mi">4</span>
+
+    <span class="n">beta</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">step</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span><span class="n">dtype</span> <span class="o">=</span> <span class="s1">&#39;float64&#39;</span><span class="p">),</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">gamma</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">step</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span><span class="n">dtype</span> <span class="o">=</span> <span class="s1">&#39;float64&#39;</span><span class="p">),</span> <span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">vqc</span><span class="o">=</span><span class="n">VariationalQuantumCircuit</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">qlist</span><span class="p">:</span>
+        <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">VariationalQuantumGate_H</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">step</span><span class="p">):</span>
+        <span class="n">vqc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">oneCircuit</span><span class="p">(</span><span class="n">qlist</span><span class="p">,</span><span class="n">Hp</span><span class="o">.</span><span class="n">toHamiltonian</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span><span class="n">beta</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">gamma</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+
+
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">qop</span><span class="p">(</span><span class="n">vqc</span><span class="p">,</span> <span class="n">Hp</span><span class="p">,</span> <span class="n">machine</span><span class="p">,</span> <span class="n">qlist</span><span class="p">)</span>
+    <span class="n">optimizer</span> <span class="o">=</span> <span class="n">MomentumOptimizer</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">)</span>
+
+    <span class="n">leaves</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">get_variables</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+        <span class="n">optimizer</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">leaves</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">loss_value</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">get_loss</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;i: &quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="s2">&quot; loss:&quot;</span><span class="p">,</span><span class="n">loss_value</span> <span class="p">)</span>
+
+    <span class="c1"># 验证结果</span>
+    <span class="n">prog</span> <span class="o">=</span> <span class="n">QProg</span><span class="p">()</span>
+    <span class="n">qcir</span> <span class="o">=</span> <span class="n">vqc</span><span class="o">.</span><span class="n">feed</span><span class="p">()</span>
+    <span class="n">prog</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">qcir</span><span class="p">)</span>
+    <span class="n">directly_run</span><span class="p">(</span><span class="n">prog</span><span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">quick_measure</span><span class="p">(</span><span class="n">qlist</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</pre></div>
+</div>
+<figure class="align-default" id="id34">
+<img alt="*images/QAOA*\ 7bit\_Optimizer\_Example.png" src="https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/QAOA_7bit_Optimizer_Example.png" />
+<figcaption>
+<p><span class="caption-text"><em>images/QAOA</em>7bit_Optimizer_Example.png</span><a class="headerlink" href="#id34" title="永久链接至图片">¶</a></p>
+</figcaption>
+</figure>
+<p>我们将测量的结果绘制出柱状图，可以看到’0001111’和’1110000’这两个比特串测量得到的概率最大，也正是我们这个问题的解。</p>
+<figure class="align-default" id="id35">
+<img alt="*images/QAOA*\ result.png" src="https://pyqpanda-toturial.readthedocs.io/zh/latest/_images/QAOA_result.png" />
+<figcaption>
+<p><span class="caption-text"><em>images/QAOA</em>result.png</span><a class="headerlink" href="#id35" title="永久链接至图片">¶</a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">pyQPanda</a></h1>
+
+
+
+
+
+
+
+
+<h3>导航</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html"><strong>5 Utility tool</strong></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../database/index.html"><strong>2 深入学习</strong></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tool/index.html"><strong>3 量子程序信息</strong></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../04/test.html"><strong>4 编译量子程序</strong></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../05/test.html">5555555555</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../05/test.html#aszdgvfsadgeg">aszdgvfsadgeg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../06/test.html"><strong>6 组件</strong></a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#"><strong>7 VQC</strong></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1"><strong>7.1 变量</strong></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id2">7.1.1 接口介绍</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">7.1.2 实例</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id4"><strong>7.2 运算符</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id5"><strong>7.3 可变量子逻辑门</strong></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id6">7.3.1 接口介绍</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">7.3.2 实例</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#vqg"><strong>7.4 可变量子逻辑门（VQG）</strong></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id8">7.4.1 接口介绍</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id21">7.4.2 动态修改参数方法</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id22">7.4.3 更新可变量子线路</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id23">7.4.4 实例</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id24"><strong>7.5 优化算法(梯度下降法)</strong></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id25">7.5.1接口介绍</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id26">7.5.2实例</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id27"><strong>7.6 综合示例</strong></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#qaoa">7.6.1 QAOA</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../08/test.html"><strong>8 量子算法基础</strong></a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="../06/test.html" title="上一章"><strong>6 组件</strong></a></li>
+      <li>Next: <a href="../08/test.html" title="下一章"><strong>8 量子算法基础</strong></a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="转向" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, BYLZ.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/07/test.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

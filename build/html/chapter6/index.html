@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>6 Component &mdash; pyQPanda 1.0.0 文档</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/translations.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="7 VQC" href="../chapter7/index.html" />
+    <link rel="prev" title="5 Utility tool" href="../chapter5/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> pyQPanda
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="在文档中搜索" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../chapter1/index.html">1 Basic Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter2/index.html">2 Deep learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter3/index.html">3 Quantum program information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter4/index.html">4 Compiling of quantum program</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter5/index.html">5 Utility tool</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">6 Component</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#class-of-pauli-operators">6.1 Class of Pauli operators</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#interface-introduction">6.1.1 Interface introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example">6.1.2 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#class-of-fermionic-operators">6.2 Class of Fermionic operators</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">6.2.1 Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#optimization-algorithm-direct-search">6.3 Optimization algorithm (direct search)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id2">6.3.1 Interface introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">6.3.2 Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter7/index.html">7 VQC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter8/index.html">8 Basis of quantum algorithm</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pyQPanda</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>6 Component</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/chapter6/index.rst.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="component">
+<h1>6 Component<a class="headerlink" href="#component" title="永久链接至标题"></a></h1>
+<section id="class-of-pauli-operators">
+<h2>6.1 Class of Pauli operators<a class="headerlink" href="#class-of-pauli-operators" title="永久链接至标题"></a></h2>
+<p>The Pauli operators are a set of three 2 × 2 complex matrices which are
+Hermitian and unitary, also called unitary matrices. The matrices are
+usually indicated by the Greek letter σ (sigma), denoted as</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 18%" />
+<col style="width: 19%" />
+<col style="width: 63%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><div class="line-block">
+<div class="line"><a class="reference internal" href="../_images/6.1.png"><img alt="X" src="../_images/6.1.png" style="width: 50px; height: 50px;" /></a></div>
+</div>
+</td>
+<td><div class="line-block">
+<div class="line"><span class="math notranslate nohighlight">\(\sigma_x\)</span></div>
+</div>
+</td>
+<td><div class="line-block">
+<div class="line"><span class="math notranslate nohighlight">\(\begin{bmatrix} 0 &amp; 1 \\ 1 &amp; 0 \end{bmatrix}\quad\)</span></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><div class="line-block">
+<div class="line"><a class="reference internal" href="../_images/6.2.png"><img alt="Y" src="../_images/6.2.png" style="width: 50px; height: 50px;" /></a></div>
+</div>
+</td>
+<td><div class="line-block">
+<div class="line"><span class="math notranslate nohighlight">\(\sigma_y\)</span></div>
+</div>
+</td>
+<td><div class="line-block">
+<div class="line"><span class="math notranslate nohighlight">\(\begin{bmatrix} 0 &amp; -i \\ i &amp; 0 \end{bmatrix}\quad\)</span></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="line-block">
+<div class="line"><a class="reference internal" href="../_images/6.3.png"><img alt="Z" src="../_images/6.3.png" style="width: 50px; height: 50px;" /></a></div>
+</div>
+</td>
+<td><div class="line-block">
+<div class="line"><span class="math notranslate nohighlight">\(\sigma_z\)</span></div>
+</div>
+</td>
+<td><div class="line-block">
+<div class="line"><span class="math notranslate nohighlight">\(\begin{bmatrix} 1 &amp; 0 \\ 0 &amp; -1 \end{bmatrix}\quad\)</span></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The operational rules of Pauli operators are as below:</p>
+<ol class="arabic simple">
+<li><p>The Pauli operators are multiplied by themselves to get an identity
+matrix.</p></li>
+</ol>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+&amp;\sigma_{x} \sigma_{x}=I \\
+&amp;\sigma_{y} \sigma_{y}=I \\
+&amp;\sigma_{z} \sigma_{z}=I
+\end{aligned}\end{split}\]</div>
+<ol class="arabic" start="2">
+<li><p>The Pauli operators remain unchanged when multiplied (either
+pre-multiplied or post-multiplied) by the identity matrix.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+&amp;\sigma_{x} \mathrm{I}=\mathrm{I} \sigma_{x}=\sigma_{x} \\
+&amp;\sigma_{y} \mathrm{I}=\mathrm{I} \sigma_{y}=\sigma_{y} \\
+&amp;\sigma_{z} \mathrm{I}=\mathrm{I} \sigma_{z}=\sigma_{z}
+\end{aligned}\end{split}\]</div>
+</li>
+<li><p>Two Pauli operators are multiplied in sequence to be i times as large
+as the operators not involved in the computing.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+&amp;\sigma_{x} \sigma_{y}=\mathrm{i} \sigma_{z} \\
+&amp;\sigma_{y} \sigma_{z}=\mathrm{i} \sigma_{x} \\
+&amp;\sigma_{z} \sigma_{x}=\mathrm{i} \sigma_{y}
+\end{aligned}\end{split}\]</div>
+</li>
+<li><p>Two Pauli operators are multiplied in inverted sequence to be −i
+times as large as the operators not involved in the computing.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\sigma_{y} \sigma_{x} &amp;=-\mathrm{i} \sigma_{z} \\
+\sigma_{z} \sigma_{y} &amp;=-\mathrm{i} \sigma_{x} \\
+\sigma_{x} \sigma_{z} &amp;=-\mathrm{i} \sigma_{y}
+\end{aligned}\end{split}\]</div>
+</li>
+</ol>
+<section id="interface-introduction">
+<h3>6.1.1 Interface introduction<a class="headerlink" href="#interface-introduction" title="永久链接至标题"></a></h3>
+<p>According to the above properties of the Pauli operators, we implement
+<code class="docutils literal notranslate"><span class="pre">PauliOperator</span></code> in <code class="docutils literal notranslate"><span class="pre">pyQPanda</span></code>. We can construct the class of Pauli operators
+easily, for example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyqpanda</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span><span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1"># Construct an empty PauliOperator class</span>
+    <span class="n">p1</span> <span class="o">=</span> <span class="n">PauliOperator</span><span class="p">()</span>
+
+    <span class="c1"># Two times the tensor product of Pauli Z0 Pauli Z1</span>
+    <span class="n">p2</span> <span class="o">=</span> <span class="n">PauliOperator</span><span class="p">(</span><span class="s2">&quot;Z0 Z1&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+<span class="c1">#2 times the Pauli Z0 tensor product Pauli Z1 plus 3 times the Pauli X1</span>
+<span class="c1"># tensor product Pauli Y2</span>
+    <span class="n">p3</span> <span class="o">=</span> <span class="n">PauliOperator</span><span class="p">({</span><span class="s2">&quot;Z0 Z1&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;X1 Y2&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">})</span>
+
+<span class="c1"># Construct an identity matrix with coefficients of 2, equivalent to p4</span>
+<span class="c1"># = PauliOperator(&quot;&quot;, 2)</span>
+    <span class="n">p4</span> <span class="o">=</span> <span class="n">PauliOperator</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Where PauliOperator p2(“Z0 Z1”, 2) represents</p>
+<div class="math notranslate nohighlight">
+\[2 \sigma_{0}^{Z} \otimes \sigma_{1}^{Z}\]</div>
+<p>Pauli operators can be added, subtracted, multiplied or subjected to
+other operations, and the computed return result still belongs to the
+class of Pauli operators.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="n">PauliOperator</span><span class="p">(</span><span class="s2">&quot;Z0 Z1&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">PauliOperator</span><span class="p">(</span><span class="s2">&quot;X5 Y6&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+
+<span class="n">plus</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+<span class="n">minus</span> <span class="o">=</span> <span class="n">a</span> <span class="o">-</span> <span class="n">b</span>
+<span class="n">muliply</span> <span class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span class="n">b</span>
+</pre></div>
+</div>
+<p>The class of Pauli operators supports printing, and we can print the
+class of Pauli operators on the screen to view their values.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="n">PauliOperator</span><span class="p">(</span><span class="s2">&quot;Z0 Z1&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In actual applications, we often need to know how many qubits are
+operated by the class of Pauli operators, which can be obtained by
+calling the getMaxIndex interface of the class of Pauli operators. If an
+empty class of Pauli operators calls the getMaxIndex interface, the
+result returned will be 0. Otherwise, the result will be the maximum
+subscript index value plus 1.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="n">PauliOperator</span><span class="p">(</span><span class="s2">&quot;Z0 Z1&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">PauliOperator</span><span class="p">(</span><span class="s2">&quot;X5 Y6&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="c1"># The output value is 2</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">getMaxIndex</span><span class="p">())</span>
+<span class="c1"># The output value is 7</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">getMaxIndex</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>We construct a class of Pauli operators where the subscript index of the
+Pauli operator is not allocated from 0. For example, the number of
+qubits returned and used by the getMaxIndex interface called by
+PauliOperator b(“X5 Y6”, 3) is 7, but actually only 2 qubits are used.
+How can we return the number of qubits actually used? We can call the
+remapQubitIndex interface in the class of Pauli operators which is used
+to allocate and map the indexes in the Pauli operator from 0 qubit and
+returns the new class of Pauli operator. This interface requires input
+of a map to save the mapping relationship between the subscript before
+saving the that after saving.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">b</span> <span class="o">=</span> <span class="n">PauliOperator</span><span class="p">(</span><span class="s2">&quot;X5 Y6&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">index_map</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">remapQubitIndex</span><span class="p">(</span><span class="n">index_map</span><span class="p">)</span>
+
+<span class="c1"># The output value is 7</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">getMaxIndex</span><span class="p">())</span>
+<span class="c1"># The output value is 2</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">getMaxIndex</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+<section id="example">
+<h3>6.1.2 Example<a class="headerlink" href="#example" title="永久链接至标题"></a></h3>
+<p>The following example mainly demonstrate how to use the <code class="docutils literal notranslate"><span class="pre">PauliOperator</span></code>
+interface.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyqpanda</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span><span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">PauliOperator</span><span class="p">(</span><span class="s2">&quot;Z0 Z1&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">PauliOperator</span><span class="p">(</span><span class="s2">&quot;X5 Y6&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="n">plus</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+    <span class="n">minus</span> <span class="o">=</span> <span class="n">a</span> <span class="o">-</span> <span class="n">b</span>
+    <span class="n">muliply</span> <span class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span class="n">b</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;a + b = &quot;</span><span class="p">,</span> <span class="n">plus</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;a - b = &quot;</span><span class="p">,</span> <span class="n">minus</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;a * b = &quot;</span><span class="p">,</span> <span class="n">muliply</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Index : &quot;</span><span class="p">,</span> <span class="n">muliply</span><span class="o">.</span><span class="n">getMaxIndex</span><span class="p">())</span>
+    <span class="n">index_map</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">remap_pauli</span> <span class="o">=</span> <span class="n">muliply</span><span class="o">.</span><span class="n">remapQubitIndex</span><span class="p">(</span><span class="n">index_map</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;remap_pauli : &quot;</span><span class="p">,</span> <span class="n">remap_pauli</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Index : &quot;</span><span class="p">,</span> <span class="n">remap_pauli</span><span class="o">.</span><span class="n">getMaxIndex</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>The results are as below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span> <span class="o">=</span>  <span class="p">{</span>
+<span class="n">X5</span> <span class="n">Y6</span> <span class="p">:</span> <span class="mf">3.000000</span>
+<span class="n">Z0</span> <span class="n">Z1</span> <span class="p">:</span> <span class="mf">2.000000</span>
+<span class="p">}</span>
+<span class="n">a</span> <span class="o">-</span> <span class="n">b</span> <span class="o">=</span>  <span class="p">{</span>
+<span class="n">X5</span> <span class="n">Y6</span> <span class="p">:</span> <span class="o">-</span><span class="mf">3.000000</span>
+<span class="n">Z0</span> <span class="n">Z1</span> <span class="p">:</span> <span class="mf">2.000000</span>
+<span class="p">}</span>
+<span class="n">a</span> <span class="o">*</span> <span class="n">b</span> <span class="o">=</span>  <span class="p">{</span>
+<span class="n">Z0</span> <span class="n">Z1</span> <span class="n">X5</span> <span class="n">Y6</span> <span class="p">:</span> <span class="mf">6.000000</span>
+<span class="p">}</span>
+<span class="n">Index</span> <span class="p">:</span>  <span class="mi">7</span>
+<span class="n">remap_pauli</span> <span class="p">:</span>  <span class="p">{</span>
+<span class="n">Z0</span> <span class="n">Z1</span> <span class="n">X2</span> <span class="n">Y3</span> <span class="p">:</span> <span class="mf">6.000000</span>
+<span class="p">}</span>
+<span class="n">Index</span> <span class="p">:</span>  <span class="mi">4</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="class-of-fermionic-operators">
+<h2>6.2 Class of Fermionic operators<a class="headerlink" href="#class-of-fermionic-operators" title="永久链接至标题"></a></h2>
+<p>We use the following notations to indicate the two forms of fermions,
+annihilation: X denotes <span class="math notranslate nohighlight">\(a_{x}\)</span> , creation <span class="math notranslate nohighlight">\(X_{+}\)</span> denotes :<span class="math notranslate nohighlight">\(a_{x}^{\dagger}\)</span>. For example, “1+ 3 5+ 1” denotes <span class="math notranslate nohighlight">\(a_{1}^{\dagger} a_{3} a_{5}^{\dagger} a_{1}\)</span>.</p>
+<p>The rules are organized as below:</p>
+<ol class="arabic">
+<li><p>Different numbers</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{array}{r}
+&quot; 1 \quad 2 &quot;=-1 * &quot; 2 \quad 1 &quot; \\
+&quot; 1+2+&quot;=-1 * &quot; 2+1+&quot; \\
+&quot; 1+2 &quot;=-1 * &quot; 2 \quad 1+&quot;
+\end{array}\end{split}\]</div>
+</li>
+<li><p>Same number</p></li>
+</ol>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{array}{r}
+&quot; 1 \quad 1+&quot;=1-&quot; 1+1 &quot; \\
+&quot; 1+1+&quot;=0 \\
+\quad &quot; 1\quad1 &quot;=0
+\end{array}\end{split}\]</div>
+<p>Similar with <code class="docutils literal notranslate"><span class="pre">PauliOperator</span></code>, the class of <code class="docutils literal notranslate"><span class="pre">FermionOperator</span></code> provides basic
+operations of Fermionic operators including addition, subtraction and
+multiplication. An ordered list of results can be obtained through
+organization.</p>
+<section id="id1">
+<h3>6.2.1 Example<a class="headerlink" href="#id1" title="永久链接至标题"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyqpanda</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span><span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">a</span> <span class="o">=</span> <span class="n">FermionOperator</span><span class="p">(</span><span class="s2">&quot;0 1+&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">FermionOperator</span><span class="p">(</span><span class="s2">&quot;2+ 3&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+
+    <span class="n">plus</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+    <span class="n">minus</span> <span class="o">=</span> <span class="n">a</span> <span class="o">-</span> <span class="n">b</span>
+    <span class="n">muliply</span> <span class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span class="n">b</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;a + b = &quot;</span><span class="p">,</span> <span class="n">plus</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;a - b = &quot;</span><span class="p">,</span> <span class="n">minus</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;a * b = &quot;</span><span class="p">,</span> <span class="n">muliply</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;normal_ordered(a + b) = &quot;</span><span class="p">,</span> <span class="n">plus</span><span class="o">.</span><span class="n">normal_ordered</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;normal_ordered(a - b) = &quot;</span><span class="p">,</span> <span class="n">minus</span><span class="o">.</span><span class="n">normal_ordered</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;normal_ordered(a * b) = &quot;</span><span class="p">,</span> <span class="n">muliply</span><span class="o">.</span><span class="n">normal_ordered</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>The results are as below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span> <span class="o">=</span>  <span class="p">{</span>
+<span class="mi">0</span> <span class="mi">1</span><span class="o">+</span> <span class="p">:</span> <span class="mf">2.000000</span>
+<span class="mi">2</span><span class="o">+</span> <span class="mi">3</span> <span class="p">:</span> <span class="mf">3.000000</span>
+<span class="p">}</span>
+<span class="n">a</span> <span class="o">-</span> <span class="n">b</span> <span class="o">=</span>  <span class="p">{</span>
+<span class="mi">0</span> <span class="mi">1</span><span class="o">+</span> <span class="p">:</span> <span class="mf">2.000000</span>
+<span class="mi">2</span><span class="o">+</span> <span class="mi">3</span>  <span class="p">:</span> <span class="o">-</span><span class="mf">3.000000</span>
+<span class="p">}</span>
+<span class="n">a</span> <span class="o">*</span> <span class="n">b</span> <span class="o">=</span>  <span class="p">{</span>
+<span class="mi">0</span> <span class="mi">1</span><span class="o">+</span> <span class="mi">2</span><span class="o">+</span> <span class="mi">3</span> <span class="p">:</span> <span class="mf">6.000000</span>
+<span class="p">}</span>
+<span class="n">normal_ordered</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span> <span class="o">=</span>  <span class="p">{</span>
+<span class="mi">1</span><span class="o">+</span> <span class="mi">0</span> <span class="p">:</span> <span class="o">-</span><span class="mf">2.000000</span>
+<span class="mi">2</span><span class="o">+</span> <span class="mi">3</span> <span class="p">:</span> <span class="mf">3.000000</span>
+<span class="p">}</span>
+<span class="n">normal_ordered</span><span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="n">b</span><span class="p">)</span> <span class="o">=</span>  <span class="p">{</span>
+<span class="mi">1</span><span class="o">+</span> <span class="mi">0</span> <span class="p">:</span> <span class="o">-</span><span class="mf">2.000000</span>
+<span class="mi">2</span><span class="o">+</span> <span class="mi">3</span>  <span class="p">:</span> <span class="o">-</span><span class="mf">3.000000</span>
+<span class="p">}</span>
+<span class="n">normal_ordered</span><span class="p">(</span><span class="n">a</span> <span class="o">*</span> <span class="n">b</span><span class="p">)</span> <span class="o">=</span>  <span class="p">{</span>
+<span class="mi">2</span><span class="o">+</span> <span class="mi">1</span><span class="o">+</span> <span class="mi">3</span> <span class="mi">0</span> <span class="p">:</span> <span class="mf">6.000000</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="optimization-algorithm-direct-search">
+<h2>6.3 Optimization algorithm (direct search)<a class="headerlink" href="#optimization-algorithm-direct-search" title="永久链接至标题"></a></h2>
+<p>This chapter will explain the application of optimization algorithms,
+including the <code class="docutils literal notranslate"><span class="pre">Nelder-Mead</span></code> algorithm and the <code class="docutils literal notranslate"><span class="pre">Powell</span></code> algorithm which are
+direct search ones. In <code class="docutils literal notranslate"><span class="pre">QPanda</span></code>, we have implemented <code class="docutils literal notranslate"><span class="pre">OriginNelderMead</span></code> and
+<code class="docutils literal notranslate"><span class="pre">OriginPowell</span></code> which are both inherited from <code class="docutils literal notranslate"><span class="pre">AbstractOptimizer</span></code>.</p>
+<section id="id2">
+<h3>6.3.1 Interface introduction<a class="headerlink" href="#id2" title="永久链接至标题"></a></h3>
+<p>An optimizer of a specified type can be generated through the optimizer
+factory. For instance, the type of the optimizer can be specified as
+Nelder-mead.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">OptimizerFactory</span><span class="o">.</span><span class="n">makeOptimizer</span><span class="p">(</span><span class="n">OptimizerType</span><span class="o">.</span><span class="n">NELDER_MEAD</span><span class="p">)</span>
+<span class="c1">#optimizer = OptimizerFactory.makeOptimizer(&#39;NELDER_MEAD&#39;)</span>
+</pre></div>
+</div>
+<p>We need to register with the optimizer a function used to compute the
+loss value and the parameters to be optimized.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">init_para</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">optimizer</span><span class="o">.</span><span class="n">registerFunc</span><span class="p">(</span><span class="n">lossFunc</span><span class="p">,</span> <span class="n">init_para</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then, we can set the ending condition. Moreover, we can set the
+convergence thresholds of variables and function values, the maximum
+number of function calls and the number of iterations in an
+optimization. The optimization ends as long as the above conditions are
+met.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">optimizer</span><span class="o">.</span><span class="n">setXatol</span><span class="p">(</span><span class="mf">1e-6</span><span class="p">)</span>
+<span class="n">optimizer</span><span class="o">.</span><span class="n">setFatol</span><span class="p">(</span><span class="mf">1e-6</span><span class="p">)</span>
+<span class="n">optimizer</span><span class="o">.</span><span class="n">setMaxFCalls</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
+<span class="n">optimizer</span><span class="o">.</span><span class="n">setMaxIter</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then, we can conduct optimization through the exec interface, and obtain
+the optimized results through the getResult interface.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">optimizer</span><span class="o">.</span><span class="n">exec</span><span class="p">()</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">getResult</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; Current function value: &quot;</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">fun_val</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; Iterations: &quot;</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">iters</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; Function evaluations: &quot;</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">fcalls</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; Optimized para: W: &quot;</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">para</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot; b: &quot;</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">para</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+</section>
+<section id="id3">
+<h3>6.3.2 Example<a class="headerlink" href="#id3" title="永久链接至标题"></a></h3>
+<p>Given with some hash points, we fit a line where the sum of the
+distances between the hash points and the line is minimized. The
+expression of the function which defines the line is <code class="docutils literal notranslate"><span class="pre">y</span> <span class="pre">=</span> <span class="pre">w\*x</span> <span class="pre">+</span> <span class="pre">b</span></code>. Next,
+we will get the optimization values of w and b by using the optimization
+algorithm. First, we define the function to obtain expectation.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyqpanda</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">3.3</span><span class="p">,</span> <span class="mf">4.4</span><span class="p">,</span> <span class="mf">5.5</span><span class="p">,</span> <span class="mf">6.71</span><span class="p">,</span> <span class="mf">6.93</span><span class="p">,</span> <span class="mf">4.168</span><span class="p">,</span> <span class="mf">9.779</span><span class="p">,</span> <span class="mf">6.182</span><span class="p">,</span> <span class="mf">7.59</span><span class="p">,</span>\
+             <span class="mf">2.167</span><span class="p">,</span> <span class="mf">7.042</span><span class="p">,</span> <span class="mf">10.791</span><span class="p">,</span> <span class="mf">5.313</span><span class="p">,</span> <span class="mf">7.997</span><span class="p">,</span> <span class="mf">5.654</span><span class="p">,</span> <span class="mf">9.27</span><span class="p">,</span><span class="mf">3.1</span><span class="p">])</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.7</span><span class="p">,</span> <span class="mf">2.76</span><span class="p">,</span> <span class="mf">2.09</span><span class="p">,</span> <span class="mf">3.19</span><span class="p">,</span> <span class="mf">1.694</span><span class="p">,</span> <span class="mf">1.573</span><span class="p">,</span> <span class="mf">3.366</span><span class="p">,</span> <span class="mf">2.596</span><span class="p">,</span> <span class="mf">2.53</span><span class="p">,</span>\
+             <span class="mf">1.221</span><span class="p">,</span> <span class="mf">2.827</span><span class="p">,</span> <span class="mf">3.465</span><span class="p">,</span> <span class="mf">1.65</span><span class="p">,</span> <span class="mf">2.904</span><span class="p">,</span> <span class="mf">2.42</span><span class="p">,</span> <span class="mf">2.94</span><span class="p">,</span><span class="mf">1.3</span><span class="p">])</span>
+
+<span class="k">def</span> <span class="nf">lossFunc</span><span class="p">(</span><span class="n">para</span><span class="p">,</span><span class="n">grad</span><span class="p">,</span><span class="n">inter</span><span class="p">,</span><span class="n">fcall</span><span class="p">):</span>
+    <span class="n">y_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)):</span>
+        <span class="n">y_</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">para</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">para</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">loss</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)):</span>
+        <span class="n">loss</span> <span class="o">+=</span> <span class="p">(</span><span class="n">y_</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">loss</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We use the <code class="docutils literal notranslate"><span class="pre">Nelder-Mead</span></code> algorithm for optimization.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">OptimizerFactory</span><span class="o">.</span><span class="n">makeOptimizer</span><span class="p">(</span><span class="s1">&#39;NELDER_MEAD&#39;</span><span class="p">)</span>
+
+<span class="n">init_para</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">optimizer</span><span class="o">.</span><span class="n">registerFunc</span><span class="p">(</span><span class="n">lossFunc</span><span class="p">,</span> <span class="n">init_para</span><span class="p">)</span>
+<span class="n">optimizer</span><span class="o">.</span><span class="n">setXatol</span><span class="p">(</span><span class="mf">1e-6</span><span class="p">)</span>
+<span class="n">optimizer</span><span class="o">.</span><span class="n">setFatol</span><span class="p">(</span><span class="mf">1e-6</span><span class="p">)</span>
+<span class="n">optimizer</span><span class="o">.</span><span class="n">setMaxIter</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
+<span class="n">optimizer</span><span class="o">.</span><span class="n">exec</span><span class="p">()</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">getResult</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; Current function value: &quot;</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">fun_val</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; Iterations: &quot;</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">iters</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; Function evaluations: &quot;</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">fcalls</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; Optimized para: W: &quot;</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">para</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot; b: &quot;</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">para</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Optimization terminated successfully.
+ Current function value: 0.1538576740419577
+ Iterations: 84
+ Function evaluations: 161
+ Optimized para: W：0.2516349997921341  b：0.7988010530189995
+</pre></div>
+</div>
+<p>We plot a graph with the hash points and the fitted lines.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="n">w</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">para</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">para</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;Training data&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="n">b</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;Fitted line&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<figure class="align-default">
+<img alt="" src="../_images/6.4.png" />
+</figure>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../chapter5/index.html" class="btn btn-neutral float-left" title="5 Utility tool" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> 上一页</a>
+        <a href="../chapter7/index.html" class="btn btn-neutral float-right" title="7 VQC" accesskey="n" rel="next">下一页 <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2021, BYLZ.</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用了 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a>开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
