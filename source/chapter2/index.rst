@@ -1,4 +1,4 @@
-2 Deep learning
+2 Advanced Quantum programming
 ===============
 
 2.1 Quantum logic gate
